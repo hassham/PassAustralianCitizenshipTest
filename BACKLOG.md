@@ -1,0 +1,1285 @@
+# BACKLOG.md
+
+## Pass Australian Citizenship Test - Implementation Backlog
+
+**Last Updated:** 2026-07-20
+
+**Priority Levels:** P0 (Critical/Blocker) | P1 (High/MVP Required) | P2 (Medium/Nice to Have) | P3 (Low/Future)
+
+**Effort Estimates:** XS (< 2 hours) | S (2-4 hours) | M (4-8 hours) | L (8-16 hours) | XL (16+ hours)
+
+---
+
+## Tracker Dashboard
+
+**Tracker updated:** 2026-07-20
+
+| Status | Meaning | Tasks | Share |
+|---|---|---:|---:|
+| COMPLETE | Every acceptance item in the task is implemented and verified | 1 | 2% |
+| PARTIAL | Useful scope is implemented, but acceptance items remain | 28 | 47% |
+| IN PROGRESS | Actively being implemented | 0 | 0% |
+| BLOCKED | Cannot proceed until the recorded blocker is resolved | 0 | 0% |
+| NOT STARTED | No meaningful implementation yet | 30 | 51% |
+| **Total** |  | **59** | **100%** |
+
+### Phase roll-up
+
+| Phase | Complete | Partial | In progress | Blocked | Not started |
+|---|---:|---:|---:|---:|---:|
+| 1. Setup | 1 | 2 | 0 | 0 | 1 |
+| 2. Database | 0 | 5 | 0 | 0 | 3 |
+| 3. Domain logic | 0 | 1 | 0 | 0 | 6 |
+| 4. State management | 0 | 3 | 0 | 0 | 0 |
+| 5. Feature engines | 0 | 2 | 0 | 0 | 4 |
+| 6. Screens | 0 | 4 | 0 | 0 | 6 |
+| 7. Shared UI | 0 | 3 | 0 | 0 | 0 |
+| 8. Testing | 0 | 3 | 0 | 0 | 1 |
+| 9. Content | 0 | 3 | 0 | 0 | 0 |
+| 10. Optimization | 0 | 0 | 0 | 0 | 4 |
+| 11. Platforms | 0 | 2 | 0 | 0 | 1 |
+| 12. Release | 0 | 0 | 0 | 0 | 4 |
+
+### Tracker conventions
+
+- Every task has a status, owner, target, and last-updated date.
+- `COMPLETE` means the entire original task scope is done, not merely the current vertical-slice subset.
+- `PARTIAL` records both implemented evidence and the most important remaining work.
+- `Owner: Unassigned` means the task is available for assignment.
+- `Target: Backlog` means the task has no committed delivery date.
+- File paths under `Evidence` are the implementation proof for the recorded status.
+- Status changes should update this dashboard, the task metadata, and the change log at the bottom.
+
+### Next-up queue
+
+| Order | Task | Outcome | Exit check |
+|---:|---|---|---|
+| 1 | 11.1 Android Setup | Make the current slice runnable on an Android emulator/device | `flutter doctor` passes and a debug APK builds |
+| 2 | 8.4 Manual Testing | Validate the current practice journey on a real UI | Checklist results and defects are recorded |
+| 3 | 1.2 Dependencies | Finalize only the dependencies needed for the next milestone | Dependency review passes and unused packages are removed |
+| 4 | 5.4 Starred Questions | Deliver the next free-user study capability | Questions can be starred, filtered, and persisted |
+| 5 | 6.1 App Navigation | Introduce the five-section application shell | Home, Practice, Exams, Progress, and Settings routes work |
+| 6 | 9.1 Question Dataset | Replace starter content with a reviewed production pipeline | Schema validation and content review gates pass |
+
+## Implementation Progress
+
+**Milestone 1 - Offline Practice Vertical Slice: Complete (2026-07-20)**
+
+Completed in this milestone:
+- Flutter scaffold for Android, iOS, web, Windows, macOS, and Linux
+- Riverpod application state and accessible Material 3 theme
+- Drift/SQLite database with categories, questions, attempts, and resumable practice sessions
+- Idempotent JSON content import with concurrent-startup protection
+- 12 development-only sample questions across three categories
+- Category and all-category practice flows
+- Immediate answer feedback, explanations, session results, and progress summary
+- Automatic unfinished-session persistence and "Continue Learning?" restoration
+- Repository and widget tests; static analysis passes with no findings
+- Git repository initialized
+
+Deferred to later milestones:
+- Production-reviewed 500+ question bank
+- Mock exams, timer, starred questions, premium purchases, and analytics engines
+- Remaining database tables from `docs/DATABASE_SCHEMA.md`
+- Android APK verification (Android SDK is not installed on the current machine)
+
+---
+
+# Phase 1: Project Setup & Infrastructure
+
+## Task 1.1: Create Flutter Project Scaffold
+**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-20  
+**Evidence:** `lib/`, platform folders, `test/`, `pubspec.yaml`  
+**Remaining:** None for the scaffold task.
+**Priority:** P0 | **Effort:** M
+
+Create base Flutter project with:
+- Initialize Flutter project: `flutter create pass_citizenship_test`
+- Set up folder structure (Clean Architecture)
+- Create core/ folder for utilities and constants
+- Create features/ subfolder structure (practice, categories, exams, progress, analytics, premium, settings)
+- Create shared/ folder for widgets and services
+- Create lib/main.dart entry point
+- Create pubspec.yaml with all dependencies (see Task 1.2)
+
+**Dependencies:** None
+**Related Docs:** SAD.md (Architecture section)
+
+---
+
+## Task 1.2: Configure pubspec.yaml with Dependencies
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Riverpod, Drift, routing, path utilities, code generation, and linting are configured in `pubspec.yaml`.  
+**Remaining:** Add localization, purchase, mocking, and integration-test dependencies only when their features begin; review unused packages.
+**Priority:** P0 | **Effort:** S
+
+Add all required dependencies to pubspec.yaml:
+- **State Management:** riverpod, flutter_riverpod, riverpod_generator, build_runner
+- **Database:** drift, drift_flutter, sqlite3_flutter_libs
+- **Code Generation:** build_runner, drift_generator
+- **UI:** flutter_localizations, intl
+- **In-App Purchases:** in_app_purchase
+- **Testing:** test, mocktail, integration_test
+- **Linting:** flutter_lints
+
+Run: `flutter pub get`
+
+**Dependencies:** Task 1.1
+**Related Docs:** SAD.md (Tech Stack section)
+
+---
+
+## Task 1.3: Set Up Build Configurations
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Backlog | **Updated:** 2026-07-20
+**Priority:** P0 | **Effort:** S
+
+Configure build settings:
+- android/app/build.gradle (min SDK 21, target SDK 34)
+- ios/Podfile (deployment target iOS 12.0+)
+- .env files for different build flavors (dev, staging, production)
+- Configure code signing for iOS and Android
+
+**Dependencies:** Task 1.1
+**Related Docs:** SAD.md
+
+---
+
+## Task 1.4: Create Project Constants & Utils
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Backlog | **Updated:** 2026-07-20  
+**Evidence:** Application name and starter-content warning exist in `lib/core/constants/app_constants.dart`.  
+**Remaining:** Exam defaults, logging, date/time helpers, and validators.
+**Priority:** P1 | **Effort:** S
+
+Create core utilities:
+- lib/core/constants/app_constants.dart (app name, version, default values)
+- lib/core/constants/exam_defaults.dart (20 questions, 45 min, 75% pass mark)
+- lib/core/utils/logger.dart (logging utility with levels)
+- lib/core/utils/date_time_utils.dart (timestamp conversions, formatting)
+- lib/core/utils/validators.dart (input validation functions)
+
+**Dependencies:** Task 1.1
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Logging section)
+
+---
+
+# Phase 2: Database & Data Layer
+
+## Task 2.1: Create Drift Database Configuration
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Persistent SQLite connection, schema version, four registered tables, and generated Drift bindings in `lib/data/database/`.  
+**Remaining:** Define migration strategy and production database recovery behavior.
+**Priority:** P0 | **Effort:** M
+
+Set up Drift SQLite:
+- Create lib/data/database/app_database.dart
+- Define database initialization
+- Set up migration strategy
+- Configure SQLite version and settings
+- Create database connection singleton
+
+**Dependencies:** Task 1.2
+**Related Docs:** DATABASE_SCHEMA.md (Design Principles section)
+
+---
+
+## Task 2.2: Create Database Models - Content Tables
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Content milestone | **Updated:** 2026-07-20  
+**Evidence:** Categories and questions are persisted; options and explanations are stored with each question.  
+**Remaining:** Normalize options/explanations and add official-reference and content-version tables per the full schema.
+**Priority:** P0 | **Effort:** L
+
+Create Drift models for content tables:
+- lib/data/database/tables/categories_table.dart
+- lib/data/database/tables/questions_table.dart
+- lib/data/database/tables/question_options_table.dart
+- lib/data/database/tables/question_explanations_table.dart
+- lib/data/database/tables/question_references_table.dart
+- lib/data/database/tables/exam_configurations_table.dart
+
+Generate with: `flutter pub run build_runner build`
+
+**Dependencies:** Task 2.1
+**Related Docs:** DATABASE_SCHEMA.md (Core Tables section)
+
+---
+
+## Task 2.3: Create Database Models - User Progress Tables
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Question attempts and resumable practice sessions are implemented.  
+**Remaining:** Starred questions, richer session fields, performance metrics, constraints, and indexes.
+**Priority:** P0 | **Effort:** L
+
+Create Drift models for progress tracking:
+- lib/data/database/tables/user_question_attempts_table.dart
+- lib/data/database/tables/user_starred_questions_table.dart
+- lib/data/database/tables/user_practice_sessions_table.dart
+
+**Dependencies:** Task 2.1
+**Related Docs:** DATABASE_SCHEMA.md (User Progress Tables section)
+
+---
+
+## Task 2.4: Create Database Models - Exam Tables
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20
+**Priority:** P0 | **Effort:** L
+
+Create Drift models for exam data:
+- lib/data/database/tables/exam_attempts_table.dart
+- lib/data/database/tables/exam_attempt_answers_table.dart
+- lib/data/database/tables/exam_history_table.dart
+
+**Dependencies:** Task 2.1
+**Related Docs:** DATABASE_SCHEMA.md (Mock Exam Tables section)
+
+---
+
+## Task 2.5: Create Database Models - Analytics & Premium Tables
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Priority:** P0 | **Effort:** M
+
+Create Drift models for analytics and settings:
+- lib/data/database/tables/user_performance_metrics_table.dart
+- lib/data/database/tables/premium_entitlements_table.dart
+- lib/data/database/tables/app_settings_table.dart
+- lib/data/database/tables/user_preferences_table.dart
+- lib/data/database/tables/content_versions_table.dart
+
+**Dependencies:** Task 2.1
+**Related Docs:** DATABASE_SCHEMA.md (Analytics & Premium sections)
+
+---
+
+## Task 2.6: Create Database Queries & DAOs
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** `PracticeRepository` provides category, question, attempt, progress, and session operations.  
+**Remaining:** Split full-schema operations into feature DAOs and add exam, analytics, starred, premium, and settings queries.
+**Priority:** P1 | **Effort:** L
+
+Create data access objects:
+- lib/data/database/daos/question_dao.dart (query questions, options, explanations)
+- lib/data/database/daos/practice_session_dao.dart (CRUD for sessions)
+- lib/data/database/daos/exam_dao.dart (CRUD for exams)
+- lib/data/database/daos/progress_dao.dart (CRUD for attempts and metrics)
+- lib/data/database/daos/starred_dao.dart (CRUD for starred questions)
+- lib/data/database/daos/premium_dao.dart (CRUD for premium data)
+
+**Dependencies:** Task 2.2, 2.3, 2.4, 2.5
+**Related Docs:** DATABASE_SCHEMA.md (entire document)
+
+---
+
+## Task 2.7: Create Database Initialization & JSON Import
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Content milestone | **Updated:** 2026-07-20  
+**Evidence:** Bundled JSON imports transactionally and idempotently, including protection against concurrent startup imports.  
+**Remaining:** Formal schema validation, version migrations, corruption recovery, import diagnostics, and production content volume tests.
+**Priority:** P0 | **Effort:** L
+
+Implement content loading:
+- lib/data/database/database_init.dart (initialization logic)
+- lib/data/repositories/question_repository.dart (load from JSON assets)
+- Create assets/data/questions.json (initial empty structure)
+- Create assets/data/categories.json
+- Create assets/data/exam_config.json
+- Implement JSON parsing and validation
+- Implement batch insert for performance
+
+**Dependencies:** Task 2.1, 2.6
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Content Management section)
+
+---
+
+## Task 2.8: Create Database Views & Analytics Queries
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Implement database views:
+- Create v_user_statistics view
+- Create v_active_questions view
+- Create analytics query methods in DAOs
+- Test query performance against targets
+
+**Dependencies:** Task 2.6
+**Related Docs:** DATABASE_SCHEMA.md (Migrations & Integrity Views section)
+
+---
+
+# Phase 3: Core Domain Logic & Engines
+
+## Task 3.1: Implement Readiness Score Calculator
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** L
+
+Create readiness score calculation engine:
+- lib/domain/entities/readiness_model.dart (data model)
+- lib/domain/usecases/calculate_readiness_score_usecase.dart
+- Implement 7-step algorithm from ALGORITHMS.md
+- Implement readiness band classification
+- Handle minimum data requirements
+- Add unit tests (80% coverage)
+
+**Dependencies:** Task 2.6
+**Related Docs:** ALGORITHMS.md (Readiness Score Algorithm section)
+
+---
+
+## Task 3.2: Implement Weak Area Analysis Engine
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create weak area analysis:
+- lib/domain/entities/weak_area_model.dart
+- lib/domain/usecases/analyze_weak_areas_usecase.dart
+- Implement algorithm from ALGORITHMS.md
+- Identify weak categories with severity ranking
+- Generate top 3 recommendations
+- Add unit tests (80% coverage)
+
+**Dependencies:** Task 2.6
+**Related Docs:** ALGORITHMS.md (Weak Area Analysis section)
+
+---
+
+## Task 3.3: Implement Performance Metrics Calculator
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create performance metrics aggregation:
+- lib/domain/usecases/calculate_performance_metrics_usecase.dart
+- Overall statistics calculation
+- Per-category statistics
+- Mock exam statistics
+- Update caching strategy
+- Add unit tests
+
+**Dependencies:** Task 2.6
+**Related Docs:** ALGORITHMS.md (Performance Metrics Aggregation section)
+
+---
+
+## Task 3.4: Implement Recommendation Engine
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Create recommendation logic:
+- lib/domain/entities/recommendation_model.dart
+- lib/domain/usecases/generate_recommendations_usecase.dart
+- Implement 6 recommendation rules from ALGORITHMS.md
+- Prioritize recommendations
+- Add unit tests
+
+**Dependencies:** Task 3.1, 3.2, 3.3
+**Related Docs:** ALGORITHMS.md (Recommendation Engine section)
+
+---
+
+## Task 3.5: Implement Mock Exam Scoring Engine
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** S
+
+Create exam scoring:
+- lib/domain/usecases/score_exam_usecase.dart
+- Calculate overall score
+- Calculate pass/fail
+- Generate per-category breakdown
+- Add unit tests
+
+**Dependencies:** Task 2.6
+**Related Docs:** ALGORITHMS.md (Mock Exam Scoring section)
+
+---
+
+## Task 3.6: Implement Timer Engine (Timed Exams)
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create timer handling:
+- lib/domain/services/timer_service.dart
+- Calculate remaining time based on elapsed real-world time
+- Handle background/resume transitions
+- Detect device time changes
+- Handle timer expiry
+- Add unit tests for edge cases
+
+**Dependencies:** Task 2.4
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Timer Edge Cases section)
+
+---
+
+## Task 3.7: Implement Session Persistence Service
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20  
+**Evidence:** Practice session question order, position, score, completion state, and restart restoration are persisted.  
+**Remaining:** Exam session persistence, timer timestamps, lifecycle handling, clock-change detection, and auto-submit.
+**Priority:** P1 | **Effort:** M
+
+Create session management:
+- lib/domain/services/session_service.dart
+- Save practice session state
+- Restore practice session on app restart
+- Handle exam session persistence
+- Prompt for session continuation
+- Add unit tests
+
+**Dependencies:** Task 2.3, 2.4, 3.6
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Session Persistence section)
+
+---
+
+# Phase 4: State Management & Application Layer
+
+## Task 4.1: Create Riverpod Providers - Database Layer
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Database and practice-repository providers manage creation and disposal.  
+**Remaining:** Providers for the remaining feature repositories/DAOs and test overrides for each boundary.
+**Priority:** P1 | **Effort:** M
+
+Set up state management:
+- lib/application/providers/database_provider.dart (database singleton)
+- lib/application/providers/question_provider.dart (question queries)
+- lib/application/providers/category_provider.dart (categories)
+- lib/application/providers/exam_config_provider.dart (exam config)
+
+**Dependencies:** Task 2.6, 3.6
+**Related Docs:** SAD.md (State Management section)
+
+---
+
+## Task 4.2: Create Riverpod Providers - Business Logic
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-20  
+**Evidence:** Category and progress summary providers are implemented.  
+**Remaining:** Readiness, weak-area, metrics, recommendation, and premium providers.
+**Priority:** P1 | **Effort:** M
+
+Create business logic providers:
+- lib/application/providers/readiness_score_provider.dart
+- lib/application/providers/weak_areas_provider.dart
+- lib/application/providers/performance_metrics_provider.dart
+- lib/application/providers/recommendations_provider.dart
+
+**Dependencies:** Task 3.1, 3.2, 3.3, 3.4
+**Related Docs:** SAD.md (State Management section)
+
+---
+
+## Task 4.3: Create Riverpod Providers - Session Management
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20  
+**Evidence:** `PracticeController` manages practice loading, answer state, progress, completion, and restoration.  
+**Remaining:** Exam and timer controllers plus lifecycle integration.
+**Priority:** P1 | **Effort:** M
+
+Create session providers:
+- lib/application/providers/current_session_provider.dart
+- lib/application/providers/current_exam_provider.dart
+- lib/application/providers/timer_provider.dart (for timed exams)
+- lib/application/providers/user_progress_provider.dart
+
+**Dependencies:** Task 3.6, 3.7, 4.1
+**Related Docs:** SAD.md (State Management section)
+
+---
+
+# Phase 5: Feature Implementation - Core Engines
+
+## Task 5.1: Implement Practice Session Engine
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Randomized category/all-category sessions, answer evaluation, results, persistence, and resume are working.  
+**Remaining:** Configurable session length, richer exit handling, retry behavior, and full FSD edge-case coverage.
+**Priority:** P1 | **Effort:** L
+
+Create practice flow:
+- lib/features/practice/domain/usecases/start_practice_usecase.dart
+- lib/features/practice/domain/usecases/submit_answer_usecase.dart
+- lib/features/practice/domain/usecases/navigate_question_usecase.dart
+- lib/features/practice/domain/usecases/end_practice_usecase.dart
+- Handle question randomization
+- Handle answer validation
+- Handle session persistence
+- Add integration tests
+
+**Dependencies:** Task 3.7, 4.3
+**Related Docs:** FSD.md (Practice Mode section)
+
+---
+
+## Task 5.2: Implement Mock Exam Engine
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** L
+
+Create exam flow:
+- lib/features/exams/domain/usecases/create_exam_usecase.dart
+- lib/features/exams/domain/usecases/start_exam_usecase.dart
+- lib/features/exams/domain/usecases/submit_exam_answer_usecase.dart
+- lib/features/exams/domain/usecases/submit_exam_usecase.dart
+- Random question selection per config
+- Timed vs untimed exam support
+- Auto-submit on timer expiry
+- Add integration tests
+
+**Dependencies:** Task 3.5, 3.6, 5.1
+**Related Docs:** FSD.md (Mock Exams section)
+
+---
+
+## Task 5.3: Implement Category Filtering
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Users can practise a single category or all categories; filtering is database-driven.  
+**Remaining:** Multiple-category selection, question-count options, and empty-category handling.
+**Priority:** P1 | **Effort:** M
+
+Create category selection:
+- lib/features/categories/domain/usecases/get_categories_usecase.dart
+- lib/features/categories/domain/usecases/filter_questions_by_category_usecase.dart
+- Single category selection
+- Multiple category selection
+- All categories selection
+- Add unit tests
+
+**Dependencies:** Task 2.6
+**Related Docs:** FSD.md (Category Practice section)
+
+---
+
+## Task 5.4: Implement Starred Questions System
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create starred questions functionality:
+- lib/features/starred/domain/usecases/star_question_usecase.dart
+- lib/features/starred/domain/usecases/unstar_question_usecase.dart
+- lib/features/starred/domain/usecases/get_starred_questions_usecase.dart
+- lib/features/starred/domain/usecases/practice_starred_usecase.dart
+- Archive handling for starred questions
+- Add unit tests
+
+**Dependencies:** Task 2.3, 5.1
+**Related Docs:** FSD.md (Starred Questions section)
+
+---
+
+## Task 5.5: Implement Premium Features Manager
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create premium features:
+- lib/features/premium/domain/usecases/check_premium_status_usecase.dart
+- lib/features/premium/domain/usecases/process_purchase_usecase.dart
+- lib/features/premium/domain/usecases/restore_purchases_usecase.dart
+- lib/features/premium/domain/usecases/grant_timed_exam_access_usecase.dart
+- Feature gating (readiness score, weak areas, exam history)
+- Add unit tests
+
+**Dependencies:** Task 2.5
+**Related Docs:** PRD.md (Premium Model section)
+
+---
+
+## Task 5.6: Implement Error Handling Service
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Reliability milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create error handling:
+- lib/core/errors/exceptions.dart (custom exceptions)
+- lib/core/errors/error_handler.dart (centralized error handling)
+- lib/data/services/database_recovery_service.dart (DB corruption recovery)
+- lib/data/services/json_import_error_service.dart (JSON import error handling)
+- lib/data/services/purchase_error_service.dart (purchase error handling)
+- Logging integration
+- Add unit tests
+
+**Dependencies:** Task 1.4, 2.7
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Error Handling Strategy section)
+
+---
+
+# Phase 6: UI/Presentation Layer - Screens
+
+## Task 6.1: Create App Shell & Navigation
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Application shell, theme, home route, and practice navigation are present.  
+**Remaining:** Five-section navigation, named/deep routes, route guards, state preservation, and back-navigation policy.
+**Priority:** P1 | **Effort:** M
+
+Create app structure:
+- lib/presentation/app.dart (main app widget)
+- lib/presentation/navigation/app_router.dart (routing setup)
+- lib/presentation/screens/shell/bottom_navigation_shell.dart
+- Set up 5 bottom nav tabs: Home, Practice, Exams, Progress, Settings
+- Handle navigation and state persistence
+
+**Dependencies:** Task 4.1
+**Related Docs:** FSD.md (Application Navigation section)
+
+---
+
+## Task 6.2: Implement Home Screen
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Home shows practice entry points, category cards, accuracy, attempted count, and resume prompt.  
+**Remaining:** FSD-complete cards, premium/readiness states, recommendations, loading skeletons, and polished empty/error states.
+**Priority:** P1 | **Effort:** M
+
+Create home screen:
+- lib/presentation/screens/home/home_screen.dart
+- lib/presentation/providers/home_provider.dart
+- Display welcome banner
+- Display quick statistics (attempts, accuracy, starred count)
+- Display continue learning section (if session active)
+- Display quick action buttons
+- Display premium banner (non-premium users)
+- Add unit and widget tests
+
+**Dependencies:** Task 4.2, 6.1
+**Related Docs:** FSD.md (Home Screen section)
+
+---
+
+## Task 6.3: Implement Practice Mode Screen
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Question progress, options, answer locking, correct/incorrect styling, explanation, next action, and results are implemented.  
+**Remaining:** Exit confirmation, star control, configurable flows, full responsive QA, and remaining accessibility verification.
+**Priority:** P1 | **Effort:** L
+
+Create practice flow:
+- lib/presentation/screens/practice/practice_mode_screen.dart
+- lib/presentation/screens/practice/question_screen.dart
+- lib/presentation/screens/practice/answer_feedback_screen.dart
+- lib/presentation/providers/practice_provider.dart
+- Display question with 4 options
+- Show category, difficulty, star icon
+- Implement option selection flow
+- Show correct/incorrect feedback with colors
+- Display explanation and reference
+- Navigation buttons (Previous, Next)
+- Add widget tests
+
+**Dependencies:** Task 5.1, 6.1
+**Related Docs:** FSD.md (Practice Mode section)
+
+---
+
+## Task 6.4: Implement Category Selection Screen
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Database-driven single-category and all-category selection is integrated into Home.  
+**Remaining:** Dedicated selection workflow, multiple selection, counts/settings, selection validation, and FSD-complete states.
+**Priority:** P1 | **Effort:** S
+
+Create category picker:
+- lib/presentation/screens/categories/categories_screen.dart
+- lib/presentation/providers/categories_provider.dart
+- Display all categories
+- Single category selection
+- Multiple category selection (checkboxes)
+- "All Categories" option
+- Start practice button
+- Add widget tests
+
+**Dependencies:** Task 5.3, 6.1
+**Related Docs:** FSD.md (Category Practice section)
+
+---
+
+## Task 6.5: Implement Starred Questions Screen
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create starred view:
+- lib/presentation/screens/starred/starred_questions_screen.dart
+- lib/presentation/providers/starred_provider.dart
+- Display starred questions list
+- Filters: category, difficulty
+- Practice starred questions action
+- Remove from starred action
+- Archive handling message
+- Add widget tests
+
+**Dependencies:** Task 5.4, 6.1
+**Related Docs:** FSD.md (Starred Questions section)
+
+---
+
+## Task 6.6: Implement Mock Exams Screen
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** L
+
+Create exam flows:
+- lib/presentation/screens/exams/exams_screen.dart
+- lib/presentation/screens/exams/exam_question_screen.dart (for timed)
+- lib/presentation/screens/exams/exam_results_screen.dart
+- lib/presentation/screens/exams/exam_review_screen.dart
+- lib/presentation/providers/exam_provider.dart
+- Start free untimed exam
+- Start premium timed exam (with timer display)
+- Answer submission flow
+- Results display (score, pass/fail)
+- Review with correct answers
+- Add widget and integration tests
+
+**Dependencies:** Task 5.2, 5.5, 6.1
+**Related Docs:** FSD.md (Mock Exams & Premium Timed Exams sections)
+
+---
+
+## Task 6.7: Implement Progress Screen
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create progress tracking:
+- lib/presentation/screens/progress/progress_screen.dart
+- lib/presentation/providers/progress_provider.dart
+- Display overall statistics (attempts, accuracy)
+- Display category performance chart/list
+- Display readiness score (premium only)
+- Display weak areas (premium only)
+- Display recommendations
+- Add widget tests
+
+**Dependencies:** Task 3.1, 3.2, 3.3, 4.2, 6.1
+**Related Docs:** FSD.md, ALGORITHMS.md
+
+---
+
+## Task 6.8: Implement Exam History Screen
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Create history view (premium):
+- lib/presentation/screens/progress/exam_history_screen.dart
+- lib/presentation/providers/exam_history_provider.dart
+- Display all completed exams
+- Show date, score, pass/fail status
+- Show trend/improvement
+- Ability to review past exams
+- Add widget tests
+
+**Dependencies:** Task 5.5, 6.7
+**Related Docs:** PRD.md (Premium Features section)
+
+---
+
+## Task 6.9: Implement Premium Screen
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create premium upsell:
+- lib/presentation/screens/premium/premium_screen.dart
+- lib/presentation/providers/premium_provider.dart
+- Display premium features list
+- Display pricing
+- Purchase button
+- Restore purchases button
+- Handle purchase flow
+- Show purchase confirmation
+- Add widget tests
+
+**Dependencies:** Task 5.5, 6.1
+**Related Docs:** PRD.md (Monetization section)
+
+---
+
+## Task 6.10: Implement Settings Screen
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Settings milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Create settings:
+- lib/presentation/screens/settings/settings_screen.dart
+- lib/presentation/providers/settings_provider.dart
+- Display app version
+- Text size preference (100-200%)
+- Theme preference (light/dark)
+- Notification settings
+- About section
+- Privacy policy link
+- Terms of service link
+- Add widget tests
+
+**Dependencies:** Task 4.1, 6.1
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Accessibility section)
+
+---
+
+# Phase 7: UI Components & Shared Widgets
+
+## Task 7.1: Create Common Widgets
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Reusable themed cards, buttons, progress treatments, and result presentation patterns exist in the current screens.  
+**Remaining:** Extract formal shared widgets, document their APIs, and add component-level tests.
+**Priority:** P2 | **Effort:** M
+
+Build reusable components:
+- lib/presentation/widgets/question_card.dart
+- lib/presentation/widgets/option_button.dart
+- lib/presentation/widgets/score_display.dart
+- lib/presentation/widgets/progress_bar.dart
+- lib/presentation/widgets/category_chip.dart
+- lib/presentation/widgets/difficulty_badge.dart
+- lib/presentation/widgets/star_icon_button.dart
+- lib/presentation/widgets/empty_state.dart
+- lib/presentation/widgets/loading_indicator.dart
+
+**Dependencies:** Task 6.1
+**Related Docs:** FSD.md (Screen Display sections)
+
+---
+
+## Task 7.2: Create Theme & Styling
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Material 3 color scheme, background, card, and primary-button themes are centralized in `lib/app.dart`.  
+**Remaining:** Typography scale, spacing tokens, dark theme decision, component states, and visual QA.
+**Priority:** P2 | **Effort:** S
+
+Set up theming:
+- lib/presentation/theme/app_colors.dart
+- lib/presentation/theme/app_text_styles.dart
+- lib/presentation/theme/app_theme.dart (light and dark themes)
+- Implement accessibility color contrast
+
+**Dependencies:** Task 6.1
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Accessibility section)
+
+---
+
+## Task 7.3: Implement Accessibility Support
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Continuous | **Updated:** 2026-07-20  
+**Evidence:** Semantic labels, selected state, live feedback region, large touch targets, and non-color answer indicators are present.  
+**Remaining:** Screen-reader audit, 200% text scaling, contrast measurement, keyboard navigation, focus order, and platform testing.
+**Priority:** P1 | **Effort:** M
+
+Add accessibility features:
+- Semantic labels on all interactive elements
+- Screen reader support
+- Text scaling (100-200%)
+- High contrast mode support
+- Keyboard navigation
+- Tab order verification
+- Test with accessibility scanner
+
+**Dependencies:** Task 6.1-6.10, 7.1, 7.2
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Accessibility section)
+
+---
+
+# Phase 8: Testing & Quality Assurance
+
+## Task 8.1: Create Unit Tests - Core Logic
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Continuous | **Updated:** 2026-07-20  
+**Evidence:** Repository tests cover idempotent import, attempt recording, progress, and session restoration.  
+**Remaining:** Controller and all future algorithm tests, edge cases, failure paths, and coverage reporting.
+**Priority:** P1 | **Effort:** L
+
+Write unit tests:
+- 80% coverage of readiness score calculation
+- 80% coverage of weak area analysis
+- 80% coverage of metrics calculation
+- 80% coverage of timer logic
+- 80% coverage of all domain usecases
+- Run: `flutter test --coverage`
+
+**Dependencies:** Task 3.1-3.7
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Testing Requirements section)
+
+---
+
+## Task 8.2: Create Integration Tests - Core Flows
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** In-memory database tests verify persistence behavior across repository operations.  
+**Remaining:** Device-level `integration_test` coverage for complete practice, restart restoration, mock exam, and timer flows.
+**Priority:** P1 | **Effort:** L
+
+Write integration tests:
+- Complete practice session flow (start → answer → finish)
+- Timed exam flow with timer (start → answer → timer expiry → submit)
+- Session persistence (close app → restore session → continue)
+- Premium purchase flow
+- Weak area analysis calculation
+
+**Dependencies:** Task 5.1-5.5, 6.3-6.6
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Testing Requirements section)
+
+---
+
+## Task 8.3: Create Widget Tests - Screens
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Continuous | **Updated:** 2026-07-20  
+**Evidence:** Home rendering, category import, and primary practice entry point are covered in `test/app_test.dart`.  
+**Remaining:** Practice interactions, feedback, results, resume dialog, errors, responsive layout, and all future screens.
+**Priority:** P2 | **Effort:** M
+
+Write widget tests:
+- Home screen rendering
+- Practice question screen interaction
+- Option selection flow
+- Results screen display
+- Progress metrics display
+- Premium screen
+
+**Dependencies:** Task 6.2-6.10
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Testing Requirements section)
+
+---
+
+## Task 8.4: Manual Testing Checklist
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Blocker note:** Android SDK/emulator is not installed on the current machine; Windows or web can still be used for an initial UI pass.
+**Priority:** P1 | **Effort:** M
+
+Perform manual testing:
+- Device rotation during quiz
+- App backgrounding during practice
+- Timer + backgrounding (timed exam)
+- Session restoration on cold start
+- Accessibility testing (screen reader, text scaling)
+- Low disk space handling
+- Database corruption recovery
+- Network (if offline verification added)
+- Test on real Android and iOS devices
+
+**Dependencies:** All feature tasks
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Manual Testing Scenarios)
+
+---
+
+# Phase 9: Content & Data
+
+## Task 9.1: Create Question Dataset Structure
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Content milestone | **Updated:** 2026-07-20  
+**Evidence:** Versioned starter JSON contains 12 questions with IDs, categories, four options, a correct index, and explanations.  
+**Remaining:** Difficulty, option-specific explanations, official references, schema documentation, 500+ reviewed questions, and licensing review.
+**Priority:** P0 | **Effort:** S
+
+Set up JSON structure:
+- Create assets/data/questions.json with 500+ questions
+- Format per specification in DATABASE_SCHEMA.md
+- Include all fields: text, options, correct answer, difficulty, category, explanation, reference
+- Create sample data for testing (10-20 questions)
+
+**Dependencies:** Task 2.7
+**Related Docs:** PRD.md (Question Bank Requirements section)
+
+---
+
+## Task 9.2: Create Categories & Configuration
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Content milestone | **Updated:** 2026-07-20  
+**Evidence:** Three database-driven categories and a versioned exam configuration asset exist under `assets/data/`.  
+**Remaining:** Validate taxonomy against current official material and connect exam configuration to mock-exam logic.
+**Priority:** P0 | **Effort:** S
+
+Create supporting content:
+- assets/data/categories.json (8 categories from official list)
+- assets/data/exam_config.json (question count: 20, duration: 45 min, pass: 75%)
+- assets/data/references.json (book references per question)
+
+**Dependencies:** Task 2.7
+**Related Docs:** PRD.md, FSD.md (Configuration sections)
+
+---
+
+## Task 9.3: Validate & Test Content Import
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Content milestone | **Updated:** 2026-07-20  
+**Evidence:** Automated tests verify repeat-safe import and expected starter category/question counts.  
+**Remaining:** JSON schema validation, duplicate/reference checks, 500+ item performance tests, and user-facing failure recovery.
+**Priority:** P1 | **Effort:** M
+
+Verify data:
+- Validate all 500+ questions parse correctly
+- Verify 4 options per question
+- Verify 1 correct answer per question
+- Verify explanations exist
+- Verify references complete
+- Test database import performance (< 30 seconds)
+- Verify data integrity post-import
+
+**Dependencies:** Task 2.7, 9.1, 9.2
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Content Management section)
+
+---
+
+# Phase 10: Performance Optimization
+
+## Task 10.1: Optimize Database Queries
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Optimization milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Improve query performance:
+- Verify all queries complete in < 100ms
+- Check index usage with EXPLAIN QUERY PLAN
+- Optimize slow queries
+- Implement query result caching
+- Test with 500+ questions
+
+**Dependencies:** Task 2.8
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Performance Targets section)
+
+---
+
+## Task 10.2: Optimize App Launch Time
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Optimization milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Reduce startup time:
+- Profile app startup
+- Target: < 3 seconds to home screen visible
+- Lazy load features
+- Pre-fetch home screen data in background
+- Remove blocking operations
+- Measure with DevTools
+
+**Dependencies:** Task 6.1
+**Related Docs:** IMPLEMENTATION_DETAILS.md (App Launch Time section)
+
+---
+
+## Task 10.3: Optimize Memory Usage
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Optimization milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Reduce memory footprint:
+- Profile memory usage
+- Target: < 150MB average
+- Check for memory leaks
+- Dispose widgets properly
+- Clear caches appropriately
+- Test with real questions dataset
+
+**Dependencies:** All feature tasks
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Memory Usage section)
+
+---
+
+## Task 10.4: Performance Testing & Profiling
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Optimization milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Create performance tests:
+- Measure app launch time
+- Measure question load time
+- Measure database query times
+- Measure memory usage under load
+- Document baseline metrics
+- Create performance regression tests
+
+**Dependencies:** Task 10.1-10.3
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Performance Targets section)
+
+---
+
+# Phase 11: Platform-Specific Implementation
+
+## Task 11.1: Android Setup
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
+**Evidence:** Standard Android Flutter project and application identifier are scaffolded.  
+**Remaining:** Install/configure Android SDK, validate current SDK targets, create emulator, build APK, configure signing, and test on a real device.  
+**Environment blocker:** No Android SDK was found during the 2026-07-20 debug-build attempt.
+**Priority:** P1 | **Effort:** M
+
+Configure Android:
+- android/app/build.gradle (min SDK 21, target 34)
+- AndroidManifest.xml (permissions)
+- Set up Google Play Billing API
+- Configure app signing
+- Test on Android emulator and real device
+
+**Dependencies:** Task 1.3
+**Related Docs:** SAD.md (Tech Stack section)
+
+---
+
+## Task 11.2: iOS Setup
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Platform milestone | **Updated:** 2026-07-20  
+**Evidence:** Standard iOS Flutter runner, Xcode project, assets, and tests are scaffolded.  
+**Remaining:** Validate deployment target, bundle/signing configuration, permissions, icons, simulator build, and real-device testing on macOS.
+**Priority:** P1 | **Effort:** M
+
+Configure iOS:
+- ios/Podfile (deployment target iOS 12.0+)
+- Set up Apple In-App Purchases
+- Configure provisioning profiles
+- Configure code signing
+- Test on iOS simulator and real device
+
+**Dependencies:** Task 1.3
+**Related Docs:** SAD.md (Tech Stack section)
+
+---
+
+## Task 11.3: In-App Purchase Implementation
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Priority:** P1 | **Effort:** M
+
+Implement purchases:
+- lib/data/services/purchase_service.dart
+- Integrate Google Play Billing (Android)
+- Integrate Apple In-App Purchases (iOS)
+- Handle purchase flow
+- Handle restore purchases
+- Verify purchases
+- Add error handling
+
+**Dependencies:** Task 5.5, 11.1, 11.2
+**Related Docs:** PRD.md (Monetization section)
+
+---
+
+# Phase 12: Deployment & Release
+
+## Task 12.1: Prepare Google Play Store Release
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Release milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Prepare Android release:
+- Create Google Play Developer account
+- Generate upload key
+- Create signed APK
+- Write app description and screenshots
+- Set up store listing
+- Configure pricing
+- Create release build
+
+**Dependencies:** Task 11.1, 8.4
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Deployment section)
+
+---
+
+## Task 12.2: Prepare Apple App Store Release
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Release milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Prepare iOS release:
+- Create Apple Developer account
+- Create app in App Store Connect
+- Generate provisioning profiles
+- Create signing certificates
+- Write app description and screenshots
+- Set up store listing
+- Configure pricing
+- Create release build
+
+**Dependencies:** Task 11.2, 8.4
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Deployment section)
+
+---
+
+## Task 12.3: Create Release Documentation
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Release milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** S
+
+Prepare docs:
+- Create RELEASE_NOTES.md for v1.0.0
+- Create PRIVACY_POLICY.md
+- Create TERMS_OF_SERVICE.md
+- Create USER_GUIDE.md (optional, for future)
+- Document support contact
+
+**Dependencies:** Task 12.1, 12.2
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Deployment section)
+
+---
+
+## Task 12.4: Beta Testing & App Review
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Release milestone | **Updated:** 2026-07-20
+**Priority:** P2 | **Effort:** M
+
+Test before release:
+- Google Play internal testing track
+- Apple TestFlight beta testing
+- Gather feedback from beta testers
+- Fix critical issues
+- Submit to stores for review
+- Respond to review feedback
+
+**Dependencies:** Task 12.1, 12.2
+**Related Docs:** IMPLEMENTATION_DETAILS.md (Deployment Checklist)
+
+---
+
+# Dependency Graph Summary
+
+```
+Phase 1: Project Setup (1.1-1.4)
+    ↓
+Phase 2: Database (2.1-2.8)
+    ↓
+Phase 3: Core Logic (3.1-3.7)
+    ↓
+Phase 4: State Management (4.1-4.3)
+    ↓
+Phase 5: Features (5.1-5.6)
+    ↓
+Phase 6: UI Screens (6.1-6.10)
+    ↓
+Phase 7: UI Components (7.1-7.3)
+    ↓
+Phase 8: Testing (8.1-8.4)
+    ↓
+Phase 9: Content (9.1-9.3)
+    ↓
+Phase 10: Optimization (10.1-10.4)
+    ↓
+Phase 11: Platform Setup (11.1-11.3)
+    ↓
+Phase 12: Deployment (12.1-12.4)
+```
+
+---
+
+# Task Priority for MVP
+
+**Must Complete for MVP (P0 & P1):**
+- All Phase 1, 2, 3, 4 tasks
+- Phase 5: 5.1-5.6
+- Phase 6: 6.1-6.10
+- Phase 7: 7.1-7.3
+- Phase 8: 8.1-8.3
+- Phase 9: 9.1-9.3
+- Phase 11: 11.1-11.3
+- Phase 12: 12.1-12.4
+
+**Nice to Have (P2):**
+- Phase 8: 8.4 (manual testing - still important for quality)
+- Phase 10: 10.1-10.4
+- Phase 12: 12.3
+
+---
+
+# Effort Summary
+
+| Phase | Tasks | Total Effort |
+|-------|-------|--------------|
+| 1: Setup | 4 | ~4M |
+| 2: Database | 8 | ~7L |
+| 3: Core Logic | 7 | ~6L |
+| 4: State Mgmt | 3 | ~3M |
+| 5: Features | 6 | ~6L |
+| 6: UI Screens | 10 | ~10L |
+| 7: Components | 3 | ~3M |
+| 8: Testing | 4 | ~4L |
+| 9: Content | 3 | ~2M |
+| 10: Optimization | 4 | ~4M |
+| 11: Platform | 3 | ~3M |
+| 12: Deployment | 4 | ~3M |
+
+**Total MVP Estimate: ~50 weeks (assuming 1 person, ~40 hours/week development)**
+**With team of 2-3 people working in parallel: ~15-20 weeks**
+
+---
+
+# How to Use This Backlog
+
+1. **Select from Next Up** - Prefer the ordered queue unless priorities or dependencies change.
+2. **Assign an Owner** - Replace `Unassigned` before implementation starts.
+3. **Set In Progress** - Record the intended target and update date.
+4. **Keep Evidence Current** - Add implementation and test paths as acceptance items land.
+5. **Use Partial Honestly** - Do not mark a broad task complete when only a vertical-slice subset exists.
+6. **Record Blockers** - State the external condition, owner, and next unblock action.
+7. **Complete with Verification** - Confirm every task bullet, tests, and relevant manual checks.
+8. **Update the Dashboard** - Recount all 59 tasks whenever a status changes.
+9. **Reference Task IDs** - Include task IDs in commits and pull requests.
+
+---
+
+# Tracker Change Log
+
+| Date | Change | Verification |
+|---|---|---|
+| 2026-07-20 | Converted the implementation plan into a 59-task tracker with explicit status, ownership, targets, evidence, remaining work, dashboard totals, and next-up ordering. | Status metadata count and dashboard totals validated. |
+| 2026-07-20 | Recorded Milestone 1 implementation and the Android SDK environment blocker. | `flutter analyze` passed; all 3 automated tests passed; Android build stopped at missing SDK. |
+
+---
+
+**Questions?** Refer to AGENTS.md for quick navigation to relevant documentation.

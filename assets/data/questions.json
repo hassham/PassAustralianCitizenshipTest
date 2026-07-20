@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "categories": [
+    {"id": "values", "name": "Australian values"},
+    {"id": "government", "name": "Government and the law"},
+    {"id": "history", "name": "Australia and its people"}
+  ],
+  "questions": [
+    {"id":"v1","categoryId":"values","text":"What does freedom of speech mean in Australia?","options":["People may express ideas within the law","Only elected officials may speak publicly","People may ignore Australian laws","Newspapers must agree with the government"],"correctIndex":0,"explanation":"People in Australia may express their ideas freely, provided they remain within the law."},
+    {"id":"v2","categoryId":"values","text":"Which statement reflects equality in Australia?","options":["Men and women have equal rights","A person's wealth determines their rights","Only citizens must obey the law","Some religions have greater legal rights"],"correctIndex":0,"explanation":"Australian law gives men and women equal rights."},
+    {"id":"v3","categoryId":"values","text":"What is an example of mutual respect?","options":["Listening to views you disagree with","Preventing others from voting","Refusing to follow lawful decisions","Using violence to settle disagreement"],"correctIndex":0,"explanation":"Australians are expected to respect the rights and opinions of others, even when they disagree."},
+    {"id":"v4","categoryId":"values","text":"Is violence acceptable when people disagree?","options":["No, disagreement should be resolved peacefully","Yes, if the issue is important","Yes, during an election","Only against public officials"],"correctIndex":0,"explanation":"Violence is not accepted as a way to change a person's mind or the law."},
+    {"id":"g1","categoryId":"government","text":"Who makes and changes federal laws in Australia?","options":["The Australian Parliament","The police","Local councils alone","The High Court alone"],"correctIndex":0,"explanation":"The Australian Parliament makes and changes federal laws."},
+    {"id":"g2","categoryId":"government","text":"What are the two houses of the Australian Parliament?","options":["The Senate and the House of Representatives","The Cabinet and the High Court","The states and the territories","The police and the Defence Force"],"correctIndex":0,"explanation":"The Australian Parliament consists of the King, the Senate and the House of Representatives."},
+    {"id":"g3","categoryId":"government","text":"Who is Australia's Head of State?","options":["The King of Australia","The Prime Minister","The Governor-General","The Chief Justice"],"correctIndex":0,"explanation":"The King of Australia is Australia's Head of State and is represented federally by the Governor-General."},
+    {"id":"g4","categoryId":"government","text":"Voting in federal elections is compulsory for Australian citizens aged 18 or over. Is this true?","options":["Yes","No","Only for people who own property","Only for government employees"],"correctIndex":0,"explanation":"Australian citizens aged 18 years or over must enrol and vote in federal elections and referenda."},
+    {"id":"h1","categoryId":"history","text":"Who were Australia's first inhabitants?","options":["Aboriginal and Torres Strait Islander peoples","European settlers","People from New Zealand","British soldiers"],"correctIndex":0,"explanation":"Aboriginal and Torres Strait Islander peoples are Australia's first inhabitants."},
+    {"id":"h2","categoryId":"history","text":"What is Australia's national day?","options":["Australia Day on 26 January","Anzac Day on 25 April","Federation Day on 1 January","King's Birthday"],"correctIndex":0,"explanation":"Australia Day is celebrated on 26 January each year."},
+    {"id":"h3","categoryId":"history","text":"What does Anzac Day commemorate?","options":["Australians and New Zealanders who served and died in wars, conflicts and peacekeeping operations","The opening of the first Parliament House","The arrival of the First Fleet only","The federation of Australia"],"correctIndex":0,"explanation":"Anzac Day commemorates all Australians and New Zealanders who served and died in wars, conflicts and peacekeeping operations."},
+    {"id":"h4","categoryId":"history","text":"When did the separate colonies unite in a federation of states?","options":["1901","1788","1915","1967"],"correctIndex":0,"explanation":"On 1 January 1901, the colonies united into a federation called the Commonwealth of Australia."}
+  ]
+}
