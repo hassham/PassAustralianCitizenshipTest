@@ -60,4 +60,19 @@ void main() {
     expect(await repository.starredIds(), isNot(contains(questionId)));
     expect(await repository.starredQuestions(), isEmpty);
   });
+
+  test('filters multiple categories and limits the session length', () async {
+    final questions = await repository.questionsFor(
+      categoryIds: {'values', 'history'},
+      limit: 5,
+    );
+
+    expect(questions, hasLength(5));
+    expect(
+      questions.every(
+        (question) => {'values', 'history'}.contains(question.categoryId),
+      ),
+      isTrue,
+    );
+  });
 }

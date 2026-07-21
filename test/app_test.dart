@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pass_citizenship_test/app.dart';
 import 'package:pass_citizenship_test/data/database/app_database.dart';
 import 'package:pass_citizenship_test/features/practice/application/practice_controller.dart';
+import 'package:pass_citizenship_test/features/practice/domain/study_question.dart';
+import 'package:pass_citizenship_test/features/practice/presentation/practice_hub_screen.dart';
 
 void main() {
   testWidgets('shows the offline practice entry point', (tester) async {
@@ -24,9 +26,7 @@ void main() {
     expect(find.text('Australian values'), findsOneWidget);
   });
 
-  testWidgets('provides five-section navigation and opens starred questions', (
-    tester,
-  ) async {
+  testWidgets('provides five-section navigation', (tester) async {
     final database = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(database.close);
 
@@ -43,15 +43,37 @@ void main() {
     expect(find.text('Exams'), findsOneWidget);
     expect(find.text('Progress'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
+  });
 
-    await tester.tap(find.byIcon(Icons.school_outlined));
-    await tester.pump(const Duration(seconds: 1));
-    expect(find.text('Choose how to practise'), findsOneWidget);
+  testWidgets('practice hub supports category and question-count selection', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          categoriesProvider.overrideWith(
+            (_) async => const [
+              CategoryModel('values', 'Australian values', 4),
+              CategoryModel('history', 'Australia and its people', 4),
+            ],
+          ),
+          starredQuestionsProvider.overrideWith((_) async => const []),
+        ],
+        child: const MaterialApp(home: PracticeHubScreen()),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
 
-    await tester.tap(find.textContaining('Starred questions'));
-    for (var frame = 0; frame < 10; frame++) {
-      await tester.pump(const Duration(milliseconds: 100));
-    }
-    expect(find.text('Starred questions'), findsOneWidget);
+    expect(find.text('Build a practice session'), findsOneWidget);
+    expect(find.text('8 questions will be included.'), findsOneWidget);
+
+    await tester.tap(find.text('Australia and its people'));
+    await tester.pump();
+    expect(find.text('4 questions will be included.'), findsOneWidget);
+
+    await tester.tap(find.text('5'));
+    await tester.pump();
+    expect(find.text('4 questions will be included.'), findsOneWidget);
   });
 }

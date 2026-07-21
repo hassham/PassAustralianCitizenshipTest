@@ -17,10 +17,10 @@
 | Status | Meaning | Tasks | Share |
 |---|---|---:|---:|
 | COMPLETE | Every acceptance item in the task is implemented and verified | 1 | 2% |
-| PARTIAL | Useful scope is implemented, but acceptance items remain | 31 | 53% |
+| PARTIAL | Useful scope is implemented, but acceptance items remain | 32 | 54% |
 | IN PROGRESS | Actively being implemented | 0 | 0% |
 | BLOCKED | Cannot proceed until the recorded blocker is resolved | 0 | 0% |
-| NOT STARTED | No meaningful implementation yet | 27 | 46% |
+| NOT STARTED | No meaningful implementation yet | 26 | 44% |
 | **Total** |  | **59** | **100%** |
 
 ### Phase roll-up
@@ -34,7 +34,7 @@
 | 5. Feature engines | 0 | 3 | 0 | 0 | 3 |
 | 6. Screens | 0 | 6 | 0 | 0 | 4 |
 | 7. Shared UI | 0 | 3 | 0 | 0 | 0 |
-| 8. Testing | 0 | 3 | 0 | 0 | 1 |
+| 8. Testing | 0 | 4 | 0 | 0 | 0 |
 | 9. Content | 0 | 3 | 0 | 0 | 0 |
 | 10. Optimization | 0 | 0 | 0 | 0 | 4 |
 | 11. Platforms | 0 | 2 | 0 | 0 | 1 |
@@ -54,12 +54,12 @@
 
 | Order | Task | Outcome | Exit check |
 |---:|---|---|---|
-| 1 | 8.4 Manual Testing | Validate practice, starring, navigation, migration, and restart on the emulator | Checklist results and defects are recorded |
-| 2 | 5.3 Category Filtering | Add multi-category and question-count selection | Single, multiple, and all-category modes pass tests |
-| 3 | 6.1 App Navigation | Replace local page pushes with named routes and finalize back-navigation behavior | All five sections preserve state and route predictably |
-| 4 | 1.2 Dependencies | Finalize only the dependencies needed for the next milestone | Dependency review passes and unused packages are removed |
-| 5 | 9.1 Question Dataset | Replace starter content with a reviewed production pipeline | Schema validation and content review gates pass |
-| 6 | 5.2 Mock Exam Engine | Begin the free untimed mock-exam vertical slice | A configured exam can be completed and scored offline |
+| 1 | 6.1 App Navigation | Replace local page pushes with named routes and finalize back-navigation behavior | All five sections preserve state and route predictably |
+| 2 | 1.2 Dependencies | Finalize only the dependencies needed for the next milestone | Dependency review passes and unused packages are removed |
+| 3 | 9.1 Question Dataset | Replace starter content with a reviewed production pipeline | Schema validation and content review gates pass |
+| 4 | 5.2 Mock Exam Engine | Begin the free untimed mock-exam vertical slice | A configured exam can be completed and scored offline |
+| 5 | 8.4 Manual Testing | Complete the remaining resilience, accessibility, and real-device scenarios | Checklist results and defects are recorded |
+| 6 | 2.4 Exam Tables | Add the persisted foundation for mock exams | Exam configuration, attempts, and answers migrate cleanly |
 
 ## Implementation Progress
 
@@ -96,8 +96,19 @@ Completed in this milestone:
 - Star persistence and navigation tests added; all 5 automated tests pass
 
 Still required before this milestone is considered fully complete:
-- Manual emulator walkthrough, restart/migration verification, accessibility checks, and defect recording
+- Remaining resilience/accessibility scenarios and formal defect recording
 - Real Android device testing and release-signing configuration
+
+**Milestone 3 - Configurable Category Practice: Implemented (2026-07-22)**
+
+Completed in this milestone:
+- User-confirmed emulator walkthrough for starring and five-section navigation
+- Single, multiple, and all-category selection in the Practice hub
+- Choice of 5, 10, 20, or all available questions
+- Safe clamping when selected categories contain fewer questions than requested
+- Randomized filtering in the repository before session persistence
+- Multi-category repository and deterministic Practice-hub widget coverage
+- Static analysis passes and all 7 automated tests pass
 
 ---
 
@@ -498,7 +509,7 @@ Create session providers:
 ## Task 5.1: Implement Practice Session Engine
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
 **Evidence:** Randomized category/all-category sessions, answer evaluation, results, persistence, and resume are working.  
-**Remaining:** Configurable session length, richer exit handling, retry behavior, and full FSD edge-case coverage.
+**Remaining:** Richer exit handling, retry behavior, and full FSD edge-case coverage.
 **Priority:** P1 | **Effort:** L
 
 Create practice flow:
@@ -536,9 +547,9 @@ Create exam flow:
 ---
 
 ## Task 5.3: Implement Category Filtering
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
-**Evidence:** Users can practise a single category or all categories; filtering is database-driven.  
-**Remaining:** Multiple-category selection, question-count options, and empty-category handling.
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Architecture cleanup | **Updated:** 2026-07-22
+**Evidence:** Single, multiple, and all-category filtering plus 5/10/20/all session lengths are database-driven and covered by repository tests.
+**Remaining:** Extract the filtering behavior into the domain use cases specified by the original architecture.
 **Priority:** P1 | **Effort:** M
 
 Create category selection:
@@ -674,9 +685,9 @@ Create practice flow:
 ---
 
 ## Task 6.4: Implement Category Selection Screen
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
-**Evidence:** Database-driven single-category and all-category selection is integrated into Home.  
-**Remaining:** Dedicated selection workflow, multiple selection, counts/settings, selection validation, and FSD-complete states.
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Architecture cleanup | **Updated:** 2026-07-22
+**Evidence:** The Practice hub provides all-category, single-category, multi-category, question-count, validation, availability feedback, and start-session controls with widget coverage.
+**Remaining:** Extract the selection workflow to its own route/provider if named routing warrants it, then complete visual and accessibility QA.
 **Priority:** P1 | **Effort:** S
 
 Create category picker:
@@ -937,8 +948,9 @@ Write widget tests:
 ---
 
 ## Task 8.4: Manual Testing Checklist
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
-**Blocker note:** Android SDK/emulator is not installed on the current machine; Windows or web can still be used for an initial UI pass.
+**Status:** PARTIAL | **Owner:** Project owner | **Target:** Continuous | **Updated:** 2026-07-22
+**Evidence:** Project owner completed an Android emulator walkthrough covering star/unstar behavior and five-section navigation.
+**Remaining:** Rotation, backgrounding, cold-start restoration, text scaling/screen reader, low disk, corruption recovery, timed-exam cases when available, and real Android/iOS devices.
 **Priority:** P1 | **Effort:** M
 
 Perform manual testing:
@@ -1298,6 +1310,7 @@ Phase 12: Deployment (12.1-12.4)
 
 | Date | Change | Verification |
 |---|---|---|
+| 2026-07-22 | Added multi-category selection and configurable practice length; recorded user-completed emulator checks and reprioritized the queue. | Analysis clean; all 7 automated tests passed. |
 | 2026-07-21 | Added Android debug-build/install evidence, persistent starred questions, five-section navigation, Practice hub, and basic Progress screen; reprioritized the next-up queue. | `flutter doctor` clean; analysis clean; debug APK installed on emulator; all 5 automated tests passed. |
 | 2026-07-20 | Converted the implementation plan into a 59-task tracker with explicit status, ownership, targets, evidence, remaining work, dashboard totals, and next-up ordering. | Status metadata count and dashboard totals validated. |
 | 2026-07-20 | Recorded Milestone 1 implementation and the Android SDK environment blocker. | `flutter analyze` passed; all 3 automated tests passed; Android build stopped at missing SDK. |
