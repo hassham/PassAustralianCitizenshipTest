@@ -22,6 +22,10 @@ final progressProvider = FutureProvider<ProgressSummary>(
   (ref) => ref.watch(practiceRepositoryProvider).progress(),
 );
 
+final starredQuestionsProvider = FutureProvider<List<StudyQuestionModel>>(
+  (ref) => ref.watch(practiceRepositoryProvider).starredQuestions(),
+);
+
 class PracticeState {
   const PracticeState({
     this.loading = false,
@@ -31,6 +35,7 @@ class PracticeState {
     this.correctCount = 0,
     this.selectedIndex,
     this.complete = false,
+    this.starredIds = const {},
     this.error,
   });
 
@@ -41,6 +46,7 @@ class PracticeState {
   final int correctCount;
   final int? selectedIndex;
   final bool complete;
+  final Set<String> starredIds;
   final String? error;
   StudyQuestionModel? get current =>
       questions.isEmpty || index >= questions.length ? null : questions[index];
@@ -54,6 +60,7 @@ class PracticeState {
     int? selectedIndex,
     bool clearSelection = false,
     bool? complete,
+    Set<String>? starredIds,
     String? error,
   }) => PracticeState(
     loading: loading ?? this.loading,
@@ -63,6 +70,7 @@ class PracticeState {
     correctCount: correctCount ?? this.correctCount,
     selectedIndex: clearSelection ? null : selectedIndex ?? this.selectedIndex,
     complete: complete ?? this.complete,
+    starredIds: starredIds ?? this.starredIds,
     error: error,
   );
 }
@@ -83,6 +91,7 @@ class PracticeController extends StateNotifier<PracticeState> {
       questions: restored.questions,
       index: restored.currentIndex,
       correctCount: restored.correctCount,
+      starredIds: await repository.starredIds(),
     );
     return true;
   }
@@ -93,10 +102,49 @@ class PracticeController extends StateNotifier<PracticeState> {
       await repository.abandonActiveSession();
       final questions = await repository.questions(categoryId);
       final id = await repository.createSession(categoryId, questions);
-      state = PracticeState(sessionId: id, questions: questions);
+      state = PracticeState(
+        sessionId: id,
+        questions: questions,
+        starredIds: await repository.starredIds(),
+      );
     } catch (error) {
       state = PracticeState(error: error.toString());
     }
+  }
+
+  Future<bool> startStarred() async {
+    state = state.copyWith(loading: true, clearSelection: true);
+    try {
+      await repository.abandonActiveSession();
+      final questions = await repository.starredQuestions();
+      if (questions.isEmpty) {
+        state = const PracticeState();
+        return false;
+      }
+      final id = await repository.createSession(null, questions);
+      state = PracticeState(
+        sessionId: id,
+        questions: questions,
+        starredIds: questions.map((question) => question.id).toSet(),
+      );
+      return true;
+    } catch (error) {
+      state = PracticeState(error: error.toString());
+      return false;
+    }
+  }
+
+  Future<void> toggleCurrentStar() async {
+    final question = state.current;
+    if (question == null) return;
+    final starred = await repository.toggleStarred(question.id);
+    final ids = {...state.starredIds};
+    if (starred) {
+      ids.add(question.id);
+    } else {
+      ids.remove(question.id);
+    }
+    state = state.copyWith(starredIds: ids);
   }
 
   void selectAnswer(int index) {

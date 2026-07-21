@@ -1012,6 +1012,226 @@ class QuestionAttemptsCompanion extends UpdateCompanion<QuestionAttempt> {
   }
 }
 
+class $StarredQuestionsTable extends StarredQuestions
+    with TableInfo<$StarredQuestionsTable, StarredQuestion> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StarredQuestionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _questionIdMeta = const VerificationMeta(
+    'questionId',
+  );
+  @override
+  late final GeneratedColumn<String> questionId = GeneratedColumn<String>(
+    'question_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _starredAtMeta = const VerificationMeta(
+    'starredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> starredAt = GeneratedColumn<DateTime>(
+    'starred_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [questionId, starredAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'starred_questions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StarredQuestion> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('question_id')) {
+      context.handle(
+        _questionIdMeta,
+        questionId.isAcceptableOrUnknown(data['question_id']!, _questionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_questionIdMeta);
+    }
+    if (data.containsKey('starred_at')) {
+      context.handle(
+        _starredAtMeta,
+        starredAt.isAcceptableOrUnknown(data['starred_at']!, _starredAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_starredAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {questionId};
+  @override
+  StarredQuestion map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StarredQuestion(
+      questionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}question_id'],
+      )!,
+      starredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}starred_at'],
+      )!,
+    );
+  }
+
+  @override
+  $StarredQuestionsTable createAlias(String alias) {
+    return $StarredQuestionsTable(attachedDatabase, alias);
+  }
+}
+
+class StarredQuestion extends DataClass implements Insertable<StarredQuestion> {
+  final String questionId;
+  final DateTime starredAt;
+  const StarredQuestion({required this.questionId, required this.starredAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['question_id'] = Variable<String>(questionId);
+    map['starred_at'] = Variable<DateTime>(starredAt);
+    return map;
+  }
+
+  StarredQuestionsCompanion toCompanion(bool nullToAbsent) {
+    return StarredQuestionsCompanion(
+      questionId: Value(questionId),
+      starredAt: Value(starredAt),
+    );
+  }
+
+  factory StarredQuestion.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StarredQuestion(
+      questionId: serializer.fromJson<String>(json['questionId']),
+      starredAt: serializer.fromJson<DateTime>(json['starredAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'questionId': serializer.toJson<String>(questionId),
+      'starredAt': serializer.toJson<DateTime>(starredAt),
+    };
+  }
+
+  StarredQuestion copyWith({String? questionId, DateTime? starredAt}) =>
+      StarredQuestion(
+        questionId: questionId ?? this.questionId,
+        starredAt: starredAt ?? this.starredAt,
+      );
+  StarredQuestion copyWithCompanion(StarredQuestionsCompanion data) {
+    return StarredQuestion(
+      questionId: data.questionId.present
+          ? data.questionId.value
+          : this.questionId,
+      starredAt: data.starredAt.present ? data.starredAt.value : this.starredAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StarredQuestion(')
+          ..write('questionId: $questionId, ')
+          ..write('starredAt: $starredAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(questionId, starredAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StarredQuestion &&
+          other.questionId == this.questionId &&
+          other.starredAt == this.starredAt);
+}
+
+class StarredQuestionsCompanion extends UpdateCompanion<StarredQuestion> {
+  final Value<String> questionId;
+  final Value<DateTime> starredAt;
+  final Value<int> rowid;
+  const StarredQuestionsCompanion({
+    this.questionId = const Value.absent(),
+    this.starredAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StarredQuestionsCompanion.insert({
+    required String questionId,
+    required DateTime starredAt,
+    this.rowid = const Value.absent(),
+  }) : questionId = Value(questionId),
+       starredAt = Value(starredAt);
+  static Insertable<StarredQuestion> custom({
+    Expression<String>? questionId,
+    Expression<DateTime>? starredAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (questionId != null) 'question_id': questionId,
+      if (starredAt != null) 'starred_at': starredAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StarredQuestionsCompanion copyWith({
+    Value<String>? questionId,
+    Value<DateTime>? starredAt,
+    Value<int>? rowid,
+  }) {
+    return StarredQuestionsCompanion(
+      questionId: questionId ?? this.questionId,
+      starredAt: starredAt ?? this.starredAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (questionId.present) {
+      map['question_id'] = Variable<String>(questionId.value);
+    }
+    if (starredAt.present) {
+      map['starred_at'] = Variable<DateTime>(starredAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StarredQuestionsCompanion(')
+          ..write('questionId: $questionId, ')
+          ..write('starredAt: $starredAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PracticeSessionsTable extends PracticeSessions
     with TableInfo<$PracticeSessionsTable, PracticeSession> {
   @override
@@ -1491,6 +1711,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $QuestionAttemptsTable questionAttempts = $QuestionAttemptsTable(
     this,
   );
+  late final $StarredQuestionsTable starredQuestions = $StarredQuestionsTable(
+    this,
+  );
   late final $PracticeSessionsTable practiceSessions = $PracticeSessionsTable(
     this,
   );
@@ -1502,6 +1725,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     categories,
     studyQuestions,
     questionAttempts,
+    starredQuestions,
     practiceSessions,
   ];
 }
@@ -2073,6 +2297,157 @@ typedef $$QuestionAttemptsTableProcessedTableManager =
       QuestionAttempt,
       PrefetchHooks Function()
     >;
+typedef $$StarredQuestionsTableCreateCompanionBuilder =
+    StarredQuestionsCompanion Function({
+      required String questionId,
+      required DateTime starredAt,
+      Value<int> rowid,
+    });
+typedef $$StarredQuestionsTableUpdateCompanionBuilder =
+    StarredQuestionsCompanion Function({
+      Value<String> questionId,
+      Value<DateTime> starredAt,
+      Value<int> rowid,
+    });
+
+class $$StarredQuestionsTableFilterComposer
+    extends Composer<_$AppDatabase, $StarredQuestionsTable> {
+  $$StarredQuestionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get questionId => $composableBuilder(
+    column: $table.questionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get starredAt => $composableBuilder(
+    column: $table.starredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$StarredQuestionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $StarredQuestionsTable> {
+  $$StarredQuestionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get questionId => $composableBuilder(
+    column: $table.questionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get starredAt => $composableBuilder(
+    column: $table.starredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StarredQuestionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $StarredQuestionsTable> {
+  $$StarredQuestionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get questionId => $composableBuilder(
+    column: $table.questionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get starredAt =>
+      $composableBuilder(column: $table.starredAt, builder: (column) => column);
+}
+
+class $$StarredQuestionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $StarredQuestionsTable,
+          StarredQuestion,
+          $$StarredQuestionsTableFilterComposer,
+          $$StarredQuestionsTableOrderingComposer,
+          $$StarredQuestionsTableAnnotationComposer,
+          $$StarredQuestionsTableCreateCompanionBuilder,
+          $$StarredQuestionsTableUpdateCompanionBuilder,
+          (
+            StarredQuestion,
+            BaseReferences<
+              _$AppDatabase,
+              $StarredQuestionsTable,
+              StarredQuestion
+            >,
+          ),
+          StarredQuestion,
+          PrefetchHooks Function()
+        > {
+  $$StarredQuestionsTableTableManager(
+    _$AppDatabase db,
+    $StarredQuestionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StarredQuestionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StarredQuestionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StarredQuestionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> questionId = const Value.absent(),
+                Value<DateTime> starredAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => StarredQuestionsCompanion(
+                questionId: questionId,
+                starredAt: starredAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String questionId,
+                required DateTime starredAt,
+                Value<int> rowid = const Value.absent(),
+              }) => StarredQuestionsCompanion.insert(
+                questionId: questionId,
+                starredAt: starredAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$StarredQuestionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $StarredQuestionsTable,
+      StarredQuestion,
+      $$StarredQuestionsTableFilterComposer,
+      $$StarredQuestionsTableOrderingComposer,
+      $$StarredQuestionsTableAnnotationComposer,
+      $$StarredQuestionsTableCreateCompanionBuilder,
+      $$StarredQuestionsTableUpdateCompanionBuilder,
+      (
+        StarredQuestion,
+        BaseReferences<_$AppDatabase, $StarredQuestionsTable, StarredQuestion>,
+      ),
+      StarredQuestion,
+      PrefetchHooks Function()
+    >;
 typedef $$PracticeSessionsTableCreateCompanionBuilder =
     PracticeSessionsCompanion Function({
       Value<int> id,
@@ -2331,6 +2706,8 @@ class $AppDatabaseManager {
       $$StudyQuestionsTableTableManager(_db, _db.studyQuestions);
   $$QuestionAttemptsTableTableManager get questionAttempts =>
       $$QuestionAttemptsTableTableManager(_db, _db.questionAttempts);
+  $$StarredQuestionsTableTableManager get starredQuestions =>
+      $$StarredQuestionsTableTableManager(_db, _db.starredQuestions);
   $$PracticeSessionsTableTableManager get practiceSessions =>
       $$PracticeSessionsTableTableManager(_db, _db.practiceSessions);
 }
