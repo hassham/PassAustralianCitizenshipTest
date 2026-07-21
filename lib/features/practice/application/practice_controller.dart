@@ -97,11 +97,24 @@ class PracticeController extends StateNotifier<PracticeState> {
   }
 
   Future<void> start(String? categoryId) async {
+    await startSelection(categoryIds: categoryId == null ? null : {categoryId});
+  }
+
+  Future<void> startSelection({
+    Set<String>? categoryIds,
+    int? questionCount,
+  }) async {
     state = state.copyWith(loading: true, clearSelection: true);
     try {
       await repository.abandonActiveSession();
-      final questions = await repository.questions(categoryId);
-      final id = await repository.createSession(categoryId, questions);
+      final questions = await repository.questionsFor(
+        categoryIds: categoryIds,
+        limit: questionCount,
+      );
+      final categoryKey = categoryIds == null || categoryIds.isEmpty
+          ? null
+          : categoryIds.join(',');
+      final id = await repository.createSession(categoryKey, questions);
       state = PracticeState(
         sessionId: id,
         questions: questions,

@@ -76,12 +76,21 @@ class PracticeRepository {
   }
 
   Future<List<StudyQuestionModel>> questions([String? categoryId]) async {
+    return questionsFor(categoryIds: categoryId == null ? null : {categoryId});
+  }
+
+  Future<List<StudyQuestionModel>> questionsFor({
+    Set<String>? categoryIds,
+    int? limit,
+  }) async {
     await initialise();
     final query = database.select(database.studyQuestions);
-    if (categoryId != null) {
-      query.where((row) => row.categoryId.equals(categoryId));
+    if (categoryIds != null && categoryIds.isNotEmpty) {
+      query.where((row) => row.categoryId.isIn(categoryIds));
     }
-    return (await query.get()).map(_toModel).toList()..shuffle();
+    final items = (await query.get()).map(_toModel).toList()..shuffle();
+    if (limit == null || limit >= items.length) return items;
+    return items.take(limit).toList();
   }
 
   Future<Set<String>> starredIds() async {
