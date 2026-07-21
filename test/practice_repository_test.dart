@@ -47,4 +47,17 @@ void main() {
     expect(progress.attempted, 1);
     expect(progress.accuracy, 100);
   });
+
+  test('stars and unstars a question persistently', () async {
+    final questions = await repository.questions();
+    final questionId = questions.first.id;
+
+    expect(await repository.toggleStarred(questionId), isTrue);
+    expect(await repository.starredIds(), contains(questionId));
+    expect(await repository.starredQuestions(), hasLength(1));
+
+    expect(await repository.toggleStarred(questionId), isFalse);
+    expect(await repository.starredIds(), isNot(contains(questionId)));
+    expect(await repository.starredQuestions(), isEmpty);
+  });
 }

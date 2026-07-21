@@ -35,6 +35,14 @@ class QuestionAttempts extends Table {
   DateTimeColumn get attemptedAt => dateTime()();
 }
 
+class StarredQuestions extends Table {
+  TextColumn get questionId => text()();
+  DateTimeColumn get starredAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {questionId};
+}
+
 class PracticeSessions extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get categoryId => text().nullable()();
@@ -46,7 +54,13 @@ class PracticeSessions extends Table {
 }
 
 @DriftDatabase(
-  tables: [Categories, StudyQuestions, QuestionAttempts, PracticeSessions],
+  tables: [
+    Categories,
+    StudyQuestions,
+    QuestionAttempts,
+    StarredQuestions,
+    PracticeSessions,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -54,7 +68,15 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (migrator) => migrator.createAll(),
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) await migrator.createTable(starredQuestions);
+    },
+  );
 
   Future<PracticeSession?> activeSession() =>
       (select(practiceSessions)

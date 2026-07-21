@@ -21,9 +21,22 @@ class PracticeScreen extends ConsumerWidget {
     if (state.complete) return _ResultsView(state: state);
     final question = state.current!;
     final answered = state.selectedIndex != null;
+    final isStarred = state.starredIds.contains(question.id);
     return Scaffold(
       appBar: AppBar(
         title: Text('Question ${state.index + 1} of ${state.questions.length}'),
+        actions: [
+          IconButton(
+            tooltip: isStarred ? 'Remove from starred' : 'Add to starred',
+            onPressed: () async {
+              await ref
+                  .read(practiceControllerProvider.notifier)
+                  .toggleCurrentStar();
+              ref.invalidate(starredQuestionsProvider);
+            },
+            icon: Icon(isStarred ? Icons.star : Icons.star_outline),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Padding(

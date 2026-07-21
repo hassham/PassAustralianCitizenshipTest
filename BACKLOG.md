@@ -17,10 +17,10 @@
 | Status | Meaning | Tasks | Share |
 |---|---|---:|---:|
 | COMPLETE | Every acceptance item in the task is implemented and verified | 1 | 2% |
-| PARTIAL | Useful scope is implemented, but acceptance items remain | 28 | 47% |
+| PARTIAL | Useful scope is implemented, but acceptance items remain | 31 | 53% |
 | IN PROGRESS | Actively being implemented | 0 | 0% |
 | BLOCKED | Cannot proceed until the recorded blocker is resolved | 0 | 0% |
-| NOT STARTED | No meaningful implementation yet | 30 | 51% |
+| NOT STARTED | No meaningful implementation yet | 27 | 46% |
 | **Total** |  | **59** | **100%** |
 
 ### Phase roll-up
@@ -31,8 +31,8 @@
 | 2. Database | 0 | 5 | 0 | 0 | 3 |
 | 3. Domain logic | 0 | 1 | 0 | 0 | 6 |
 | 4. State management | 0 | 3 | 0 | 0 | 0 |
-| 5. Feature engines | 0 | 2 | 0 | 0 | 4 |
-| 6. Screens | 0 | 4 | 0 | 0 | 6 |
+| 5. Feature engines | 0 | 3 | 0 | 0 | 3 |
+| 6. Screens | 0 | 6 | 0 | 0 | 4 |
 | 7. Shared UI | 0 | 3 | 0 | 0 | 0 |
 | 8. Testing | 0 | 3 | 0 | 0 | 1 |
 | 9. Content | 0 | 3 | 0 | 0 | 0 |
@@ -54,12 +54,12 @@
 
 | Order | Task | Outcome | Exit check |
 |---:|---|---|---|
-| 1 | 11.1 Android Setup | Make the current slice runnable on an Android emulator/device | `flutter doctor` passes and a debug APK builds |
-| 2 | 8.4 Manual Testing | Validate the current practice journey on a real UI | Checklist results and defects are recorded |
-| 3 | 1.2 Dependencies | Finalize only the dependencies needed for the next milestone | Dependency review passes and unused packages are removed |
-| 4 | 5.4 Starred Questions | Deliver the next free-user study capability | Questions can be starred, filtered, and persisted |
-| 5 | 6.1 App Navigation | Introduce the five-section application shell | Home, Practice, Exams, Progress, and Settings routes work |
-| 6 | 9.1 Question Dataset | Replace starter content with a reviewed production pipeline | Schema validation and content review gates pass |
+| 1 | 8.4 Manual Testing | Validate practice, starring, navigation, migration, and restart on the emulator | Checklist results and defects are recorded |
+| 2 | 5.3 Category Filtering | Add multi-category and question-count selection | Single, multiple, and all-category modes pass tests |
+| 3 | 6.1 App Navigation | Replace local page pushes with named routes and finalize back-navigation behavior | All five sections preserve state and route predictably |
+| 4 | 1.2 Dependencies | Finalize only the dependencies needed for the next milestone | Dependency review passes and unused packages are removed |
+| 5 | 9.1 Question Dataset | Replace starter content with a reviewed production pipeline | Schema validation and content review gates pass |
+| 6 | 5.2 Mock Exam Engine | Begin the free untimed mock-exam vertical slice | A configured exam can be completed and scored offline |
 
 ## Implementation Progress
 
@@ -82,6 +82,22 @@ Deferred to later milestones:
 - Mock exams, timer, starred questions, premium purchases, and analytics engines
 - Remaining database tables from `docs/DATABASE_SCHEMA.md`
 - Android APK verification (Android SDK is not installed on the current machine)
+
+**Milestone 2 - Android Baseline, Starred Questions & Navigation: Implemented (2026-07-21)**
+
+Completed in this milestone:
+- Android SDK/emulator toolchain verified with no `flutter doctor` findings
+- Debug APK built and installed on `emulator-5554`
+- Versioned Drift migration adds persistent starred questions
+- Star/unstar control added to the practice screen
+- Starred-question list and focused practice action added
+- Five-section shell added: Home, Practice, Exams, Progress, and Settings
+- Practice hub and basic progress summary added; deferred sections show explicit placeholders
+- Star persistence and navigation tests added; all 5 automated tests pass
+
+Still required before this milestone is considered fully complete:
+- Manual emulator walkthrough, restart/migration verification, accessibility checks, and defect recording
+- Real Android device testing and release-signing configuration
 
 ---
 
@@ -539,7 +555,9 @@ Create category selection:
 ---
 
 ## Task 5.4: Implement Starred Questions System
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-21
+**Evidence:** Persistent star/unstar operations, starred retrieval, focused starred practice, schema migration, and repository tests are implemented.
+**Remaining:** Archive handling and separation into dedicated domain use cases.
 **Priority:** P1 | **Effort:** M
 
 Create starred questions functionality:
@@ -593,9 +611,9 @@ Create error handling:
 # Phase 6: UI/Presentation Layer - Screens
 
 ## Task 6.1: Create App Shell & Navigation
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
-**Evidence:** Application shell, theme, home route, and practice navigation are present.  
-**Remaining:** Five-section navigation, named/deep routes, route guards, state preservation, and back-navigation policy.
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-21
+**Evidence:** Five-section navigation for Home, Practice, Exams, Progress, and Settings uses an indexed shell that preserves tab state.
+**Remaining:** Named/deep routes, route guards, and a finalized back-navigation policy.
 **Priority:** P1 | **Effort:** M
 
 Create app structure:
@@ -634,7 +652,7 @@ Create home screen:
 ## Task 6.3: Implement Practice Mode Screen
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
 **Evidence:** Question progress, options, answer locking, correct/incorrect styling, explanation, next action, and results are implemented.  
-**Remaining:** Exit confirmation, star control, configurable flows, full responsive QA, and remaining accessibility verification.
+**Remaining:** Exit confirmation, configurable flows, full responsive QA, and remaining accessibility verification.
 **Priority:** P1 | **Effort:** L
 
 Create practice flow:
@@ -677,7 +695,9 @@ Create category picker:
 ---
 
 ## Task 6.5: Implement Starred Questions Screen
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-21
+**Evidence:** Starred list, empty state, saved count, and focused practice action are implemented and reachable from the Practice hub.
+**Remaining:** Category/difficulty filters, direct removal from the list, archive messaging, and broader widget coverage.
 **Priority:** P1 | **Effort:** M
 
 Create starred view:
@@ -718,7 +738,9 @@ Create exam flows:
 ---
 
 ## Task 6.7: Implement Progress Screen
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-21
+**Evidence:** Overall accuracy and answered-question count are displayed from persisted attempts.
+**Remaining:** Category performance, readiness, weak areas, recommendations, premium states, and widget tests.
 **Priority:** P1 | **Effort:** M
 
 Create progress tracking:
@@ -1062,10 +1084,9 @@ Create performance tests:
 # Phase 11: Platform-Specific Implementation
 
 ## Task 11.1: Android Setup
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
-**Evidence:** Standard Android Flutter project and application identifier are scaffolded.  
-**Remaining:** Install/configure Android SDK, validate current SDK targets, create emulator, build APK, configure signing, and test on a real device.  
-**Environment blocker:** No Android SDK was found during the 2026-07-20 debug-build attempt.
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Platform milestone | **Updated:** 2026-07-21
+**Evidence:** Android SDK 36, accepted licences, Android Studio, emulator detection, debug APK build, and emulator installation are verified.
+**Remaining:** Manual emulator checklist, release signing, Play Billing setup, and real-device testing.
 **Priority:** P1 | **Effort:** M
 
 Configure Android:
@@ -1277,6 +1298,7 @@ Phase 12: Deployment (12.1-12.4)
 
 | Date | Change | Verification |
 |---|---|---|
+| 2026-07-21 | Added Android debug-build/install evidence, persistent starred questions, five-section navigation, Practice hub, and basic Progress screen; reprioritized the next-up queue. | `flutter doctor` clean; analysis clean; debug APK installed on emulator; all 5 automated tests passed. |
 | 2026-07-20 | Converted the implementation plan into a 59-task tracker with explicit status, ownership, targets, evidence, remaining work, dashboard totals, and next-up ordering. | Status metadata count and dashboard totals validated. |
 | 2026-07-20 | Recorded Milestone 1 implementation and the Android SDK environment blocker. | `flutter analyze` passed; all 3 automated tests passed; Android build stopped at missing SDK. |
 

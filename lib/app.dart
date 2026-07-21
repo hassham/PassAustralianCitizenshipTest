@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'features/practice/presentation/home_screen.dart';
+import 'shared/presentation/app_shell.dart';
 
 class CitizenshipStudyApp extends StatelessWidget {
   const CitizenshipStudyApp({super.key});
@@ -34,7 +34,7 @@ class CitizenshipStudyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const HomeScreen(),
+      home: const AppShell(),
     );
   }
 }

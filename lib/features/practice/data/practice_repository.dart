@@ -84,6 +84,41 @@ class PracticeRepository {
     return (await query.get()).map(_toModel).toList()..shuffle();
   }
 
+  Future<Set<String>> starredIds() async {
+    await initialise();
+    final rows = await database.select(database.starredQuestions).get();
+    return rows.map((row) => row.questionId).toSet();
+  }
+
+  Future<List<StudyQuestionModel>> starredQuestions() async {
+    final ids = await starredIds();
+    if (ids.isEmpty) return [];
+    final rows = await database.select(database.studyQuestions).get();
+    return rows.where((row) => ids.contains(row.id)).map(_toModel).toList()
+      ..shuffle();
+  }
+
+  Future<bool> toggleStarred(String questionId) async {
+    final existing = await (database.select(
+      database.starredQuestions,
+    )..where((row) => row.questionId.equals(questionId))).getSingleOrNull();
+    if (existing == null) {
+      await database
+          .into(database.starredQuestions)
+          .insert(
+            StarredQuestionsCompanion.insert(
+              questionId: questionId,
+              starredAt: DateTime.now(),
+            ),
+          );
+      return true;
+    }
+    await (database.delete(
+      database.starredQuestions,
+    )..where((row) => row.questionId.equals(questionId))).go();
+    return false;
+  }
+
   Future<int> createSession(
     String? categoryId,
     List<StudyQuestionModel> items,
