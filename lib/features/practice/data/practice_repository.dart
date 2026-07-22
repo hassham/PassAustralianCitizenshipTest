@@ -27,9 +27,31 @@ class PracticeRepository {
   Future<void> initialise() => _initialising ??= _initialise();
 
   Future<void> _initialise() async {
-    if (await database.categories.count().getSingle() > 0) return;
     final raw = await rootBundle.loadString('assets/data/questions.json');
     final data = jsonDecode(raw) as Map<String, dynamic>;
+    final newVersion = data['version'].toString();
+    
+    // Get stored version
+    final storedVersionRow = await (database.select(database.appSettings)
+          ..where((row) => row.key.equals('questions_version')))
+        .getSingleOrNull();
+    final storedVersion = storedVersionRow?.value ?? '0';
+    
+    // If versions match and data exists, skip import
+    if (storedVersion == newVersion &&
+        await database.categories.count().getSingle() > 0) {
+      return;
+    }
+    
+    // Clear old data if version changed
+    if (storedVersion != newVersion) {
+      await database.transaction(() async {
+        await database.delete(database.studyQuestions).go();
+        await database.delete(database.categories).go();
+      });
+    }
+    
+    // Import new data
     await database.transaction(() async {
       for (final item in data['categories'] as List<dynamic>) {
         final map = item as Map<String, dynamic>;
@@ -57,6 +79,14 @@ class PracticeRepository {
               ),
             );
       }
+      
+      // Store the version
+      await database.into(database.appSettings).insertOnConflictUpdate(
+        AppSettingsCompanion(
+          key: const Value('questions_version'),
+          value: Value(newVersion),
+        ),
+      );
     });
   }
 
@@ -91,6 +121,13 @@ class PracticeRepository {
     final items = (await query.get()).map(_toModel).toList()..shuffle();
     if (limit == null || limit >= items.length) return items;
     return items.take(limit).toList();
+  }
+
+  Future<List<StudyQuestionModel>> questionsByIds(List<String> ids) async {
+    await initialise();
+    final rows = await database.select(database.studyQuestions).get();
+    final byId = {for (final row in rows) row.id: _toModel(row)};
+    return ids.map((id) => byId[id]).whereType<StudyQuestionModel>().toList();
   }
 
   Future<Set<String>> starredIds() async {

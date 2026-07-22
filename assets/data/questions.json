@@ -1,22 +1,1583 @@
 {
-  "version": 1,
+  "version": 2,
   "categories": [
-    {"id": "values", "name": "Australian values"},
-    {"id": "government", "name": "Government and the law"},
-    {"id": "history", "name": "Australia and its people"}
+    {
+      "id": "people",
+      "name": "Australia and its people"
+    },
+    {
+      "id": "beliefs",
+      "name": "Australia's democratic beliefs, rights and liberties"
+    },
+    {
+      "id": "government",
+      "name": "Government and the law in Australia"
+    },
+    {
+      "id": "values",
+      "name": "Australian values"
+    }
   ],
   "questions": [
-    {"id":"v1","categoryId":"values","text":"What does freedom of speech mean in Australia?","options":["People may express ideas within the law","Only elected officials may speak publicly","People may ignore Australian laws","Newspapers must agree with the government"],"correctIndex":0,"explanation":"People in Australia may express their ideas freely, provided they remain within the law."},
-    {"id":"v2","categoryId":"values","text":"Which statement reflects equality in Australia?","options":["Men and women have equal rights","A person's wealth determines their rights","Only citizens must obey the law","Some religions have greater legal rights"],"correctIndex":0,"explanation":"Australian law gives men and women equal rights."},
-    {"id":"v3","categoryId":"values","text":"What is an example of mutual respect?","options":["Listening to views you disagree with","Preventing others from voting","Refusing to follow lawful decisions","Using violence to settle disagreement"],"correctIndex":0,"explanation":"Australians are expected to respect the rights and opinions of others, even when they disagree."},
-    {"id":"v4","categoryId":"values","text":"Is violence acceptable when people disagree?","options":["No, disagreement should be resolved peacefully","Yes, if the issue is important","Yes, during an election","Only against public officials"],"correctIndex":0,"explanation":"Violence is not accepted as a way to change a person's mind or the law."},
-    {"id":"g1","categoryId":"government","text":"Who makes and changes federal laws in Australia?","options":["The Australian Parliament","The police","Local councils alone","The High Court alone"],"correctIndex":0,"explanation":"The Australian Parliament makes and changes federal laws."},
-    {"id":"g2","categoryId":"government","text":"What are the two houses of the Australian Parliament?","options":["The Senate and the House of Representatives","The Cabinet and the High Court","The states and the territories","The police and the Defence Force"],"correctIndex":0,"explanation":"The Australian Parliament consists of the King, the Senate and the House of Representatives."},
-    {"id":"g3","categoryId":"government","text":"Who is Australia's Head of State?","options":["The King of Australia","The Prime Minister","The Governor-General","The Chief Justice"],"correctIndex":0,"explanation":"The King of Australia is Australia's Head of State and is represented federally by the Governor-General."},
-    {"id":"g4","categoryId":"government","text":"Voting in federal elections is compulsory for Australian citizens aged 18 or over. Is this true?","options":["Yes","No","Only for people who own property","Only for government employees"],"correctIndex":0,"explanation":"Australian citizens aged 18 years or over must enrol and vote in federal elections and referenda."},
-    {"id":"h1","categoryId":"history","text":"Who were Australia's first inhabitants?","options":["Aboriginal and Torres Strait Islander peoples","European settlers","People from New Zealand","British soldiers"],"correctIndex":0,"explanation":"Aboriginal and Torres Strait Islander peoples are Australia's first inhabitants."},
-    {"id":"h2","categoryId":"history","text":"What is Australia's national day?","options":["Australia Day on 26 January","Anzac Day on 25 April","Federation Day on 1 January","King's Birthday"],"correctIndex":0,"explanation":"Australia Day is celebrated on 26 January each year."},
-    {"id":"h3","categoryId":"history","text":"What does Anzac Day commemorate?","options":["Australians and New Zealanders who served and died in wars, conflicts and peacekeeping operations","The opening of the first Parliament House","The arrival of the First Fleet only","The federation of Australia"],"correctIndex":0,"explanation":"Anzac Day commemorates all Australians and New Zealanders who served and died in wars, conflicts and peacekeeping operations."},
-    {"id":"h4","categoryId":"history","text":"When did the separate colonies unite in a federation of states?","options":["1901","1788","1915","1967"],"correctIndex":0,"explanation":"On 1 January 1901, the colonies united into a federation called the Commonwealth of Australia."}
+    {
+      "id": "p1",
+      "categoryId": "people",
+      "text": "Who are Australia's first inhabitants?",
+      "options": [
+        "Aboriginal and Torres Strait Islander peoples",
+        "European settlers",
+        "British soldiers",
+        "People from New Zealand"
+      ],
+      "correctIndex": 0,
+      "explanation": "Aboriginal and Torres Strait Islander peoples are Australia's first inhabitants and have the oldest continuous cultures and traditions in the world."
+    },
+    {
+      "id": "p2",
+      "categoryId": "people",
+      "text": "Where are Torres Strait Islander peoples traditionally from?",
+      "options": [
+        "Islands between northern Queensland and Papua New Guinea",
+        "Tasmania",
+        "The south-west of Western Australia",
+        "New Zealand"
+      ],
+      "correctIndex": 0,
+      "explanation": "Torres Strait Islander peoples are from islands between the northern tip of Queensland and Papua New Guinea."
+    },
+    {
+      "id": "p3",
+      "categoryId": "people",
+      "text": "When did the First Fleet arrive from Great Britain?",
+      "options": [
+        "26 January 1788",
+        "1 January 1901",
+        "25 April 1915",
+        "27 May 1967"
+      ],
+      "correctIndex": 0,
+      "explanation": "The First Fleet arrived from Great Britain on 26 January 1788."
+    },
+    {
+      "id": "p4",
+      "categoryId": "people",
+      "text": "Who was the first Governor of the colony of New South Wales?",
+      "options": [
+        "Captain Arthur Phillip",
+        "Sir Edmund Barton",
+        "Captain James Cook",
+        "Governor Lachlan Macquarie"
+      ],
+      "correctIndex": 0,
+      "explanation": "Captain Arthur Phillip was the first Governor of the colony of New South Wales."
+    },
+    {
+      "id": "p5",
+      "categoryId": "people",
+      "text": "What began in 1851 in New South Wales and Victoria?",
+      "options": [
+        "A gold rush",
+        "Federation",
+        "World War I",
+        "The first federal election"
+      ],
+      "correctIndex": 0,
+      "explanation": "A gold rush began in 1851 after gold was discovered in New South Wales and Victoria."
+    },
+    {
+      "id": "p6",
+      "categoryId": "people",
+      "text": "Which group was the first large group of migrants to Australia not from Europe?",
+      "options": [
+        "Chinese people",
+        "Canadians",
+        "New Zealanders",
+        "Americans"
+      ],
+      "correctIndex": 0,
+      "explanation": "Chinese people who arrived during the gold rush were the first large group of migrants not from Europe."
+    },
+    {
+      "id": "p7",
+      "categoryId": "people",
+      "text": "When did the separate colonies unite as the Commonwealth of Australia?",
+      "options": [
+        "1901",
+        "1788",
+        "1915",
+        "1967"
+      ],
+      "correctIndex": 0,
+      "explanation": "The colonies united into the Commonwealth of Australia on 1 January 1901."
+    },
+    {
+      "id": "p8",
+      "categoryId": "people",
+      "text": "What happened in the 1967 Referendum?",
+      "options": [
+        "Aboriginal peoples were allowed to be counted in official population estimates",
+        "Australia became a republic",
+        "Voting became compulsory",
+        "The Senate was created"
+      ],
+      "correctIndex": 0,
+      "explanation": "The 1967 Referendum allowed Aboriginal peoples to be counted in official estimates of the Australian population."
+    },
+    {
+      "id": "p9",
+      "categoryId": "people",
+      "text": "What is Australia's national language?",
+      "options": [
+        "English",
+        "French",
+        "Mandarin",
+        "No language is recognised"
+      ],
+      "correctIndex": 0,
+      "explanation": "English is Australia's national language and is an important part of national identity."
+    },
+    {
+      "id": "p10",
+      "categoryId": "people",
+      "text": "How many states does Australia have?",
+      "options": [
+        "Six",
+        "Five",
+        "Seven",
+        "Eight"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australia has six states."
+    },
+    {
+      "id": "p11",
+      "categoryId": "people",
+      "text": "How many mainland territories are listed in the booklet?",
+      "options": [
+        "Two",
+        "One",
+        "Three",
+        "Four"
+      ],
+      "correctIndex": 0,
+      "explanation": "The booklet identifies two mainland territories: the Australian Capital Territory and the Northern Territory."
+    },
+    {
+      "id": "p12",
+      "categoryId": "people",
+      "text": "What is the capital city of Australia?",
+      "options": [
+        "Canberra",
+        "Sydney",
+        "Melbourne",
+        "Brisbane"
+      ],
+      "correctIndex": 0,
+      "explanation": "Canberra is Australia's capital city."
+    },
+    {
+      "id": "p13",
+      "categoryId": "people",
+      "text": "What is the capital city of New South Wales?",
+      "options": [
+        "Sydney",
+        "Canberra",
+        "Melbourne",
+        "Hobart"
+      ],
+      "correctIndex": 0,
+      "explanation": "Sydney is the capital city of New South Wales."
+    },
+    {
+      "id": "p14",
+      "categoryId": "people",
+      "text": "What is the capital city of Victoria?",
+      "options": [
+        "Melbourne",
+        "Sydney",
+        "Adelaide",
+        "Perth"
+      ],
+      "correctIndex": 0,
+      "explanation": "Melbourne is the capital city of Victoria."
+    },
+    {
+      "id": "p15",
+      "categoryId": "people",
+      "text": "What is the capital city of Queensland?",
+      "options": [
+        "Brisbane",
+        "Darwin",
+        "Canberra",
+        "Hobart"
+      ],
+      "correctIndex": 0,
+      "explanation": "Brisbane is the capital city of Queensland."
+    },
+    {
+      "id": "p16",
+      "categoryId": "people",
+      "text": "What is the capital city of Western Australia?",
+      "options": [
+        "Perth",
+        "Adelaide",
+        "Darwin",
+        "Melbourne"
+      ],
+      "correctIndex": 0,
+      "explanation": "Perth is the capital city of Western Australia."
+    },
+    {
+      "id": "p17",
+      "categoryId": "people",
+      "text": "What is the capital city of South Australia?",
+      "options": [
+        "Adelaide",
+        "Perth",
+        "Brisbane",
+        "Canberra"
+      ],
+      "correctIndex": 0,
+      "explanation": "Adelaide is the capital city of South Australia."
+    },
+    {
+      "id": "p18",
+      "categoryId": "people",
+      "text": "What is the capital city of Tasmania?",
+      "options": [
+        "Hobart",
+        "Darwin",
+        "Sydney",
+        "Melbourne"
+      ],
+      "correctIndex": 0,
+      "explanation": "Hobart is the capital city of Tasmania."
+    },
+    {
+      "id": "p19",
+      "categoryId": "people",
+      "text": "What is the capital city of the Northern Territory?",
+      "options": [
+        "Darwin",
+        "Canberra",
+        "Perth",
+        "Brisbane"
+      ],
+      "correctIndex": 0,
+      "explanation": "Darwin is the capital city of the Northern Territory."
+    },
+    {
+      "id": "p20",
+      "categoryId": "people",
+      "text": "Who may perform a Welcome to Country?",
+      "options": [
+        "An Aboriginal or Torres Strait Islander custodian of the local region",
+        "Any visitor to Australia",
+        "Only the Prime Minister",
+        "Only a local mayor"
+      ],
+      "correctIndex": 0,
+      "explanation": "A Welcome to Country is performed by an Aboriginal or Torres Strait Islander custodian of the local region."
+    },
+    {
+      "id": "p21",
+      "categoryId": "people",
+      "text": "Who can deliver an Acknowledgement of Country?",
+      "options": [
+        "Anyone",
+        "Only an Indigenous elder",
+        "Only the Governor-General",
+        "Only a judge"
+      ],
+      "correctIndex": 0,
+      "explanation": "Anyone can deliver an Acknowledgement of Country."
+    },
+    {
+      "id": "p22",
+      "categoryId": "people",
+      "text": "On what date is Australia Day celebrated?",
+      "options": [
+        "26 January",
+        "25 April",
+        "1 January",
+        "11 November"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australia Day is celebrated on 26 January each year."
+    },
+    {
+      "id": "p23",
+      "categoryId": "people",
+      "text": "On what date is Anzac Day commemorated?",
+      "options": [
+        "25 April",
+        "26 January",
+        "1 January",
+        "15 November"
+      ],
+      "correctIndex": 0,
+      "explanation": "Anzac Day is commemorated on 25 April each year."
+    },
+    {
+      "id": "p24",
+      "categoryId": "people",
+      "text": "What does Anzac stand for?",
+      "options": [
+        "Australian and New Zealand Army Corps",
+        "Australian National Zone and Council",
+        "Australasian Naval and Army Command",
+        "Australian and New Zealand Alliance Council"
+      ],
+      "correctIndex": 0,
+      "explanation": "Anzac stands for the Australian and New Zealand Army Corps."
+    },
+    {
+      "id": "p25",
+      "categoryId": "people",
+      "text": "What does the Commonwealth Star on the Australian National Flag represent?",
+      "options": [
+        "The six states and the territories",
+        "Only the six states",
+        "The Southern Cross",
+        "The British monarch"
+      ],
+      "correctIndex": 0,
+      "explanation": "The seven points of the Commonwealth Star represent the six states and the territories."
+    },
+    {
+      "id": "p26",
+      "categoryId": "people",
+      "text": "What does the Southern Cross on the Australian National Flag represent?",
+      "options": [
+        "A group of stars visible in the southern sky",
+        "The six states",
+        "The national flower",
+        "The Australian Parliament"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Southern Cross is a group of stars that can be seen in the southern sky."
+    },
+    {
+      "id": "p27",
+      "categoryId": "people",
+      "text": "What colour on the Australian Aboriginal Flag represents the earth?",
+      "options": [
+        "Red",
+        "Black",
+        "Yellow",
+        "White"
+      ],
+      "correctIndex": 0,
+      "explanation": "The red lower half of the Australian Aboriginal Flag represents the earth."
+    },
+    {
+      "id": "p28",
+      "categoryId": "people",
+      "text": "What does the white colour on the Torres Strait Islander Flag symbolise?",
+      "options": [
+        "Peace",
+        "The sea",
+        "The land",
+        "The sun"
+      ],
+      "correctIndex": 0,
+      "explanation": "The colour white on the Torres Strait Islander Flag symbolises peace."
+    },
+    {
+      "id": "p29",
+      "categoryId": "people",
+      "text": "What is Australia's national flower?",
+      "options": [
+        "Golden wattle",
+        "Waratah",
+        "Rose",
+        "Eucalyptus flower"
+      ],
+      "correctIndex": 0,
+      "explanation": "The golden wattle is Australia's national flower."
+    },
+    {
+      "id": "p30",
+      "categoryId": "people",
+      "text": "What is Australia's national anthem?",
+      "options": [
+        "Advance Australia Fair",
+        "Waltzing Matilda",
+        "God Save the King",
+        "I Still Call Australia Home"
+      ],
+      "correctIndex": 0,
+      "explanation": "Advance Australia Fair is Australia's national anthem."
+    },
+    {
+      "id": "b1",
+      "categoryId": "beliefs",
+      "text": "What type of democracy does Australia have?",
+      "options": [
+        "A parliamentary democracy",
+        "A military democracy",
+        "A direct monarchy",
+        "A one-party system"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australia's system of government is a parliamentary democracy."
+    },
+    {
+      "id": "b2",
+      "categoryId": "beliefs",
+      "text": "Where does the power of government come from in Australia?",
+      "options": [
+        "The Australian people",
+        "The King alone",
+        "The courts alone",
+        "The police"
+      ],
+      "correctIndex": 0,
+      "explanation": "The power of government comes from the Australian people because citizens vote for representatives."
+    },
+    {
+      "id": "b3",
+      "categoryId": "beliefs",
+      "text": "What does the Rule of Law mean?",
+      "options": [
+        "No person or group is above the law",
+        "Religious leaders are above the law",
+        "Government officials may ignore laws",
+        "Only citizens must obey laws"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Rule of Law means everyone, including people in positions of power, must obey Australian laws."
+    },
+    {
+      "id": "b4",
+      "categoryId": "beliefs",
+      "text": "How should change occur in Australia?",
+      "options": [
+        "Through discussion, peaceful persuasion and the democratic process",
+        "Through violence",
+        "Through military action",
+        "Through threats"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australians believe change should occur through discussion, peaceful persuasion and the democratic process."
+    },
+    {
+      "id": "b5",
+      "categoryId": "beliefs",
+      "text": "How should Australians treat people from different backgrounds?",
+      "options": [
+        "With dignity and respect",
+        "According to their wealth",
+        "According to their religion",
+        "According to their birthplace"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australia's democratic system expects all people to be treated with dignity and respect regardless of background."
+    },
+    {
+      "id": "b6",
+      "categoryId": "beliefs",
+      "text": "What does freedom of speech allow people to do?",
+      "options": [
+        "Say and write what they think within the law",
+        "Ignore defamation laws",
+        "Threaten violence",
+        "Force others to agree"
+      ],
+      "correctIndex": 0,
+      "explanation": "Freedom of speech allows people to express ideas and opinions while obeying Australian law."
+    },
+    {
+      "id": "b7",
+      "categoryId": "beliefs",
+      "text": "Can people peacefully criticise the government in Australia?",
+      "options": [
+        "Yes, while obeying the law",
+        "No, criticism is illegal",
+        "Only during elections",
+        "Only journalists may do so"
+      ],
+      "correctIndex": 0,
+      "explanation": "People may criticise the government and protest peacefully as long as they obey the law."
+    },
+    {
+      "id": "b8",
+      "categoryId": "beliefs",
+      "text": "What does freedom of expression include?",
+      "options": [
+        "Expressing views through art, film, music and literature",
+        "Breaking any law for artistic purposes",
+        "Damaging property during a protest",
+        "Preventing others from speaking"
+      ],
+      "correctIndex": 0,
+      "explanation": "Freedom of expression includes expressing views through art, film, music and literature within the law."
+    },
+    {
+      "id": "b9",
+      "categoryId": "beliefs",
+      "text": "What is freedom of association?",
+      "options": [
+        "The right to form and join legal associations",
+        "The duty to join a political party",
+        "The right to join illegal groups",
+        "The power to force others to join"
+      ],
+      "correctIndex": 0,
+      "explanation": "Freedom of association is the right to form and join legal groups or to choose not to join them."
+    },
+    {
+      "id": "b10",
+      "categoryId": "beliefs",
+      "text": "Can a person be forced to join an association in Australia?",
+      "options": [
+        "No",
+        "Yes, if it is a political party",
+        "Yes, if it is a union",
+        "Yes, if the government requests it"
+      ],
+      "correctIndex": 0,
+      "explanation": "People cannot be forced to join an association."
+    },
+    {
+      "id": "b11",
+      "categoryId": "beliefs",
+      "text": "Does Australia have an official national religion?",
+      "options": [
+        "No",
+        "Yes, Christianity",
+        "Yes, Islam",
+        "Yes, Judaism"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australia has no official national religion."
+    },
+    {
+      "id": "b12",
+      "categoryId": "beliefs",
+      "text": "What happens if a religious practice conflicts with Australian law?",
+      "options": [
+        "Australian law prevails",
+        "The religious practice prevails",
+        "The person chooses which rule to follow",
+        "The police cannot intervene"
+      ],
+      "correctIndex": 0,
+      "explanation": "Where a religious practice conflicts with Australian law, Australian law prevails."
+    },
+    {
+      "id": "b13",
+      "categoryId": "beliefs",
+      "text": "How does Australian law treat citizens of different religions?",
+      "options": [
+        "Equally",
+        "According to the size of the religion",
+        "Christian citizens receive more rights",
+        "Religious citizens receive fewer rights"
+      ],
+      "correctIndex": 0,
+      "explanation": "The government and the law treat all citizens equally regardless of religion or belief."
+    },
+    {
+      "id": "b14",
+      "categoryId": "beliefs",
+      "text": "What does gender equality mean in Australia?",
+      "options": [
+        "Men and women have equal rights",
+        "Men have more legal rights",
+        "Women cannot stand for parliament",
+        "Only men may join the Defence Force"
+      ],
+      "correctIndex": 0,
+      "explanation": "Men and women have equal rights and equal access to opportunities in Australia."
+    },
+    {
+      "id": "b15",
+      "categoryId": "beliefs",
+      "text": "What does a 'fair go' mean?",
+      "options": [
+        "Achievements should result from talents, work and effort",
+        "Wealth should determine opportunity",
+        "Background should determine employment",
+        "Only citizens deserve opportunity"
+      ],
+      "correctIndex": 0,
+      "explanation": "A fair go means people should have equal opportunity and succeed through their talents, work and effort."
+    },
+    {
+      "id": "b16",
+      "categoryId": "beliefs",
+      "text": "Which is a responsibility of Australian citizens?",
+      "options": [
+        "Obey the laws of Australia",
+        "Own property",
+        "Join a political party",
+        "Serve in the Defence Force full time"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australian citizens must obey Australia's laws."
+    },
+    {
+      "id": "b17",
+      "categoryId": "beliefs",
+      "text": "Which is a responsibility of citizens aged 18 or over?",
+      "options": [
+        "Vote in federal and state or territory elections and referenda",
+        "Become a Member of Parliament",
+        "Join the police",
+        "Work for the government"
+      ],
+      "correctIndex": 0,
+      "explanation": "Voting is a responsibility, right and privilege for Australian citizens aged 18 years or over."
+    },
+    {
+      "id": "b18",
+      "categoryId": "beliefs",
+      "text": "What may Australian citizens be called to do in court?",
+      "options": [
+        "Serve on a jury",
+        "Act as a judge",
+        "Write new laws",
+        "Lead the police"
+      ],
+      "correctIndex": 0,
+      "explanation": "Citizens on the electoral roll may be called to serve on a jury."
+    },
+    {
+      "id": "b19",
+      "categoryId": "beliefs",
+      "text": "Is service in the Australian Defence Force compulsory?",
+      "options": [
+        "No, it is voluntary",
+        "Yes, for all citizens",
+        "Yes, for all men",
+        "Yes, after age 18"
+      ],
+      "correctIndex": 0,
+      "explanation": "Service in the Australian Defence Force is voluntary, although citizens have a responsibility to defend Australia if needed."
+    },
+    {
+      "id": "b20",
+      "categoryId": "beliefs",
+      "text": "Which is a privilege of Australian citizenship?",
+      "options": [
+        "Applying for an Australian passport",
+        "Ignoring visa laws overseas",
+        "Avoiding jury service",
+        "Not paying tax"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australian citizens may apply for an Australian passport and re-enter Australia freely."
+    },
+    {
+      "id": "b21",
+      "categoryId": "beliefs",
+      "text": "Can Australian citizens seek election to parliament?",
+      "options": [
+        "Yes, if eligible",
+        "No",
+        "Only if appointed by the King",
+        "Only after military service"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eligible Australian citizens may seek election to parliament."
+    },
+    {
+      "id": "b22",
+      "categoryId": "beliefs",
+      "text": "What assistance may an Australian citizen seek while overseas?",
+      "options": [
+        "Consular assistance from an Australian official",
+        "Guaranteed exemption from local laws",
+        "Free travel in every country",
+        "Automatic citizenship of another country"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australian citizens may seek consular assistance from Australian officials while overseas."
+    },
+    {
+      "id": "b23",
+      "categoryId": "beliefs",
+      "text": "Can Australian citizens apply for children born overseas to become citizens by descent?",
+      "options": [
+        "Yes",
+        "No",
+        "Only if the child is over 18",
+        "Only if both parents were born in Australia"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australian citizens can apply for a child born overseas to become an Australian citizen by descent."
+    },
+    {
+      "id": "b24",
+      "categoryId": "beliefs",
+      "text": "What is compulsory in federal and state or territory elections?",
+      "options": [
+        "Voting for eligible Australian citizens",
+        "Joining a political party",
+        "Campaigning for a candidate",
+        "Donating to a party"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eligible citizens must vote in federal and state or territory elections."
+    },
+    {
+      "id": "b25",
+      "categoryId": "beliefs",
+      "text": "What is a referendum?",
+      "options": [
+        "A vote to change the Australian Constitution",
+        "A local council meeting",
+        "A court hearing",
+        "A political party election"
+      ],
+      "correctIndex": 0,
+      "explanation": "A referendum is a vote on a proposed change to the Australian Constitution."
+    },
+    {
+      "id": "b26",
+      "categoryId": "beliefs",
+      "text": "What is jury service intended to help ensure?",
+      "options": [
+        "That the court system is open and fair",
+        "That judges follow political instructions",
+        "That police decide guilt",
+        "That only lawyers decide cases"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jury service helps ensure the court system is open and fair."
+    },
+    {
+      "id": "b27",
+      "categoryId": "beliefs",
+      "text": "Which statement about freedom of religion is correct?",
+      "options": [
+        "People may follow any religion or no religion",
+        "Only recognised religions are allowed",
+        "Religion can override Australian law",
+        "The government chooses a religion for each citizen"
+      ],
+      "correctIndex": 0,
+      "explanation": "People are free to follow any religion or no religion, but Australian law must be obeyed."
+    },
+    {
+      "id": "b28",
+      "categoryId": "beliefs",
+      "text": "Which statement about peaceful protest is correct?",
+      "options": [
+        "It is allowed if it remains within the law",
+        "It is always illegal",
+        "Property damage is allowed",
+        "Violence is acceptable if many people agree"
+      ],
+      "correctIndex": 0,
+      "explanation": "People may protest peacefully, but protests must obey the law and must not injure people or damage property."
+    },
+    {
+      "id": "b29",
+      "categoryId": "beliefs",
+      "text": "Are all Australians equal under the law?",
+      "options": [
+        "Yes",
+        "No, public officials have more rights",
+        "No, wealth changes legal rights",
+        "Only citizens are equal under the law"
+      ],
+      "correctIndex": 0,
+      "explanation": "All Australians are equal under the law."
+    },
+    {
+      "id": "b30",
+      "categoryId": "beliefs",
+      "text": "What is expected when Australians disagree?",
+      "options": [
+        "They should resolve disagreement peacefully",
+        "They should use threats",
+        "They should ignore the law",
+        "They should prevent others from speaking"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australians believe disagreement should be handled peacefully and with respect."
+    },
+    {
+      "id": "g1",
+      "categoryId": "government",
+      "text": "Who conducts federal elections and referendums?",
+      "options": [
+        "The Australian Electoral Commission",
+        "The High Court",
+        "The Australian Federal Police",
+        "Local councils"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Australian Electoral Commission conducts federal elections and referendums and maintains the electoral roll."
+    },
+    {
+      "id": "g2",
+      "categoryId": "government",
+      "text": "Is the Australian Electoral Commission independent of the government?",
+      "options": [
+        "Yes",
+        "No",
+        "Only during elections",
+        "Only in the states"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Australian Electoral Commission is independent of the government."
+    },
+    {
+      "id": "g3",
+      "categoryId": "government",
+      "text": "How is voting conducted in Australian elections?",
+      "options": [
+        "By secret ballot",
+        "By public show of hands",
+        "By declaration to the police",
+        "By open online publication"
+      ],
+      "correctIndex": 0,
+      "explanation": "Voting is by secret ballot, so no one has to know how a person voted."
+    },
+    {
+      "id": "g4",
+      "categoryId": "government",
+      "text": "What may happen if a person does not vote without a good reason?",
+      "options": [
+        "They may have to pay a fine",
+        "They automatically lose citizenship",
+        "They are imprisoned",
+        "They cannot work"
+      ],
+      "correctIndex": 0,
+      "explanation": "A person who fails to vote without a good reason may have to pay a fine."
+    },
+    {
+      "id": "g5",
+      "categoryId": "government",
+      "text": "When did the Australian Constitution come into effect?",
+      "options": [
+        "1 January 1901",
+        "26 January 1788",
+        "25 April 1915",
+        "15 November 2020"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Australian Constitution came into effect on 1 January 1901."
+    },
+    {
+      "id": "g6",
+      "categoryId": "government",
+      "text": "What does the Australian Constitution set out?",
+      "options": [
+        "The basic rules for the government of Australia",
+        "Only traffic laws",
+        "Rules for local councils only",
+        "Religious laws"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Australian Constitution sets out the basic rules for the government of Australia."
+    },
+    {
+      "id": "g7",
+      "categoryId": "government",
+      "text": "What is required to change the Australian Constitution?",
+      "options": [
+        "A double majority in a referendum",
+        "A decision by the Prime Minister alone",
+        "A decision by the High Court alone",
+        "Approval by every local council"
+      ],
+      "correctIndex": 0,
+      "explanation": "A constitutional change requires a national majority and a majority of voters in a majority of states."
+    },
+    {
+      "id": "g8",
+      "categoryId": "government",
+      "text": "Which branch of power makes laws?",
+      "options": [
+        "Legislative power",
+        "Executive power",
+        "Judicial power",
+        "Military power"
+      ],
+      "correctIndex": 0,
+      "explanation": "Legislative power is the power to make and change laws."
+    },
+    {
+      "id": "g9",
+      "categoryId": "government",
+      "text": "Which branch of power puts laws into practice?",
+      "options": [
+        "Executive power",
+        "Legislative power",
+        "Judicial power",
+        "Electoral power"
+      ],
+      "correctIndex": 0,
+      "explanation": "Executive power is the power to put laws into practice."
+    },
+    {
+      "id": "g10",
+      "categoryId": "government",
+      "text": "Which branch of power interprets and applies laws?",
+      "options": [
+        "Judicial power",
+        "Executive power",
+        "Legislative power",
+        "Ministerial power"
+      ],
+      "correctIndex": 0,
+      "explanation": "Judicial power is exercised by courts and judges to interpret and apply laws."
+    },
+    {
+      "id": "g11",
+      "categoryId": "government",
+      "text": "Who is Australia's Head of State?",
+      "options": [
+        "The King of Australia",
+        "The Prime Minister",
+        "The Governor-General",
+        "The Chief Justice"
+      ],
+      "correctIndex": 0,
+      "explanation": "The King of Australia is Australia's Head of State."
+    },
+    {
+      "id": "g12",
+      "categoryId": "government",
+      "text": "Who represents the King at the federal level?",
+      "options": [
+        "The Governor-General",
+        "The Prime Minister",
+        "The Premier",
+        "The Speaker"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Governor-General represents the King in Australia at the federal level."
+    },
+    {
+      "id": "g13",
+      "categoryId": "government",
+      "text": "Who represents the King in each Australian state?",
+      "options": [
+        "A Governor",
+        "A Premier",
+        "A Mayor",
+        "A Senator"
+      ],
+      "correctIndex": 0,
+      "explanation": "A Governor represents the King in each state."
+    },
+    {
+      "id": "g14",
+      "categoryId": "government",
+      "text": "Who is the leader of the Australian Government?",
+      "options": [
+        "The Prime Minister",
+        "The Governor-General",
+        "The King",
+        "The Chief Justice"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Prime Minister is the leader of the Australian Government."
+    },
+    {
+      "id": "g15",
+      "categoryId": "government",
+      "text": "Who leads a state government?",
+      "options": [
+        "The Premier",
+        "The Chief Minister",
+        "The Mayor",
+        "The Governor-General"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Premier leads a state government."
+    },
+    {
+      "id": "g16",
+      "categoryId": "government",
+      "text": "Who leads a territory government?",
+      "options": [
+        "The Chief Minister",
+        "The Premier",
+        "The Governor",
+        "The Senator"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Chief Minister leads a territory government."
+    },
+    {
+      "id": "g17",
+      "categoryId": "government",
+      "text": "What are the two Houses of the Australian Parliament?",
+      "options": [
+        "The House of Representatives and the Senate",
+        "The Cabinet and the High Court",
+        "The House of Commons and the Senate",
+        "The Council and the Assembly"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Australian Parliament has the House of Representatives and the Senate."
+    },
+    {
+      "id": "g18",
+      "categoryId": "government",
+      "text": "What is another name for the House of Representatives?",
+      "options": [
+        "The Lower House",
+        "The Upper House",
+        "The States' House",
+        "The House of Review"
+      ],
+      "correctIndex": 0,
+      "explanation": "The House of Representatives is also called the Lower House or the People's House."
+    },
+    {
+      "id": "g19",
+      "categoryId": "government",
+      "text": "What is another name for the Senate?",
+      "options": [
+        "The Upper House",
+        "The People's House",
+        "The Lower House",
+        "The Cabinet"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Senate is also called the Upper House, the House of Review or the States' House."
+    },
+    {
+      "id": "g20",
+      "categoryId": "government",
+      "text": "How many senators are there in total?",
+      "options": [
+        "76",
+        "150",
+        "12",
+        "8"
+      ],
+      "correctIndex": 0,
+      "explanation": "There are 76 senators in total."
+    },
+    {
+      "id": "g21",
+      "categoryId": "government",
+      "text": "How many senators does each state elect?",
+      "options": [
+        "12",
+        "2",
+        "6",
+        "10"
+      ],
+      "correctIndex": 0,
+      "explanation": "Each state elects 12 senators."
+    },
+    {
+      "id": "g22",
+      "categoryId": "government",
+      "text": "How many senators does each mainland territory elect?",
+      "options": [
+        "2",
+        "12",
+        "6",
+        "1"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Australian Capital Territory and Northern Territory each elect two senators."
+    },
+    {
+      "id": "g23",
+      "categoryId": "government",
+      "text": "Who is the leader of a local government?",
+      "options": [
+        "A mayor or shire president",
+        "The Prime Minister",
+        "The Governor-General",
+        "A senator"
+      ],
+      "correctIndex": 0,
+      "explanation": "A mayor or shire president leads a local government."
+    },
+    {
+      "id": "g24",
+      "categoryId": "government",
+      "text": "Which level of government is responsible for immigration and citizenship?",
+      "options": [
+        "The Australian Government",
+        "Local government",
+        "State government only",
+        "The High Court"
+      ],
+      "correctIndex": 0,
+      "explanation": "The Australian Government is responsible for immigration and citizenship."
+    },
+    {
+      "id": "g25",
+      "categoryId": "government",
+      "text": "Which level of government is primarily responsible for hospitals and schools?",
+      "options": [
+        "State and territory governments",
+        "The Australian Government only",
+        "Local councils only",
+        "The Senate"
+      ],
+      "correctIndex": 0,
+      "explanation": "State and territory governments are primarily responsible for hospitals, health services and schools."
+    },
+    {
+      "id": "g26",
+      "categoryId": "government",
+      "text": "Which level of government is generally responsible for rubbish collection?",
+      "options": [
+        "Local government",
+        "The Australian Government",
+        "The High Court",
+        "The Senate"
+      ],
+      "correctIndex": 0,
+      "explanation": "Local governments are generally responsible for rubbish collection."
+    },
+    {
+      "id": "g27",
+      "categoryId": "government",
+      "text": "How is the Australian Government generally formed after a federal election?",
+      "options": [
+        "By the party or coalition with a majority in the House of Representatives",
+        "By the High Court",
+        "By the Senate alone",
+        "By local councils"
+      ],
+      "correctIndex": 0,
+      "explanation": "The party or coalition with a majority in the House of Representatives generally forms government."
+    },
+    {
+      "id": "g28",
+      "categoryId": "government",
+      "text": "What is a proposed new law called?",
+      "options": [
+        "A Bill",
+        "A referendum",
+        "A judgment",
+        "A regulation only"
+      ],
+      "correctIndex": 0,
+      "explanation": "A proposal to introduce a new law or change an existing law is called a Bill."
+    },
+    {
+      "id": "g29",
+      "categoryId": "government",
+      "text": "What is Royal Assent?",
+      "options": [
+        "The Governor-General signing a Bill into law",
+        "The Prime Minister announcing an election",
+        "The High Court reviewing a case",
+        "The Senate electing a president"
+      ],
+      "correctIndex": 0,
+      "explanation": "Royal Assent is given when the Governor-General signs a Bill into law."
+    },
+    {
+      "id": "g30",
+      "categoryId": "government",
+      "text": "Who decides whether a person is guilty in a court case?",
+      "options": [
+        "The court",
+        "The police",
+        "The government",
+        "The media"
+      ],
+      "correctIndex": 0,
+      "explanation": "The police may investigate and give evidence, but the court decides guilt."
+    },
+    {
+      "id": "v1",
+      "categoryId": "values",
+      "text": "What should Australians do under the Rule of Law?",
+      "options": [
+        "Obey the law even when no one is watching",
+        "Follow only laws they agree with",
+        "Let cultural rules replace Australian law",
+        "Ignore minor laws"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australian values require everyone to obey the law at all times."
+    },
+    {
+      "id": "v2",
+      "categoryId": "values",
+      "text": "Why is voting compulsory in Australia?",
+      "options": [
+        "It shows the importance of participating in elections",
+        "It allows the government to know each vote",
+        "It prevents independent candidates",
+        "It replaces parliamentary debate"
+      ],
+      "correctIndex": 0,
+      "explanation": "Compulsory voting reflects the importance of citizens participating in democracy."
+    },
+    {
+      "id": "v3",
+      "categoryId": "values",
+      "text": "What is acceptable freedom of speech?",
+      "options": [
+        "Expressing ideas freely within the law",
+        "Promoting violence",
+        "Making false allegations",
+        "Encouraging others to break the law"
+      ],
+      "correctIndex": 0,
+      "explanation": "Freedom of speech is protected when exercised within Australian law."
+    },
+    {
+      "id": "v4",
+      "categoryId": "values",
+      "text": "Is promoting violence against another person or group acceptable?",
+      "options": [
+        "No",
+        "Yes, during a protest",
+        "Yes, if done online",
+        "Yes, if based on political disagreement"
+      ],
+      "correctIndex": 0,
+      "explanation": "Promoting violence is against Australian values and law."
+    },
+    {
+      "id": "v5",
+      "categoryId": "values",
+      "text": "May Australians join or leave legal organisations voluntarily?",
+      "options": [
+        "Yes",
+        "No",
+        "Only with government permission",
+        "Only citizens may leave organisations"
+      ],
+      "correctIndex": 0,
+      "explanation": "Freedom of association allows people to join or leave legal organisations voluntarily."
+    },
+    {
+      "id": "v6",
+      "categoryId": "values",
+      "text": "Can religious law replace Australian law?",
+      "options": [
+        "No",
+        "Yes, for religious citizens",
+        "Yes, in private homes",
+        "Yes, if a religious leader agrees"
+      ],
+      "correctIndex": 0,
+      "explanation": "Religious laws have no legal status over Australian law."
+    },
+    {
+      "id": "v7",
+      "categoryId": "values",
+      "text": "Is forced marriage legal in Australia?",
+      "options": [
+        "No",
+        "Yes, with family approval",
+        "Yes, for adults only",
+        "Yes, if culturally accepted"
+      ],
+      "correctIndex": 0,
+      "explanation": "Forced marriage is against the law in Australia."
+    },
+    {
+      "id": "v8",
+      "categoryId": "values",
+      "text": "Is polygamy legal in Australia?",
+      "options": [
+        "No",
+        "Yes",
+        "Only for citizens",
+        "Only with court approval"
+      ],
+      "correctIndex": 0,
+      "explanation": "Being married to more than one person at the same time is against Australian law."
+    },
+    {
+      "id": "v9",
+      "categoryId": "values",
+      "text": "How should people of different religions be treated?",
+      "options": [
+        "Equally",
+        "According to the size of their religion",
+        "According to the religion of the government",
+        "Only citizens should be treated equally"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australian values require equal treatment regardless of religion or belief."
+    },
+    {
+      "id": "v10",
+      "categoryId": "values",
+      "text": "Can two men or two women marry each other under Australian law?",
+      "options": [
+        "Yes",
+        "No",
+        "Only in some states",
+        "Only with government permission"
+      ],
+      "correctIndex": 0,
+      "explanation": "Under Australian law, two people may marry each other, including two men or two women."
+    },
+    {
+      "id": "v11",
+      "categoryId": "values",
+      "text": "Should men and women have equal access to education and employment?",
+      "options": [
+        "Yes",
+        "No",
+        "Only citizens should",
+        "Only if they have the same income"
+      ],
+      "correctIndex": 0,
+      "explanation": "Men and women have equal rights and should have equal access to education and employment."
+    },
+    {
+      "id": "v12",
+      "categoryId": "values",
+      "text": "Can a woman get a job ahead of a man if she has better qualifications and skills?",
+      "options": [
+        "Yes",
+        "No",
+        "Only in government jobs",
+        "Only with court approval"
+      ],
+      "correctIndex": 0,
+      "explanation": "Employment decisions should be based on skills and qualifications, not gender."
+    },
+    {
+      "id": "v13",
+      "categoryId": "values",
+      "text": "Can either spouse apply for a divorce?",
+      "options": [
+        "Yes",
+        "No, only the husband",
+        "No, only the wife",
+        "Only if both spouses agree"
+      ],
+      "correctIndex": 0,
+      "explanation": "Either spouse may apply for divorce even if the other spouse wants to continue the marriage."
+    },
+    {
+      "id": "v14",
+      "categoryId": "values",
+      "text": "What does a 'fair go' mean in employment?",
+      "options": [
+        "The best-qualified person should be selected",
+        "The wealthiest person should be selected",
+        "A citizen should always be selected over a migrant",
+        "Family connections should decide"
+      ],
+      "correctIndex": 0,
+      "explanation": "A fair go means opportunity should be based on skills, experience and effort."
+    },
+    {
+      "id": "v15",
+      "categoryId": "values",
+      "text": "How should Australians respond to disagreement?",
+      "options": [
+        "With mutual respect and tolerance",
+        "With violence",
+        "By silencing the other person",
+        "By ignoring the law"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australians value peaceful disagreement, mutual respect and tolerance."
+    },
+    {
+      "id": "v16",
+      "categoryId": "values",
+      "text": "Is violence against a spouse or partner acceptable?",
+      "options": [
+        "No",
+        "Yes, in private",
+        "Yes, if no injury occurs",
+        "Only if both are citizens"
+      ],
+      "correctIndex": 0,
+      "explanation": "Physical violence against a spouse or partner is a criminal offence."
+    },
+    {
+      "id": "v17",
+      "categoryId": "values",
+      "text": "Should lawful actions of the police be supported?",
+      "options": [
+        "Yes",
+        "No",
+        "Only during emergencies",
+        "Only by citizens"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australians are expected to support lawful police actions and obey lawful requests."
+    },
+    {
+      "id": "v18",
+      "categoryId": "values",
+      "text": "Does racism have a place in Australia?",
+      "options": [
+        "No",
+        "Yes, as free speech",
+        "Only online",
+        "Only at sporting events"
+      ],
+      "correctIndex": 0,
+      "explanation": "Racism has no place in Australia and can be unlawful."
+    },
+    {
+      "id": "v19",
+      "categoryId": "values",
+      "text": "What does mateship mean?",
+      "options": [
+        "Helping each other in times of need",
+        "Joining the military",
+        "Voting for the same party",
+        "Working only with friends"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mateship means helping and receiving help from others, especially in difficult times."
+    },
+    {
+      "id": "v20",
+      "categoryId": "values",
+      "text": "Why is volunteering valued?",
+      "options": [
+        "It strengthens the community and helps people belong",
+        "It replaces paid work",
+        "It is compulsory for all citizens",
+        "It is only for retired people"
+      ],
+      "correctIndex": 0,
+      "explanation": "Volunteering supports others, builds skills and strengthens community belonging."
+    },
+    {
+      "id": "v21",
+      "categoryId": "values",
+      "text": "What should people living in Australia make an effort to learn?",
+      "options": [
+        "English",
+        "Latin",
+        "A second European language",
+        "Only their local Indigenous language"
+      ],
+      "correctIndex": 0,
+      "explanation": "English is Australia's national language and an important unifying element of society."
+    },
+    {
+      "id": "v22",
+      "categoryId": "values",
+      "text": "Why is learning English important?",
+      "options": [
+        "It helps with education, employment and community participation",
+        "It is required to vote in every election",
+        "It replaces all other languages",
+        "It is only needed for government jobs"
+      ],
+      "correctIndex": 0,
+      "explanation": "English supports education, work, economic participation and social cohesion."
+    },
+    {
+      "id": "v23",
+      "categoryId": "values",
+      "text": "What should a person do if they suspect someone is planning a serious crime?",
+      "options": [
+        "Report it to Australian government authorities",
+        "Ignore it",
+        "Post it on social media",
+        "Confront the person violently"
+      ],
+      "correctIndex": 0,
+      "explanation": "Helping to keep society safe includes reporting suspected serious crime to authorities."
+    },
+    {
+      "id": "v24",
+      "categoryId": "values",
+      "text": "What should a person do if they know a child is being abused?",
+      "options": [
+        "Report it to the police",
+        "Keep it private",
+        "Ask neighbours to decide",
+        "Wait until the child becomes an adult"
+      ],
+      "correctIndex": 0,
+      "explanation": "Suspected child abuse should be reported to police for investigation."
+    },
+    {
+      "id": "v25",
+      "categoryId": "values",
+      "text": "Is sharing sexual photos online without consent acceptable?",
+      "options": [
+        "No",
+        "Yes, if the image was sent privately",
+        "Yes, if the person is an adult",
+        "Only if no money is involved"
+      ],
+      "correctIndex": 0,
+      "explanation": "Sharing sexual images without consent can be illegal cyber abuse."
+    },
+    {
+      "id": "v26",
+      "categoryId": "values",
+      "text": "Can Australian citizens hold citizenship of another country?",
+      "options": [
+        "Yes, if the other country's laws allow it",
+        "No",
+        "Only with approval from Parliament",
+        "Only after age 30"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australian citizens may hold dual or multiple citizenship if the other country's laws permit it."
+    },
+    {
+      "id": "v27",
+      "categoryId": "values",
+      "text": "Must an Australian citizen in Australia obey Australian law even if they are also a citizen of another country?",
+      "options": [
+        "Yes",
+        "No",
+        "Only federal laws",
+        "Only if they were born in Australia"
+      ],
+      "correctIndex": 0,
+      "explanation": "All Australian citizens in Australia must obey Australian laws at all times."
+    },
+    {
+      "id": "v28",
+      "categoryId": "values",
+      "text": "Can some Australian laws apply to citizens while they are overseas?",
+      "options": [
+        "Yes",
+        "No",
+        "Only traffic laws",
+        "Only tax laws"
+      ],
+      "correctIndex": 0,
+      "explanation": "Some Australian laws apply to Australian citizens even when they are overseas."
+    },
+    {
+      "id": "v29",
+      "categoryId": "values",
+      "text": "What is expected of people who are able to support themselves and their families?",
+      "options": [
+        "They should try to do so",
+        "They should rely entirely on others",
+        "They should avoid employment",
+        "Only citizens have this responsibility"
+      ],
+      "correctIndex": 0,
+      "explanation": "Australians expect people who are able to support themselves and their families to try to do so."
+    },
+    {
+      "id": "v30",
+      "categoryId": "values",
+      "text": "What should Australian citizens avoid doing?",
+      "options": [
+        "Undermining Australia's interests and security",
+        "Criticising government policy peacefully",
+        "Joining legal organisations",
+        "Practising a religion"
+      ],
+      "correctIndex": 0,
+      "explanation": "Shared Australian values include loyalty to Australia and not undermining its interests and security."
+    }
   ]
 }

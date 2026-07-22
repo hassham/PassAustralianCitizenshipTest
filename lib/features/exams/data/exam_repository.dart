@@ -1,0 +1,196 @@
+import 'dart:convert';
+
+import 'package:drift/drift.dart';
+import 'package:flutter/services.dart';
+
+import '../../../data/database/app_database.dart';
+import '../../practice/data/practice_repository.dart';
+import 'package:pass_citizenship_test/features/practice/domain/study_question.dart';
+import '../domain/exam_models.dart';
+
+class ExamRepository {
+  ExamRepository(this.database, this.practiceRepository);
+
+  final AppDatabase database;
+  final PracticeRepository practiceRepository;
+  Future<ExamConfigModel>? _configFuture;
+
+  Future<ExamConfigModel> config() => _configFuture ??= _loadConfig();
+
+  Future<ExamConfigModel> _loadConfig() async {
+    final existing =
+        await (database.select(database.examConfigurations)
+              ..where((row) => row.isActive.equals(true))
+              ..limit(1))
+            .getSingleOrNull();
+    if (existing != null) return _configModel(existing);
+
+    final raw = await rootBundle.loadString('assets/data/exam_config.json');
+    final json = jsonDecode(raw) as Map<String, dynamic>;
+    final id = await database
+        .into(database.examConfigurations)
+        .insert(
+          ExamConfigurationsCompanion.insert(
+            examName: 'Australian Citizenship Test',
+            questionCount: json['questionCount'] as int,
+            durationMinutes: json['durationMinutes'] as int,
+            passPercentage: (json['passPercentage'] as num).toDouble(),
+            version: json['version'] as int,
+          ),
+        );
+    return ExamConfigModel(
+      id: id,
+      questionCount: json['questionCount'] as int,
+      durationMinutes: json['durationMinutes'] as int,
+      passPercentage: (json['passPercentage'] as num).toDouble(),
+    );
+  }
+
+  Future<RestoredExamModel> startExam() async {
+    await abandonActiveExam();
+    final examConfig = await config();
+    final questions = await practiceRepository.questionsFor(
+      limit: examConfig.questionCount,
+    );
+    final attemptId = await database
+        .into(database.examAttempts)
+        .insert(
+          ExamAttemptsCompanion.insert(
+            configId: examConfig.id,
+            selectedQuestionsJson: jsonEncode(
+              questions.map((question) => question.id).toList(),
+            ),
+            totalQuestions: questions.length,
+            startedAt: DateTime.now(),
+          ),
+        );
+    await database.batch((batch) {
+      batch.insertAll(database.examAttemptAnswers, [
+        for (var index = 0; index < questions.length; index++)
+          ExamAttemptAnswersCompanion.insert(
+            examAttemptId: attemptId,
+            questionId: questions[index].id,
+            questionOrder: index,
+            selectedIndex: const Value.absent(),
+            isCorrect: const Value.absent(),
+            answeredAt: const Value.absent(),
+          ),
+      ]);
+    });
+    return RestoredExamModel(
+      attemptId: attemptId,
+      config: examConfig,
+      questions: questions,
+      answers: const {},
+      currentIndex: 0,
+    );
+  }
+
+  Future<RestoredExamModel?> restoreExam() async {
+    final attempt = await database.activeExamAttempt();
+    if (attempt == null) return null;
+    final examConfig = await (database.select(
+      database.examConfigurations,
+    )..where((row) => row.id.equals(attempt.configId))).getSingle();
+    final ids = (jsonDecode(attempt.selectedQuestionsJson) as List<dynamic>)
+        .cast<String>();
+    final questions = await practiceRepository.questionsByIds(ids);
+    final answerRows = await (database.select(
+      database.examAttemptAnswers,
+    )..where((row) => row.examAttemptId.equals(attempt.id))).get();
+    return RestoredExamModel(
+      attemptId: attempt.id,
+      config: _configModel(examConfig),
+      questions: questions,
+      answers: {
+        for (final answer in answerRows)
+          if (answer.selectedIndex != null)
+            answer.questionOrder: answer.selectedIndex!,
+      },
+      currentIndex: attempt.currentQuestionIndex.clamp(0, questions.length - 1),
+    );
+  }
+
+  Future<void> saveAnswer({
+    required int attemptId,
+    required int questionOrder,
+    required int selectedIndex,
+  }) async {
+    await (database.update(database.examAttemptAnswers)..where(
+          (row) =>
+              row.examAttemptId.equals(attemptId) &
+              row.questionOrder.equals(questionOrder),
+        ))
+        .write(
+          ExamAttemptAnswersCompanion(
+            selectedIndex: Value(selectedIndex),
+            answeredAt: Value(DateTime.now()),
+          ),
+        );
+  }
+
+  Future<void> savePosition(int attemptId, int index) async {
+    await (database.update(database.examAttempts)
+          ..where((row) => row.id.equals(attemptId)))
+        .write(ExamAttemptsCompanion(currentQuestionIndex: Value(index)));
+  }
+
+  Future<ExamResultModel> submit({
+    required int attemptId,
+    required List<StudyQuestionModel> questions,
+    required Map<int, int> answers,
+    required double passPercentage,
+  }) async {
+    var correct = 0;
+    for (var index = 0; index < questions.length; index++) {
+      final selected = answers[index];
+      if (selected == questions[index].correctIndex) correct++;
+      if (selected != null) {
+        await (database.update(database.examAttemptAnswers)..where(
+              (row) =>
+                  row.examAttemptId.equals(attemptId) &
+                  row.questionOrder.equals(index),
+            ))
+            .write(
+              ExamAttemptAnswersCompanion(
+                isCorrect: Value(selected == questions[index].correctIndex),
+              ),
+            );
+      }
+    }
+    final unanswered = questions.length - answers.length;
+    final incorrect = answers.length - correct;
+    final score = questions.isEmpty ? 0.0 : correct * 100 / questions.length;
+    final passed = score >= passPercentage;
+    await (database.update(
+      database.examAttempts,
+    )..where((row) => row.id.equals(attemptId))).write(
+      ExamAttemptsCompanion(
+        score: Value(score),
+        isPassed: Value(passed),
+        submittedAt: Value(DateTime.now()),
+        isCompleted: const Value(true),
+      ),
+    );
+    return ExamResultModel(
+      score: score,
+      passed: passed,
+      correct: correct,
+      incorrect: incorrect,
+      unanswered: unanswered,
+    );
+  }
+
+  Future<void> abandonActiveExam() async {
+    await (database.update(database.examAttempts)
+          ..where((row) => row.isCompleted.equals(false)))
+        .write(const ExamAttemptsCompanion(isCompleted: Value(true)));
+  }
+
+  ExamConfigModel _configModel(ExamConfiguration row) => ExamConfigModel(
+    id: row.id,
+    questionCount: row.questionCount,
+    durationMinutes: row.durationMinutes,
+    passPercentage: row.passPercentage,
+  );
+}

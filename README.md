@@ -10,6 +10,8 @@ The first working vertical slice supports:
 - immediate answer feedback and explanations
 - locally persisted attempts and progress
 - restoration of an unfinished practice session after restart
+- configurable single/multi-category practice session lengths
+- free untimed mock exams with resume, scoring, and answer review
 - bundled, development-only sample content
 
 The sample questions are placeholders for implementation testing and require an accuracy and copyright review before release.

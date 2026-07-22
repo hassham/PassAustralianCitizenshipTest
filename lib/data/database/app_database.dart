@@ -53,6 +53,50 @@ class PracticeSessions extends Table {
   DateTimeColumn get updatedAt => dateTime()();
 }
 
+class ExamConfigurations extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get examName => text().unique()();
+  IntColumn get questionCount => integer()();
+  IntColumn get durationMinutes => integer()();
+  RealColumn get passPercentage => real()();
+  IntColumn get version => integer()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+}
+
+class ExamAttempts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get configId => integer()();
+  TextColumn get selectedQuestionsJson => text()();
+  IntColumn get totalQuestions => integer()();
+  IntColumn get currentQuestionIndex =>
+      integer().withDefault(const Constant(0))();
+  RealColumn get score => real().nullable()();
+  BoolColumn get isPassed => boolean().nullable()();
+  DateTimeColumn get startedAt => dateTime()();
+  DateTimeColumn get submittedAt => dateTime().nullable()();
+  BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
+  BoolColumn get isPremiumTimed =>
+      boolean().withDefault(const Constant(false))();
+}
+
+class ExamAttemptAnswers extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get examAttemptId => integer()();
+  TextColumn get questionId => text()();
+  IntColumn get questionOrder => integer()();
+  IntColumn get selectedIndex => integer().nullable()();
+  BoolColumn get isCorrect => boolean().nullable()();
+  DateTimeColumn get answeredAt => dateTime().nullable()();
+}
+
+class AppSettings extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {key};
+}
+
 @DriftDatabase(
   tables: [
     Categories,
@@ -60,6 +104,10 @@ class PracticeSessions extends Table {
     QuestionAttempts,
     StarredQuestions,
     PracticeSessions,
+    ExamConfigurations,
+    ExamAttempts,
+    ExamAttemptAnswers,
+    AppSettings,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -68,13 +116,21 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) => migrator.createAll(),
     onUpgrade: (migrator, from, to) async {
       if (from < 2) await migrator.createTable(starredQuestions);
+      if (from < 3) {
+        await migrator.createTable(examConfigurations);
+        await migrator.createTable(examAttempts);
+        await migrator.createTable(examAttemptAnswers);
+      }
+      if (from < 4) {
+        await migrator.createTable(appSettings);
+      }
     },
   );
 
@@ -82,6 +138,13 @@ class AppDatabase extends _$AppDatabase {
       (select(practiceSessions)
             ..where((row) => row.isComplete.equals(false))
             ..orderBy([(row) => OrderingTerm.desc(row.updatedAt)])
+            ..limit(1))
+          .getSingleOrNull();
+
+  Future<ExamAttempt?> activeExamAttempt() =>
+      (select(examAttempts)
+            ..where((row) => row.isCompleted.equals(false))
+            ..orderBy([(row) => OrderingTerm.desc(row.startedAt)])
             ..limit(1))
           .getSingleOrNull();
 }
