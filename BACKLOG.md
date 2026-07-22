@@ -17,10 +17,10 @@
 | Status | Meaning | Tasks | Share |
 |---|---|---:|---:|
 | COMPLETE | Every acceptance item in the task is implemented and verified | 1 | 2% |
-| PARTIAL | Useful scope is implemented, but acceptance items remain | 32 | 54% |
+| PARTIAL | Useful scope is implemented, but acceptance items remain | 36 | 61% |
 | IN PROGRESS | Actively being implemented | 0 | 0% |
 | BLOCKED | Cannot proceed until the recorded blocker is resolved | 0 | 0% |
-| NOT STARTED | No meaningful implementation yet | 26 | 44% |
+| NOT STARTED | No meaningful implementation yet | 22 | 37% |
 | **Total** |  | **59** | **100%** |
 
 ### Phase roll-up
@@ -28,11 +28,11 @@
 | Phase | Complete | Partial | In progress | Blocked | Not started |
 |---|---:|---:|---:|---:|---:|
 | 1. Setup | 1 | 2 | 0 | 0 | 1 |
-| 2. Database | 0 | 5 | 0 | 0 | 3 |
-| 3. Domain logic | 0 | 1 | 0 | 0 | 6 |
+| 2. Database | 0 | 6 | 0 | 0 | 2 |
+| 3. Domain logic | 0 | 2 | 0 | 0 | 5 |
 | 4. State management | 0 | 3 | 0 | 0 | 0 |
-| 5. Feature engines | 0 | 3 | 0 | 0 | 3 |
-| 6. Screens | 0 | 6 | 0 | 0 | 4 |
+| 5. Feature engines | 0 | 4 | 0 | 0 | 2 |
+| 6. Screens | 0 | 7 | 0 | 0 | 3 |
 | 7. Shared UI | 0 | 3 | 0 | 0 | 0 |
 | 8. Testing | 0 | 4 | 0 | 0 | 0 |
 | 9. Content | 0 | 3 | 0 | 0 | 0 |
@@ -55,11 +55,11 @@
 | Order | Task | Outcome | Exit check |
 |---:|---|---|---|
 | 1 | 6.1 App Navigation | Replace local page pushes with named routes and finalize back-navigation behavior | All five sections preserve state and route predictably |
-| 2 | 1.2 Dependencies | Finalize only the dependencies needed for the next milestone | Dependency review passes and unused packages are removed |
-| 3 | 9.1 Question Dataset | Replace starter content with a reviewed production pipeline | Schema validation and content review gates pass |
-| 4 | 5.2 Mock Exam Engine | Begin the free untimed mock-exam vertical slice | A configured exam can be completed and scored offline |
-| 5 | 8.4 Manual Testing | Complete the remaining resilience, accessibility, and real-device scenarios | Checklist results and defects are recorded |
-| 6 | 2.4 Exam Tables | Add the persisted foundation for mock exams | Exam configuration, attempts, and answers migrate cleanly |
+| 2 | 8.4 Manual Testing | Walk through free exam start, navigation, resume, submission, and review | Checklist results and defects are recorded |
+| 3 | 1.2 Dependencies | Finalize only the dependencies needed for the next milestone | Dependency review passes and unused packages are removed |
+| 4 | 9.1 Question Dataset | Replace starter content with a reviewed production pipeline | Schema validation and content review gates pass |
+| 5 | 5.6 Error Handling | Add typed recovery paths for database/content failures | Failures show actionable messages and recover safely |
+| 6 | 6.2 Home Screen | Add starred count, exam entry, and stronger resume states | Home matches the free-user FSD dashboard scope |
 
 ## Implementation Progress
 
@@ -109,6 +109,22 @@ Completed in this milestone:
 - Randomized filtering in the repository before session persistence
 - Multi-category repository and deterministic Practice-hub widget coverage
 - Static analysis passes and all 7 automated tests pass
+
+**Milestone 4 - Free Untimed Mock Exams: Implemented (2026-07-22)**
+
+Completed in this milestone:
+- Versioned schema-v3 migration for exam configurations, attempts, and answers
+- Exam rules loaded from bundled `exam_config.json`
+- Random question selection safely clamped to available starter content
+- Untimed answer selection without immediate feedback
+- Forward/back navigation and answered/unanswered question navigator
+- Persisted answer and current-position recovery after restart
+- Submission confirmation with unanswered count
+- Configuration-driven score and pass/fail calculation
+- Results summary plus complete answer and explanation review
+- Exams tab start/resume experience and explicit Premium timed-exam placeholder
+- Repository coverage for configuration, persistence, ordering, scoring, and completion
+- Static analysis clean, all 9 automated tests passing, and Android debug APK built
 
 ---
 
@@ -247,7 +263,9 @@ Create Drift models for progress tracking:
 ---
 
 ## Task 2.4: Create Database Models - Exam Tables
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-22
+**Evidence:** Schema v3 adds configuration, attempt, and per-question answer tables with persisted order, selection, position, score, pass state, timestamps, completion, and timed/free mode flag.
+**Remaining:** Timer/background fields, attempt numbering, richer constraints/indexes, and production migration tests.
 **Priority:** P0 | **Effort:** L
 
 Create Drift models for exam data:
@@ -400,7 +418,9 @@ Create recommendation logic:
 ---
 
 ## Task 3.5: Implement Mock Exam Scoring Engine
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Architecture cleanup | **Updated:** 2026-07-22
+**Evidence:** Configuration-driven scoring calculates percentage, pass/fail, correct, incorrect, and unanswered counts and persists the result.
+**Remaining:** Extract the calculation into a pure domain service and add mandatory-rule scoring when those rules are defined.
 **Priority:** P1 | **Effort:** S
 
 Create exam scoring:
@@ -434,8 +454,8 @@ Create timer handling:
 
 ## Task 3.7: Implement Session Persistence Service
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20  
-**Evidence:** Practice session question order, position, score, completion state, and restart restoration are persisted.  
-**Remaining:** Exam session persistence, timer timestamps, lifecycle handling, clock-change detection, and auto-submit.
+**Evidence:** Practice and untimed-exam question order, answers, current position, score, completion state, and restart restoration are persisted.
+**Remaining:** Timed-exam timestamps, lifecycle handling, clock-change detection, and auto-submit.
 **Priority:** P1 | **Effort:** M
 
 Create session management:
@@ -489,8 +509,8 @@ Create business logic providers:
 
 ## Task 4.3: Create Riverpod Providers - Session Management
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20  
-**Evidence:** `PracticeController` manages practice loading, answer state, progress, completion, and restoration.  
-**Remaining:** Exam and timer controllers plus lifecycle integration.
+**Evidence:** `PracticeController` and `ExamController` manage loading, answer state, navigation, persistence, completion, and restoration.
+**Remaining:** Timer controller and timed-exam lifecycle integration.
 **Priority:** P1 | **Effort:** M
 
 Create session providers:
@@ -528,7 +548,9 @@ Create practice flow:
 ---
 
 ## Task 5.2: Implement Mock Exam Engine
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-22
+**Evidence:** Free untimed exams support configuration-based randomized creation, answer persistence, navigation, resume, submission, scoring, and review.
+**Remaining:** Timed exam support, auto-submit, formal domain use cases, and device-level integration coverage.
 **Priority:** P1 | **Effort:** L
 
 Create exam flow:
@@ -727,7 +749,9 @@ Create starred view:
 ---
 
 ## Task 6.6: Implement Mock Exams Screen
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-22
+**Evidence:** Exams home, free exam question flow, unanswered navigator, confirmation, results, answer review, and resume card are implemented.
+**Remaining:** Timed layout, timer, premium gating, visual/accessibility QA, and expanded widget/integration tests.
 **Priority:** P1 | **Effort:** L
 
 Create exam flows:
@@ -1310,6 +1334,7 @@ Phase 12: Deployment (12.1-12.4)
 
 | Date | Change | Verification |
 |---|---|---|
+| 2026-07-22 | Added the configuration-driven free untimed mock-exam vertical slice and schema-v3 persistence. | Analysis clean; all 9 tests passed; Android debug APK built. |
 | 2026-07-22 | Added multi-category selection and configurable practice length; recorded user-completed emulator checks and reprioritized the queue. | Analysis clean; all 7 automated tests passed. |
 | 2026-07-21 | Added Android debug-build/install evidence, persistent starred questions, five-section navigation, Practice hub, and basic Progress screen; reprioritized the next-up queue. | `flutter doctor` clean; analysis clean; debug APK installed on emulator; all 5 automated tests passed. |
 | 2026-07-20 | Converted the implementation plan into a 59-task tracker with explicit status, ownership, targets, evidence, remaining work, dashboard totals, and next-up ordering. | Status metadata count and dashboard totals validated. |

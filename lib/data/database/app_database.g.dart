@@ -1703,6 +1703,1856 @@ class PracticeSessionsCompanion extends UpdateCompanion<PracticeSession> {
   }
 }
 
+class $ExamConfigurationsTable extends ExamConfigurations
+    with TableInfo<$ExamConfigurationsTable, ExamConfiguration> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExamConfigurationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _examNameMeta = const VerificationMeta(
+    'examName',
+  );
+  @override
+  late final GeneratedColumn<String> examName = GeneratedColumn<String>(
+    'exam_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _questionCountMeta = const VerificationMeta(
+    'questionCount',
+  );
+  @override
+  late final GeneratedColumn<int> questionCount = GeneratedColumn<int>(
+    'question_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _durationMinutesMeta = const VerificationMeta(
+    'durationMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> durationMinutes = GeneratedColumn<int>(
+    'duration_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _passPercentageMeta = const VerificationMeta(
+    'passPercentage',
+  );
+  @override
+  late final GeneratedColumn<double> passPercentage = GeneratedColumn<double>(
+    'pass_percentage',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    examName,
+    questionCount,
+    durationMinutes,
+    passPercentage,
+    version,
+    isActive,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exam_configurations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExamConfiguration> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('exam_name')) {
+      context.handle(
+        _examNameMeta,
+        examName.isAcceptableOrUnknown(data['exam_name']!, _examNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_examNameMeta);
+    }
+    if (data.containsKey('question_count')) {
+      context.handle(
+        _questionCountMeta,
+        questionCount.isAcceptableOrUnknown(
+          data['question_count']!,
+          _questionCountMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_questionCountMeta);
+    }
+    if (data.containsKey('duration_minutes')) {
+      context.handle(
+        _durationMinutesMeta,
+        durationMinutes.isAcceptableOrUnknown(
+          data['duration_minutes']!,
+          _durationMinutesMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_durationMinutesMeta);
+    }
+    if (data.containsKey('pass_percentage')) {
+      context.handle(
+        _passPercentageMeta,
+        passPercentage.isAcceptableOrUnknown(
+          data['pass_percentage']!,
+          _passPercentageMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_passPercentageMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExamConfiguration map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExamConfiguration(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      examName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exam_name'],
+      )!,
+      questionCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}question_count'],
+      )!,
+      durationMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_minutes'],
+      )!,
+      passPercentage: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}pass_percentage'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+    );
+  }
+
+  @override
+  $ExamConfigurationsTable createAlias(String alias) {
+    return $ExamConfigurationsTable(attachedDatabase, alias);
+  }
+}
+
+class ExamConfiguration extends DataClass
+    implements Insertable<ExamConfiguration> {
+  final int id;
+  final String examName;
+  final int questionCount;
+  final int durationMinutes;
+  final double passPercentage;
+  final int version;
+  final bool isActive;
+  const ExamConfiguration({
+    required this.id,
+    required this.examName,
+    required this.questionCount,
+    required this.durationMinutes,
+    required this.passPercentage,
+    required this.version,
+    required this.isActive,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['exam_name'] = Variable<String>(examName);
+    map['question_count'] = Variable<int>(questionCount);
+    map['duration_minutes'] = Variable<int>(durationMinutes);
+    map['pass_percentage'] = Variable<double>(passPercentage);
+    map['version'] = Variable<int>(version);
+    map['is_active'] = Variable<bool>(isActive);
+    return map;
+  }
+
+  ExamConfigurationsCompanion toCompanion(bool nullToAbsent) {
+    return ExamConfigurationsCompanion(
+      id: Value(id),
+      examName: Value(examName),
+      questionCount: Value(questionCount),
+      durationMinutes: Value(durationMinutes),
+      passPercentage: Value(passPercentage),
+      version: Value(version),
+      isActive: Value(isActive),
+    );
+  }
+
+  factory ExamConfiguration.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExamConfiguration(
+      id: serializer.fromJson<int>(json['id']),
+      examName: serializer.fromJson<String>(json['examName']),
+      questionCount: serializer.fromJson<int>(json['questionCount']),
+      durationMinutes: serializer.fromJson<int>(json['durationMinutes']),
+      passPercentage: serializer.fromJson<double>(json['passPercentage']),
+      version: serializer.fromJson<int>(json['version']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'examName': serializer.toJson<String>(examName),
+      'questionCount': serializer.toJson<int>(questionCount),
+      'durationMinutes': serializer.toJson<int>(durationMinutes),
+      'passPercentage': serializer.toJson<double>(passPercentage),
+      'version': serializer.toJson<int>(version),
+      'isActive': serializer.toJson<bool>(isActive),
+    };
+  }
+
+  ExamConfiguration copyWith({
+    int? id,
+    String? examName,
+    int? questionCount,
+    int? durationMinutes,
+    double? passPercentage,
+    int? version,
+    bool? isActive,
+  }) => ExamConfiguration(
+    id: id ?? this.id,
+    examName: examName ?? this.examName,
+    questionCount: questionCount ?? this.questionCount,
+    durationMinutes: durationMinutes ?? this.durationMinutes,
+    passPercentage: passPercentage ?? this.passPercentage,
+    version: version ?? this.version,
+    isActive: isActive ?? this.isActive,
+  );
+  ExamConfiguration copyWithCompanion(ExamConfigurationsCompanion data) {
+    return ExamConfiguration(
+      id: data.id.present ? data.id.value : this.id,
+      examName: data.examName.present ? data.examName.value : this.examName,
+      questionCount: data.questionCount.present
+          ? data.questionCount.value
+          : this.questionCount,
+      durationMinutes: data.durationMinutes.present
+          ? data.durationMinutes.value
+          : this.durationMinutes,
+      passPercentage: data.passPercentage.present
+          ? data.passPercentage.value
+          : this.passPercentage,
+      version: data.version.present ? data.version.value : this.version,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExamConfiguration(')
+          ..write('id: $id, ')
+          ..write('examName: $examName, ')
+          ..write('questionCount: $questionCount, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('passPercentage: $passPercentage, ')
+          ..write('version: $version, ')
+          ..write('isActive: $isActive')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    examName,
+    questionCount,
+    durationMinutes,
+    passPercentage,
+    version,
+    isActive,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExamConfiguration &&
+          other.id == this.id &&
+          other.examName == this.examName &&
+          other.questionCount == this.questionCount &&
+          other.durationMinutes == this.durationMinutes &&
+          other.passPercentage == this.passPercentage &&
+          other.version == this.version &&
+          other.isActive == this.isActive);
+}
+
+class ExamConfigurationsCompanion extends UpdateCompanion<ExamConfiguration> {
+  final Value<int> id;
+  final Value<String> examName;
+  final Value<int> questionCount;
+  final Value<int> durationMinutes;
+  final Value<double> passPercentage;
+  final Value<int> version;
+  final Value<bool> isActive;
+  const ExamConfigurationsCompanion({
+    this.id = const Value.absent(),
+    this.examName = const Value.absent(),
+    this.questionCount = const Value.absent(),
+    this.durationMinutes = const Value.absent(),
+    this.passPercentage = const Value.absent(),
+    this.version = const Value.absent(),
+    this.isActive = const Value.absent(),
+  });
+  ExamConfigurationsCompanion.insert({
+    this.id = const Value.absent(),
+    required String examName,
+    required int questionCount,
+    required int durationMinutes,
+    required double passPercentage,
+    required int version,
+    this.isActive = const Value.absent(),
+  }) : examName = Value(examName),
+       questionCount = Value(questionCount),
+       durationMinutes = Value(durationMinutes),
+       passPercentage = Value(passPercentage),
+       version = Value(version);
+  static Insertable<ExamConfiguration> custom({
+    Expression<int>? id,
+    Expression<String>? examName,
+    Expression<int>? questionCount,
+    Expression<int>? durationMinutes,
+    Expression<double>? passPercentage,
+    Expression<int>? version,
+    Expression<bool>? isActive,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (examName != null) 'exam_name': examName,
+      if (questionCount != null) 'question_count': questionCount,
+      if (durationMinutes != null) 'duration_minutes': durationMinutes,
+      if (passPercentage != null) 'pass_percentage': passPercentage,
+      if (version != null) 'version': version,
+      if (isActive != null) 'is_active': isActive,
+    });
+  }
+
+  ExamConfigurationsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? examName,
+    Value<int>? questionCount,
+    Value<int>? durationMinutes,
+    Value<double>? passPercentage,
+    Value<int>? version,
+    Value<bool>? isActive,
+  }) {
+    return ExamConfigurationsCompanion(
+      id: id ?? this.id,
+      examName: examName ?? this.examName,
+      questionCount: questionCount ?? this.questionCount,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      passPercentage: passPercentage ?? this.passPercentage,
+      version: version ?? this.version,
+      isActive: isActive ?? this.isActive,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (examName.present) {
+      map['exam_name'] = Variable<String>(examName.value);
+    }
+    if (questionCount.present) {
+      map['question_count'] = Variable<int>(questionCount.value);
+    }
+    if (durationMinutes.present) {
+      map['duration_minutes'] = Variable<int>(durationMinutes.value);
+    }
+    if (passPercentage.present) {
+      map['pass_percentage'] = Variable<double>(passPercentage.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExamConfigurationsCompanion(')
+          ..write('id: $id, ')
+          ..write('examName: $examName, ')
+          ..write('questionCount: $questionCount, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('passPercentage: $passPercentage, ')
+          ..write('version: $version, ')
+          ..write('isActive: $isActive')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExamAttemptsTable extends ExamAttempts
+    with TableInfo<$ExamAttemptsTable, ExamAttempt> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExamAttemptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _configIdMeta = const VerificationMeta(
+    'configId',
+  );
+  @override
+  late final GeneratedColumn<int> configId = GeneratedColumn<int>(
+    'config_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _selectedQuestionsJsonMeta =
+      const VerificationMeta('selectedQuestionsJson');
+  @override
+  late final GeneratedColumn<String> selectedQuestionsJson =
+      GeneratedColumn<String>(
+        'selected_questions_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _totalQuestionsMeta = const VerificationMeta(
+    'totalQuestions',
+  );
+  @override
+  late final GeneratedColumn<int> totalQuestions = GeneratedColumn<int>(
+    'total_questions',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currentQuestionIndexMeta =
+      const VerificationMeta('currentQuestionIndex');
+  @override
+  late final GeneratedColumn<int> currentQuestionIndex = GeneratedColumn<int>(
+    'current_question_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _scoreMeta = const VerificationMeta('score');
+  @override
+  late final GeneratedColumn<double> score = GeneratedColumn<double>(
+    'score',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isPassedMeta = const VerificationMeta(
+    'isPassed',
+  );
+  @override
+  late final GeneratedColumn<bool> isPassed = GeneratedColumn<bool>(
+    'is_passed',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_passed" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _submittedAtMeta = const VerificationMeta(
+    'submittedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> submittedAt = GeneratedColumn<DateTime>(
+    'submitted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isCompletedMeta = const VerificationMeta(
+    'isCompleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isCompleted = GeneratedColumn<bool>(
+    'is_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isPremiumTimedMeta = const VerificationMeta(
+    'isPremiumTimed',
+  );
+  @override
+  late final GeneratedColumn<bool> isPremiumTimed = GeneratedColumn<bool>(
+    'is_premium_timed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_premium_timed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    configId,
+    selectedQuestionsJson,
+    totalQuestions,
+    currentQuestionIndex,
+    score,
+    isPassed,
+    startedAt,
+    submittedAt,
+    isCompleted,
+    isPremiumTimed,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exam_attempts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExamAttempt> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('config_id')) {
+      context.handle(
+        _configIdMeta,
+        configId.isAcceptableOrUnknown(data['config_id']!, _configIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_configIdMeta);
+    }
+    if (data.containsKey('selected_questions_json')) {
+      context.handle(
+        _selectedQuestionsJsonMeta,
+        selectedQuestionsJson.isAcceptableOrUnknown(
+          data['selected_questions_json']!,
+          _selectedQuestionsJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_selectedQuestionsJsonMeta);
+    }
+    if (data.containsKey('total_questions')) {
+      context.handle(
+        _totalQuestionsMeta,
+        totalQuestions.isAcceptableOrUnknown(
+          data['total_questions']!,
+          _totalQuestionsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_totalQuestionsMeta);
+    }
+    if (data.containsKey('current_question_index')) {
+      context.handle(
+        _currentQuestionIndexMeta,
+        currentQuestionIndex.isAcceptableOrUnknown(
+          data['current_question_index']!,
+          _currentQuestionIndexMeta,
+        ),
+      );
+    }
+    if (data.containsKey('score')) {
+      context.handle(
+        _scoreMeta,
+        score.isAcceptableOrUnknown(data['score']!, _scoreMeta),
+      );
+    }
+    if (data.containsKey('is_passed')) {
+      context.handle(
+        _isPassedMeta,
+        isPassed.isAcceptableOrUnknown(data['is_passed']!, _isPassedMeta),
+      );
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('submitted_at')) {
+      context.handle(
+        _submittedAtMeta,
+        submittedAt.isAcceptableOrUnknown(
+          data['submitted_at']!,
+          _submittedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_completed')) {
+      context.handle(
+        _isCompletedMeta,
+        isCompleted.isAcceptableOrUnknown(
+          data['is_completed']!,
+          _isCompletedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_premium_timed')) {
+      context.handle(
+        _isPremiumTimedMeta,
+        isPremiumTimed.isAcceptableOrUnknown(
+          data['is_premium_timed']!,
+          _isPremiumTimedMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExamAttempt map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExamAttempt(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      configId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}config_id'],
+      )!,
+      selectedQuestionsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}selected_questions_json'],
+      )!,
+      totalQuestions: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_questions'],
+      )!,
+      currentQuestionIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}current_question_index'],
+      )!,
+      score: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}score'],
+      ),
+      isPassed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_passed'],
+      ),
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      submittedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}submitted_at'],
+      ),
+      isCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_completed'],
+      )!,
+      isPremiumTimed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_premium_timed'],
+      )!,
+    );
+  }
+
+  @override
+  $ExamAttemptsTable createAlias(String alias) {
+    return $ExamAttemptsTable(attachedDatabase, alias);
+  }
+}
+
+class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
+  final int id;
+  final int configId;
+  final String selectedQuestionsJson;
+  final int totalQuestions;
+  final int currentQuestionIndex;
+  final double? score;
+  final bool? isPassed;
+  final DateTime startedAt;
+  final DateTime? submittedAt;
+  final bool isCompleted;
+  final bool isPremiumTimed;
+  const ExamAttempt({
+    required this.id,
+    required this.configId,
+    required this.selectedQuestionsJson,
+    required this.totalQuestions,
+    required this.currentQuestionIndex,
+    this.score,
+    this.isPassed,
+    required this.startedAt,
+    this.submittedAt,
+    required this.isCompleted,
+    required this.isPremiumTimed,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['config_id'] = Variable<int>(configId);
+    map['selected_questions_json'] = Variable<String>(selectedQuestionsJson);
+    map['total_questions'] = Variable<int>(totalQuestions);
+    map['current_question_index'] = Variable<int>(currentQuestionIndex);
+    if (!nullToAbsent || score != null) {
+      map['score'] = Variable<double>(score);
+    }
+    if (!nullToAbsent || isPassed != null) {
+      map['is_passed'] = Variable<bool>(isPassed);
+    }
+    map['started_at'] = Variable<DateTime>(startedAt);
+    if (!nullToAbsent || submittedAt != null) {
+      map['submitted_at'] = Variable<DateTime>(submittedAt);
+    }
+    map['is_completed'] = Variable<bool>(isCompleted);
+    map['is_premium_timed'] = Variable<bool>(isPremiumTimed);
+    return map;
+  }
+
+  ExamAttemptsCompanion toCompanion(bool nullToAbsent) {
+    return ExamAttemptsCompanion(
+      id: Value(id),
+      configId: Value(configId),
+      selectedQuestionsJson: Value(selectedQuestionsJson),
+      totalQuestions: Value(totalQuestions),
+      currentQuestionIndex: Value(currentQuestionIndex),
+      score: score == null && nullToAbsent
+          ? const Value.absent()
+          : Value(score),
+      isPassed: isPassed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isPassed),
+      startedAt: Value(startedAt),
+      submittedAt: submittedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(submittedAt),
+      isCompleted: Value(isCompleted),
+      isPremiumTimed: Value(isPremiumTimed),
+    );
+  }
+
+  factory ExamAttempt.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExamAttempt(
+      id: serializer.fromJson<int>(json['id']),
+      configId: serializer.fromJson<int>(json['configId']),
+      selectedQuestionsJson: serializer.fromJson<String>(
+        json['selectedQuestionsJson'],
+      ),
+      totalQuestions: serializer.fromJson<int>(json['totalQuestions']),
+      currentQuestionIndex: serializer.fromJson<int>(
+        json['currentQuestionIndex'],
+      ),
+      score: serializer.fromJson<double?>(json['score']),
+      isPassed: serializer.fromJson<bool?>(json['isPassed']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      submittedAt: serializer.fromJson<DateTime?>(json['submittedAt']),
+      isCompleted: serializer.fromJson<bool>(json['isCompleted']),
+      isPremiumTimed: serializer.fromJson<bool>(json['isPremiumTimed']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'configId': serializer.toJson<int>(configId),
+      'selectedQuestionsJson': serializer.toJson<String>(selectedQuestionsJson),
+      'totalQuestions': serializer.toJson<int>(totalQuestions),
+      'currentQuestionIndex': serializer.toJson<int>(currentQuestionIndex),
+      'score': serializer.toJson<double?>(score),
+      'isPassed': serializer.toJson<bool?>(isPassed),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'submittedAt': serializer.toJson<DateTime?>(submittedAt),
+      'isCompleted': serializer.toJson<bool>(isCompleted),
+      'isPremiumTimed': serializer.toJson<bool>(isPremiumTimed),
+    };
+  }
+
+  ExamAttempt copyWith({
+    int? id,
+    int? configId,
+    String? selectedQuestionsJson,
+    int? totalQuestions,
+    int? currentQuestionIndex,
+    Value<double?> score = const Value.absent(),
+    Value<bool?> isPassed = const Value.absent(),
+    DateTime? startedAt,
+    Value<DateTime?> submittedAt = const Value.absent(),
+    bool? isCompleted,
+    bool? isPremiumTimed,
+  }) => ExamAttempt(
+    id: id ?? this.id,
+    configId: configId ?? this.configId,
+    selectedQuestionsJson: selectedQuestionsJson ?? this.selectedQuestionsJson,
+    totalQuestions: totalQuestions ?? this.totalQuestions,
+    currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
+    score: score.present ? score.value : this.score,
+    isPassed: isPassed.present ? isPassed.value : this.isPassed,
+    startedAt: startedAt ?? this.startedAt,
+    submittedAt: submittedAt.present ? submittedAt.value : this.submittedAt,
+    isCompleted: isCompleted ?? this.isCompleted,
+    isPremiumTimed: isPremiumTimed ?? this.isPremiumTimed,
+  );
+  ExamAttempt copyWithCompanion(ExamAttemptsCompanion data) {
+    return ExamAttempt(
+      id: data.id.present ? data.id.value : this.id,
+      configId: data.configId.present ? data.configId.value : this.configId,
+      selectedQuestionsJson: data.selectedQuestionsJson.present
+          ? data.selectedQuestionsJson.value
+          : this.selectedQuestionsJson,
+      totalQuestions: data.totalQuestions.present
+          ? data.totalQuestions.value
+          : this.totalQuestions,
+      currentQuestionIndex: data.currentQuestionIndex.present
+          ? data.currentQuestionIndex.value
+          : this.currentQuestionIndex,
+      score: data.score.present ? data.score.value : this.score,
+      isPassed: data.isPassed.present ? data.isPassed.value : this.isPassed,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      submittedAt: data.submittedAt.present
+          ? data.submittedAt.value
+          : this.submittedAt,
+      isCompleted: data.isCompleted.present
+          ? data.isCompleted.value
+          : this.isCompleted,
+      isPremiumTimed: data.isPremiumTimed.present
+          ? data.isPremiumTimed.value
+          : this.isPremiumTimed,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExamAttempt(')
+          ..write('id: $id, ')
+          ..write('configId: $configId, ')
+          ..write('selectedQuestionsJson: $selectedQuestionsJson, ')
+          ..write('totalQuestions: $totalQuestions, ')
+          ..write('currentQuestionIndex: $currentQuestionIndex, ')
+          ..write('score: $score, ')
+          ..write('isPassed: $isPassed, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('submittedAt: $submittedAt, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('isPremiumTimed: $isPremiumTimed')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    configId,
+    selectedQuestionsJson,
+    totalQuestions,
+    currentQuestionIndex,
+    score,
+    isPassed,
+    startedAt,
+    submittedAt,
+    isCompleted,
+    isPremiumTimed,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExamAttempt &&
+          other.id == this.id &&
+          other.configId == this.configId &&
+          other.selectedQuestionsJson == this.selectedQuestionsJson &&
+          other.totalQuestions == this.totalQuestions &&
+          other.currentQuestionIndex == this.currentQuestionIndex &&
+          other.score == this.score &&
+          other.isPassed == this.isPassed &&
+          other.startedAt == this.startedAt &&
+          other.submittedAt == this.submittedAt &&
+          other.isCompleted == this.isCompleted &&
+          other.isPremiumTimed == this.isPremiumTimed);
+}
+
+class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
+  final Value<int> id;
+  final Value<int> configId;
+  final Value<String> selectedQuestionsJson;
+  final Value<int> totalQuestions;
+  final Value<int> currentQuestionIndex;
+  final Value<double?> score;
+  final Value<bool?> isPassed;
+  final Value<DateTime> startedAt;
+  final Value<DateTime?> submittedAt;
+  final Value<bool> isCompleted;
+  final Value<bool> isPremiumTimed;
+  const ExamAttemptsCompanion({
+    this.id = const Value.absent(),
+    this.configId = const Value.absent(),
+    this.selectedQuestionsJson = const Value.absent(),
+    this.totalQuestions = const Value.absent(),
+    this.currentQuestionIndex = const Value.absent(),
+    this.score = const Value.absent(),
+    this.isPassed = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.submittedAt = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    this.isPremiumTimed = const Value.absent(),
+  });
+  ExamAttemptsCompanion.insert({
+    this.id = const Value.absent(),
+    required int configId,
+    required String selectedQuestionsJson,
+    required int totalQuestions,
+    this.currentQuestionIndex = const Value.absent(),
+    this.score = const Value.absent(),
+    this.isPassed = const Value.absent(),
+    required DateTime startedAt,
+    this.submittedAt = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    this.isPremiumTimed = const Value.absent(),
+  }) : configId = Value(configId),
+       selectedQuestionsJson = Value(selectedQuestionsJson),
+       totalQuestions = Value(totalQuestions),
+       startedAt = Value(startedAt);
+  static Insertable<ExamAttempt> custom({
+    Expression<int>? id,
+    Expression<int>? configId,
+    Expression<String>? selectedQuestionsJson,
+    Expression<int>? totalQuestions,
+    Expression<int>? currentQuestionIndex,
+    Expression<double>? score,
+    Expression<bool>? isPassed,
+    Expression<DateTime>? startedAt,
+    Expression<DateTime>? submittedAt,
+    Expression<bool>? isCompleted,
+    Expression<bool>? isPremiumTimed,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (configId != null) 'config_id': configId,
+      if (selectedQuestionsJson != null)
+        'selected_questions_json': selectedQuestionsJson,
+      if (totalQuestions != null) 'total_questions': totalQuestions,
+      if (currentQuestionIndex != null)
+        'current_question_index': currentQuestionIndex,
+      if (score != null) 'score': score,
+      if (isPassed != null) 'is_passed': isPassed,
+      if (startedAt != null) 'started_at': startedAt,
+      if (submittedAt != null) 'submitted_at': submittedAt,
+      if (isCompleted != null) 'is_completed': isCompleted,
+      if (isPremiumTimed != null) 'is_premium_timed': isPremiumTimed,
+    });
+  }
+
+  ExamAttemptsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? configId,
+    Value<String>? selectedQuestionsJson,
+    Value<int>? totalQuestions,
+    Value<int>? currentQuestionIndex,
+    Value<double?>? score,
+    Value<bool?>? isPassed,
+    Value<DateTime>? startedAt,
+    Value<DateTime?>? submittedAt,
+    Value<bool>? isCompleted,
+    Value<bool>? isPremiumTimed,
+  }) {
+    return ExamAttemptsCompanion(
+      id: id ?? this.id,
+      configId: configId ?? this.configId,
+      selectedQuestionsJson:
+          selectedQuestionsJson ?? this.selectedQuestionsJson,
+      totalQuestions: totalQuestions ?? this.totalQuestions,
+      currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
+      score: score ?? this.score,
+      isPassed: isPassed ?? this.isPassed,
+      startedAt: startedAt ?? this.startedAt,
+      submittedAt: submittedAt ?? this.submittedAt,
+      isCompleted: isCompleted ?? this.isCompleted,
+      isPremiumTimed: isPremiumTimed ?? this.isPremiumTimed,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (configId.present) {
+      map['config_id'] = Variable<int>(configId.value);
+    }
+    if (selectedQuestionsJson.present) {
+      map['selected_questions_json'] = Variable<String>(
+        selectedQuestionsJson.value,
+      );
+    }
+    if (totalQuestions.present) {
+      map['total_questions'] = Variable<int>(totalQuestions.value);
+    }
+    if (currentQuestionIndex.present) {
+      map['current_question_index'] = Variable<int>(currentQuestionIndex.value);
+    }
+    if (score.present) {
+      map['score'] = Variable<double>(score.value);
+    }
+    if (isPassed.present) {
+      map['is_passed'] = Variable<bool>(isPassed.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (submittedAt.present) {
+      map['submitted_at'] = Variable<DateTime>(submittedAt.value);
+    }
+    if (isCompleted.present) {
+      map['is_completed'] = Variable<bool>(isCompleted.value);
+    }
+    if (isPremiumTimed.present) {
+      map['is_premium_timed'] = Variable<bool>(isPremiumTimed.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExamAttemptsCompanion(')
+          ..write('id: $id, ')
+          ..write('configId: $configId, ')
+          ..write('selectedQuestionsJson: $selectedQuestionsJson, ')
+          ..write('totalQuestions: $totalQuestions, ')
+          ..write('currentQuestionIndex: $currentQuestionIndex, ')
+          ..write('score: $score, ')
+          ..write('isPassed: $isPassed, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('submittedAt: $submittedAt, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('isPremiumTimed: $isPremiumTimed')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExamAttemptAnswersTable extends ExamAttemptAnswers
+    with TableInfo<$ExamAttemptAnswersTable, ExamAttemptAnswer> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExamAttemptAnswersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _examAttemptIdMeta = const VerificationMeta(
+    'examAttemptId',
+  );
+  @override
+  late final GeneratedColumn<int> examAttemptId = GeneratedColumn<int>(
+    'exam_attempt_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _questionIdMeta = const VerificationMeta(
+    'questionId',
+  );
+  @override
+  late final GeneratedColumn<String> questionId = GeneratedColumn<String>(
+    'question_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _questionOrderMeta = const VerificationMeta(
+    'questionOrder',
+  );
+  @override
+  late final GeneratedColumn<int> questionOrder = GeneratedColumn<int>(
+    'question_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _selectedIndexMeta = const VerificationMeta(
+    'selectedIndex',
+  );
+  @override
+  late final GeneratedColumn<int> selectedIndex = GeneratedColumn<int>(
+    'selected_index',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isCorrectMeta = const VerificationMeta(
+    'isCorrect',
+  );
+  @override
+  late final GeneratedColumn<bool> isCorrect = GeneratedColumn<bool>(
+    'is_correct',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_correct" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _answeredAtMeta = const VerificationMeta(
+    'answeredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> answeredAt = GeneratedColumn<DateTime>(
+    'answered_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    examAttemptId,
+    questionId,
+    questionOrder,
+    selectedIndex,
+    isCorrect,
+    answeredAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exam_attempt_answers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExamAttemptAnswer> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('exam_attempt_id')) {
+      context.handle(
+        _examAttemptIdMeta,
+        examAttemptId.isAcceptableOrUnknown(
+          data['exam_attempt_id']!,
+          _examAttemptIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_examAttemptIdMeta);
+    }
+    if (data.containsKey('question_id')) {
+      context.handle(
+        _questionIdMeta,
+        questionId.isAcceptableOrUnknown(data['question_id']!, _questionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_questionIdMeta);
+    }
+    if (data.containsKey('question_order')) {
+      context.handle(
+        _questionOrderMeta,
+        questionOrder.isAcceptableOrUnknown(
+          data['question_order']!,
+          _questionOrderMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_questionOrderMeta);
+    }
+    if (data.containsKey('selected_index')) {
+      context.handle(
+        _selectedIndexMeta,
+        selectedIndex.isAcceptableOrUnknown(
+          data['selected_index']!,
+          _selectedIndexMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_correct')) {
+      context.handle(
+        _isCorrectMeta,
+        isCorrect.isAcceptableOrUnknown(data['is_correct']!, _isCorrectMeta),
+      );
+    }
+    if (data.containsKey('answered_at')) {
+      context.handle(
+        _answeredAtMeta,
+        answeredAt.isAcceptableOrUnknown(data['answered_at']!, _answeredAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExamAttemptAnswer map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExamAttemptAnswer(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      examAttemptId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}exam_attempt_id'],
+      )!,
+      questionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}question_id'],
+      )!,
+      questionOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}question_order'],
+      )!,
+      selectedIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}selected_index'],
+      ),
+      isCorrect: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_correct'],
+      ),
+      answeredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}answered_at'],
+      ),
+    );
+  }
+
+  @override
+  $ExamAttemptAnswersTable createAlias(String alias) {
+    return $ExamAttemptAnswersTable(attachedDatabase, alias);
+  }
+}
+
+class ExamAttemptAnswer extends DataClass
+    implements Insertable<ExamAttemptAnswer> {
+  final int id;
+  final int examAttemptId;
+  final String questionId;
+  final int questionOrder;
+  final int? selectedIndex;
+  final bool? isCorrect;
+  final DateTime? answeredAt;
+  const ExamAttemptAnswer({
+    required this.id,
+    required this.examAttemptId,
+    required this.questionId,
+    required this.questionOrder,
+    this.selectedIndex,
+    this.isCorrect,
+    this.answeredAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['exam_attempt_id'] = Variable<int>(examAttemptId);
+    map['question_id'] = Variable<String>(questionId);
+    map['question_order'] = Variable<int>(questionOrder);
+    if (!nullToAbsent || selectedIndex != null) {
+      map['selected_index'] = Variable<int>(selectedIndex);
+    }
+    if (!nullToAbsent || isCorrect != null) {
+      map['is_correct'] = Variable<bool>(isCorrect);
+    }
+    if (!nullToAbsent || answeredAt != null) {
+      map['answered_at'] = Variable<DateTime>(answeredAt);
+    }
+    return map;
+  }
+
+  ExamAttemptAnswersCompanion toCompanion(bool nullToAbsent) {
+    return ExamAttemptAnswersCompanion(
+      id: Value(id),
+      examAttemptId: Value(examAttemptId),
+      questionId: Value(questionId),
+      questionOrder: Value(questionOrder),
+      selectedIndex: selectedIndex == null && nullToAbsent
+          ? const Value.absent()
+          : Value(selectedIndex),
+      isCorrect: isCorrect == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isCorrect),
+      answeredAt: answeredAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(answeredAt),
+    );
+  }
+
+  factory ExamAttemptAnswer.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExamAttemptAnswer(
+      id: serializer.fromJson<int>(json['id']),
+      examAttemptId: serializer.fromJson<int>(json['examAttemptId']),
+      questionId: serializer.fromJson<String>(json['questionId']),
+      questionOrder: serializer.fromJson<int>(json['questionOrder']),
+      selectedIndex: serializer.fromJson<int?>(json['selectedIndex']),
+      isCorrect: serializer.fromJson<bool?>(json['isCorrect']),
+      answeredAt: serializer.fromJson<DateTime?>(json['answeredAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'examAttemptId': serializer.toJson<int>(examAttemptId),
+      'questionId': serializer.toJson<String>(questionId),
+      'questionOrder': serializer.toJson<int>(questionOrder),
+      'selectedIndex': serializer.toJson<int?>(selectedIndex),
+      'isCorrect': serializer.toJson<bool?>(isCorrect),
+      'answeredAt': serializer.toJson<DateTime?>(answeredAt),
+    };
+  }
+
+  ExamAttemptAnswer copyWith({
+    int? id,
+    int? examAttemptId,
+    String? questionId,
+    int? questionOrder,
+    Value<int?> selectedIndex = const Value.absent(),
+    Value<bool?> isCorrect = const Value.absent(),
+    Value<DateTime?> answeredAt = const Value.absent(),
+  }) => ExamAttemptAnswer(
+    id: id ?? this.id,
+    examAttemptId: examAttemptId ?? this.examAttemptId,
+    questionId: questionId ?? this.questionId,
+    questionOrder: questionOrder ?? this.questionOrder,
+    selectedIndex: selectedIndex.present
+        ? selectedIndex.value
+        : this.selectedIndex,
+    isCorrect: isCorrect.present ? isCorrect.value : this.isCorrect,
+    answeredAt: answeredAt.present ? answeredAt.value : this.answeredAt,
+  );
+  ExamAttemptAnswer copyWithCompanion(ExamAttemptAnswersCompanion data) {
+    return ExamAttemptAnswer(
+      id: data.id.present ? data.id.value : this.id,
+      examAttemptId: data.examAttemptId.present
+          ? data.examAttemptId.value
+          : this.examAttemptId,
+      questionId: data.questionId.present
+          ? data.questionId.value
+          : this.questionId,
+      questionOrder: data.questionOrder.present
+          ? data.questionOrder.value
+          : this.questionOrder,
+      selectedIndex: data.selectedIndex.present
+          ? data.selectedIndex.value
+          : this.selectedIndex,
+      isCorrect: data.isCorrect.present ? data.isCorrect.value : this.isCorrect,
+      answeredAt: data.answeredAt.present
+          ? data.answeredAt.value
+          : this.answeredAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExamAttemptAnswer(')
+          ..write('id: $id, ')
+          ..write('examAttemptId: $examAttemptId, ')
+          ..write('questionId: $questionId, ')
+          ..write('questionOrder: $questionOrder, ')
+          ..write('selectedIndex: $selectedIndex, ')
+          ..write('isCorrect: $isCorrect, ')
+          ..write('answeredAt: $answeredAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    examAttemptId,
+    questionId,
+    questionOrder,
+    selectedIndex,
+    isCorrect,
+    answeredAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExamAttemptAnswer &&
+          other.id == this.id &&
+          other.examAttemptId == this.examAttemptId &&
+          other.questionId == this.questionId &&
+          other.questionOrder == this.questionOrder &&
+          other.selectedIndex == this.selectedIndex &&
+          other.isCorrect == this.isCorrect &&
+          other.answeredAt == this.answeredAt);
+}
+
+class ExamAttemptAnswersCompanion extends UpdateCompanion<ExamAttemptAnswer> {
+  final Value<int> id;
+  final Value<int> examAttemptId;
+  final Value<String> questionId;
+  final Value<int> questionOrder;
+  final Value<int?> selectedIndex;
+  final Value<bool?> isCorrect;
+  final Value<DateTime?> answeredAt;
+  const ExamAttemptAnswersCompanion({
+    this.id = const Value.absent(),
+    this.examAttemptId = const Value.absent(),
+    this.questionId = const Value.absent(),
+    this.questionOrder = const Value.absent(),
+    this.selectedIndex = const Value.absent(),
+    this.isCorrect = const Value.absent(),
+    this.answeredAt = const Value.absent(),
+  });
+  ExamAttemptAnswersCompanion.insert({
+    this.id = const Value.absent(),
+    required int examAttemptId,
+    required String questionId,
+    required int questionOrder,
+    this.selectedIndex = const Value.absent(),
+    this.isCorrect = const Value.absent(),
+    this.answeredAt = const Value.absent(),
+  }) : examAttemptId = Value(examAttemptId),
+       questionId = Value(questionId),
+       questionOrder = Value(questionOrder);
+  static Insertable<ExamAttemptAnswer> custom({
+    Expression<int>? id,
+    Expression<int>? examAttemptId,
+    Expression<String>? questionId,
+    Expression<int>? questionOrder,
+    Expression<int>? selectedIndex,
+    Expression<bool>? isCorrect,
+    Expression<DateTime>? answeredAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (examAttemptId != null) 'exam_attempt_id': examAttemptId,
+      if (questionId != null) 'question_id': questionId,
+      if (questionOrder != null) 'question_order': questionOrder,
+      if (selectedIndex != null) 'selected_index': selectedIndex,
+      if (isCorrect != null) 'is_correct': isCorrect,
+      if (answeredAt != null) 'answered_at': answeredAt,
+    });
+  }
+
+  ExamAttemptAnswersCompanion copyWith({
+    Value<int>? id,
+    Value<int>? examAttemptId,
+    Value<String>? questionId,
+    Value<int>? questionOrder,
+    Value<int?>? selectedIndex,
+    Value<bool?>? isCorrect,
+    Value<DateTime?>? answeredAt,
+  }) {
+    return ExamAttemptAnswersCompanion(
+      id: id ?? this.id,
+      examAttemptId: examAttemptId ?? this.examAttemptId,
+      questionId: questionId ?? this.questionId,
+      questionOrder: questionOrder ?? this.questionOrder,
+      selectedIndex: selectedIndex ?? this.selectedIndex,
+      isCorrect: isCorrect ?? this.isCorrect,
+      answeredAt: answeredAt ?? this.answeredAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (examAttemptId.present) {
+      map['exam_attempt_id'] = Variable<int>(examAttemptId.value);
+    }
+    if (questionId.present) {
+      map['question_id'] = Variable<String>(questionId.value);
+    }
+    if (questionOrder.present) {
+      map['question_order'] = Variable<int>(questionOrder.value);
+    }
+    if (selectedIndex.present) {
+      map['selected_index'] = Variable<int>(selectedIndex.value);
+    }
+    if (isCorrect.present) {
+      map['is_correct'] = Variable<bool>(isCorrect.value);
+    }
+    if (answeredAt.present) {
+      map['answered_at'] = Variable<DateTime>(answeredAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExamAttemptAnswersCompanion(')
+          ..write('id: $id, ')
+          ..write('examAttemptId: $examAttemptId, ')
+          ..write('questionId: $questionId, ')
+          ..write('questionOrder: $questionOrder, ')
+          ..write('selectedIndex: $selectedIndex, ')
+          ..write('isCorrect: $isCorrect, ')
+          ..write('answeredAt: $answeredAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AppSettingsTable extends AppSettings
+    with TableInfo<$AppSettingsTable, AppSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, value];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'app_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AppSetting> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  AppSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AppSetting(
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+    );
+  }
+
+  @override
+  $AppSettingsTable createAlias(String alias) {
+    return $AppSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class AppSetting extends DataClass implements Insertable<AppSetting> {
+  final String key;
+  final String value;
+  const AppSetting({required this.key, required this.value});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<String>(value);
+    return map;
+  }
+
+  AppSettingsCompanion toCompanion(bool nullToAbsent) {
+    return AppSettingsCompanion(key: Value(key), value: Value(value));
+  }
+
+  factory AppSetting.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AppSetting(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<String>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<String>(value),
+    };
+  }
+
+  AppSetting copyWith({String? key, String? value}) =>
+      AppSetting(key: key ?? this.key, value: value ?? this.value);
+  AppSetting copyWithCompanion(AppSettingsCompanion data) {
+    return AppSetting(
+      key: data.key.present ? data.key.value : this.key,
+      value: data.value.present ? data.value.value : this.value,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSetting(')
+          ..write('key: $key, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppSetting &&
+          other.key == this.key &&
+          other.value == this.value);
+}
+
+class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
+  final Value<String> key;
+  final Value<String> value;
+  final Value<int> rowid;
+  const AppSettingsCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AppSettingsCompanion.insert({
+    required String key,
+    required String value,
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       value = Value(value);
+  static Insertable<AppSetting> custom({
+    Expression<String>? key,
+    Expression<String>? value,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AppSettingsCompanion copyWith({
+    Value<String>? key,
+    Value<String>? value,
+    Value<int>? rowid,
+  }) {
+    return AppSettingsCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSettingsCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1717,6 +3567,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PracticeSessionsTable practiceSessions = $PracticeSessionsTable(
     this,
   );
+  late final $ExamConfigurationsTable examConfigurations =
+      $ExamConfigurationsTable(this);
+  late final $ExamAttemptsTable examAttempts = $ExamAttemptsTable(this);
+  late final $ExamAttemptAnswersTable examAttemptAnswers =
+      $ExamAttemptAnswersTable(this);
+  late final $AppSettingsTable appSettings = $AppSettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1727,6 +3583,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     questionAttempts,
     starredQuestions,
     practiceSessions,
+    examConfigurations,
+    examAttempts,
+    examAttemptAnswers,
+    appSettings,
   ];
 }
 
@@ -2696,6 +4556,971 @@ typedef $$PracticeSessionsTableProcessedTableManager =
       PracticeSession,
       PrefetchHooks Function()
     >;
+typedef $$ExamConfigurationsTableCreateCompanionBuilder =
+    ExamConfigurationsCompanion Function({
+      Value<int> id,
+      required String examName,
+      required int questionCount,
+      required int durationMinutes,
+      required double passPercentage,
+      required int version,
+      Value<bool> isActive,
+    });
+typedef $$ExamConfigurationsTableUpdateCompanionBuilder =
+    ExamConfigurationsCompanion Function({
+      Value<int> id,
+      Value<String> examName,
+      Value<int> questionCount,
+      Value<int> durationMinutes,
+      Value<double> passPercentage,
+      Value<int> version,
+      Value<bool> isActive,
+    });
+
+class $$ExamConfigurationsTableFilterComposer
+    extends Composer<_$AppDatabase, $ExamConfigurationsTable> {
+  $$ExamConfigurationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get examName => $composableBuilder(
+    column: $table.examName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get questionCount => $composableBuilder(
+    column: $table.questionCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMinutes => $composableBuilder(
+    column: $table.durationMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get passPercentage => $composableBuilder(
+    column: $table.passPercentage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExamConfigurationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExamConfigurationsTable> {
+  $$ExamConfigurationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get examName => $composableBuilder(
+    column: $table.examName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get questionCount => $composableBuilder(
+    column: $table.questionCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMinutes => $composableBuilder(
+    column: $table.durationMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get passPercentage => $composableBuilder(
+    column: $table.passPercentage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExamConfigurationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExamConfigurationsTable> {
+  $$ExamConfigurationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get examName =>
+      $composableBuilder(column: $table.examName, builder: (column) => column);
+
+  GeneratedColumn<int> get questionCount => $composableBuilder(
+    column: $table.questionCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get durationMinutes => $composableBuilder(
+    column: $table.durationMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get passPercentage => $composableBuilder(
+    column: $table.passPercentage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+}
+
+class $$ExamConfigurationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExamConfigurationsTable,
+          ExamConfiguration,
+          $$ExamConfigurationsTableFilterComposer,
+          $$ExamConfigurationsTableOrderingComposer,
+          $$ExamConfigurationsTableAnnotationComposer,
+          $$ExamConfigurationsTableCreateCompanionBuilder,
+          $$ExamConfigurationsTableUpdateCompanionBuilder,
+          (
+            ExamConfiguration,
+            BaseReferences<
+              _$AppDatabase,
+              $ExamConfigurationsTable,
+              ExamConfiguration
+            >,
+          ),
+          ExamConfiguration,
+          PrefetchHooks Function()
+        > {
+  $$ExamConfigurationsTableTableManager(
+    _$AppDatabase db,
+    $ExamConfigurationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExamConfigurationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExamConfigurationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExamConfigurationsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> examName = const Value.absent(),
+                Value<int> questionCount = const Value.absent(),
+                Value<int> durationMinutes = const Value.absent(),
+                Value<double> passPercentage = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+              }) => ExamConfigurationsCompanion(
+                id: id,
+                examName: examName,
+                questionCount: questionCount,
+                durationMinutes: durationMinutes,
+                passPercentage: passPercentage,
+                version: version,
+                isActive: isActive,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String examName,
+                required int questionCount,
+                required int durationMinutes,
+                required double passPercentage,
+                required int version,
+                Value<bool> isActive = const Value.absent(),
+              }) => ExamConfigurationsCompanion.insert(
+                id: id,
+                examName: examName,
+                questionCount: questionCount,
+                durationMinutes: durationMinutes,
+                passPercentage: passPercentage,
+                version: version,
+                isActive: isActive,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExamConfigurationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExamConfigurationsTable,
+      ExamConfiguration,
+      $$ExamConfigurationsTableFilterComposer,
+      $$ExamConfigurationsTableOrderingComposer,
+      $$ExamConfigurationsTableAnnotationComposer,
+      $$ExamConfigurationsTableCreateCompanionBuilder,
+      $$ExamConfigurationsTableUpdateCompanionBuilder,
+      (
+        ExamConfiguration,
+        BaseReferences<
+          _$AppDatabase,
+          $ExamConfigurationsTable,
+          ExamConfiguration
+        >,
+      ),
+      ExamConfiguration,
+      PrefetchHooks Function()
+    >;
+typedef $$ExamAttemptsTableCreateCompanionBuilder =
+    ExamAttemptsCompanion Function({
+      Value<int> id,
+      required int configId,
+      required String selectedQuestionsJson,
+      required int totalQuestions,
+      Value<int> currentQuestionIndex,
+      Value<double?> score,
+      Value<bool?> isPassed,
+      required DateTime startedAt,
+      Value<DateTime?> submittedAt,
+      Value<bool> isCompleted,
+      Value<bool> isPremiumTimed,
+    });
+typedef $$ExamAttemptsTableUpdateCompanionBuilder =
+    ExamAttemptsCompanion Function({
+      Value<int> id,
+      Value<int> configId,
+      Value<String> selectedQuestionsJson,
+      Value<int> totalQuestions,
+      Value<int> currentQuestionIndex,
+      Value<double?> score,
+      Value<bool?> isPassed,
+      Value<DateTime> startedAt,
+      Value<DateTime?> submittedAt,
+      Value<bool> isCompleted,
+      Value<bool> isPremiumTimed,
+    });
+
+class $$ExamAttemptsTableFilterComposer
+    extends Composer<_$AppDatabase, $ExamAttemptsTable> {
+  $$ExamAttemptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get configId => $composableBuilder(
+    column: $table.configId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get selectedQuestionsJson => $composableBuilder(
+    column: $table.selectedQuestionsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get totalQuestions => $composableBuilder(
+    column: $table.totalQuestions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get currentQuestionIndex => $composableBuilder(
+    column: $table.currentQuestionIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get score => $composableBuilder(
+    column: $table.score,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPassed => $composableBuilder(
+    column: $table.isPassed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get submittedAt => $composableBuilder(
+    column: $table.submittedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPremiumTimed => $composableBuilder(
+    column: $table.isPremiumTimed,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExamAttemptsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExamAttemptsTable> {
+  $$ExamAttemptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get configId => $composableBuilder(
+    column: $table.configId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get selectedQuestionsJson => $composableBuilder(
+    column: $table.selectedQuestionsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get totalQuestions => $composableBuilder(
+    column: $table.totalQuestions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get currentQuestionIndex => $composableBuilder(
+    column: $table.currentQuestionIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get score => $composableBuilder(
+    column: $table.score,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPassed => $composableBuilder(
+    column: $table.isPassed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get submittedAt => $composableBuilder(
+    column: $table.submittedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPremiumTimed => $composableBuilder(
+    column: $table.isPremiumTimed,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExamAttemptsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExamAttemptsTable> {
+  $$ExamAttemptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get configId =>
+      $composableBuilder(column: $table.configId, builder: (column) => column);
+
+  GeneratedColumn<String> get selectedQuestionsJson => $composableBuilder(
+    column: $table.selectedQuestionsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get totalQuestions => $composableBuilder(
+    column: $table.totalQuestions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get currentQuestionIndex => $composableBuilder(
+    column: $table.currentQuestionIndex,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get score =>
+      $composableBuilder(column: $table.score, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPassed =>
+      $composableBuilder(column: $table.isPassed, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get submittedAt => $composableBuilder(
+    column: $table.submittedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isPremiumTimed => $composableBuilder(
+    column: $table.isPremiumTimed,
+    builder: (column) => column,
+  );
+}
+
+class $$ExamAttemptsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExamAttemptsTable,
+          ExamAttempt,
+          $$ExamAttemptsTableFilterComposer,
+          $$ExamAttemptsTableOrderingComposer,
+          $$ExamAttemptsTableAnnotationComposer,
+          $$ExamAttemptsTableCreateCompanionBuilder,
+          $$ExamAttemptsTableUpdateCompanionBuilder,
+          (
+            ExamAttempt,
+            BaseReferences<_$AppDatabase, $ExamAttemptsTable, ExamAttempt>,
+          ),
+          ExamAttempt,
+          PrefetchHooks Function()
+        > {
+  $$ExamAttemptsTableTableManager(_$AppDatabase db, $ExamAttemptsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExamAttemptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExamAttemptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExamAttemptsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> configId = const Value.absent(),
+                Value<String> selectedQuestionsJson = const Value.absent(),
+                Value<int> totalQuestions = const Value.absent(),
+                Value<int> currentQuestionIndex = const Value.absent(),
+                Value<double?> score = const Value.absent(),
+                Value<bool?> isPassed = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<DateTime?> submittedAt = const Value.absent(),
+                Value<bool> isCompleted = const Value.absent(),
+                Value<bool> isPremiumTimed = const Value.absent(),
+              }) => ExamAttemptsCompanion(
+                id: id,
+                configId: configId,
+                selectedQuestionsJson: selectedQuestionsJson,
+                totalQuestions: totalQuestions,
+                currentQuestionIndex: currentQuestionIndex,
+                score: score,
+                isPassed: isPassed,
+                startedAt: startedAt,
+                submittedAt: submittedAt,
+                isCompleted: isCompleted,
+                isPremiumTimed: isPremiumTimed,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int configId,
+                required String selectedQuestionsJson,
+                required int totalQuestions,
+                Value<int> currentQuestionIndex = const Value.absent(),
+                Value<double?> score = const Value.absent(),
+                Value<bool?> isPassed = const Value.absent(),
+                required DateTime startedAt,
+                Value<DateTime?> submittedAt = const Value.absent(),
+                Value<bool> isCompleted = const Value.absent(),
+                Value<bool> isPremiumTimed = const Value.absent(),
+              }) => ExamAttemptsCompanion.insert(
+                id: id,
+                configId: configId,
+                selectedQuestionsJson: selectedQuestionsJson,
+                totalQuestions: totalQuestions,
+                currentQuestionIndex: currentQuestionIndex,
+                score: score,
+                isPassed: isPassed,
+                startedAt: startedAt,
+                submittedAt: submittedAt,
+                isCompleted: isCompleted,
+                isPremiumTimed: isPremiumTimed,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExamAttemptsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExamAttemptsTable,
+      ExamAttempt,
+      $$ExamAttemptsTableFilterComposer,
+      $$ExamAttemptsTableOrderingComposer,
+      $$ExamAttemptsTableAnnotationComposer,
+      $$ExamAttemptsTableCreateCompanionBuilder,
+      $$ExamAttemptsTableUpdateCompanionBuilder,
+      (
+        ExamAttempt,
+        BaseReferences<_$AppDatabase, $ExamAttemptsTable, ExamAttempt>,
+      ),
+      ExamAttempt,
+      PrefetchHooks Function()
+    >;
+typedef $$ExamAttemptAnswersTableCreateCompanionBuilder =
+    ExamAttemptAnswersCompanion Function({
+      Value<int> id,
+      required int examAttemptId,
+      required String questionId,
+      required int questionOrder,
+      Value<int?> selectedIndex,
+      Value<bool?> isCorrect,
+      Value<DateTime?> answeredAt,
+    });
+typedef $$ExamAttemptAnswersTableUpdateCompanionBuilder =
+    ExamAttemptAnswersCompanion Function({
+      Value<int> id,
+      Value<int> examAttemptId,
+      Value<String> questionId,
+      Value<int> questionOrder,
+      Value<int?> selectedIndex,
+      Value<bool?> isCorrect,
+      Value<DateTime?> answeredAt,
+    });
+
+class $$ExamAttemptAnswersTableFilterComposer
+    extends Composer<_$AppDatabase, $ExamAttemptAnswersTable> {
+  $$ExamAttemptAnswersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get examAttemptId => $composableBuilder(
+    column: $table.examAttemptId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get questionId => $composableBuilder(
+    column: $table.questionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get questionOrder => $composableBuilder(
+    column: $table.questionOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get selectedIndex => $composableBuilder(
+    column: $table.selectedIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCorrect => $composableBuilder(
+    column: $table.isCorrect,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get answeredAt => $composableBuilder(
+    column: $table.answeredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExamAttemptAnswersTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExamAttemptAnswersTable> {
+  $$ExamAttemptAnswersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get examAttemptId => $composableBuilder(
+    column: $table.examAttemptId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get questionId => $composableBuilder(
+    column: $table.questionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get questionOrder => $composableBuilder(
+    column: $table.questionOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get selectedIndex => $composableBuilder(
+    column: $table.selectedIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCorrect => $composableBuilder(
+    column: $table.isCorrect,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get answeredAt => $composableBuilder(
+    column: $table.answeredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExamAttemptAnswersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExamAttemptAnswersTable> {
+  $$ExamAttemptAnswersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get examAttemptId => $composableBuilder(
+    column: $table.examAttemptId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get questionId => $composableBuilder(
+    column: $table.questionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get questionOrder => $composableBuilder(
+    column: $table.questionOrder,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get selectedIndex => $composableBuilder(
+    column: $table.selectedIndex,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isCorrect =>
+      $composableBuilder(column: $table.isCorrect, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get answeredAt => $composableBuilder(
+    column: $table.answeredAt,
+    builder: (column) => column,
+  );
+}
+
+class $$ExamAttemptAnswersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExamAttemptAnswersTable,
+          ExamAttemptAnswer,
+          $$ExamAttemptAnswersTableFilterComposer,
+          $$ExamAttemptAnswersTableOrderingComposer,
+          $$ExamAttemptAnswersTableAnnotationComposer,
+          $$ExamAttemptAnswersTableCreateCompanionBuilder,
+          $$ExamAttemptAnswersTableUpdateCompanionBuilder,
+          (
+            ExamAttemptAnswer,
+            BaseReferences<
+              _$AppDatabase,
+              $ExamAttemptAnswersTable,
+              ExamAttemptAnswer
+            >,
+          ),
+          ExamAttemptAnswer,
+          PrefetchHooks Function()
+        > {
+  $$ExamAttemptAnswersTableTableManager(
+    _$AppDatabase db,
+    $ExamAttemptAnswersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExamAttemptAnswersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExamAttemptAnswersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExamAttemptAnswersTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> examAttemptId = const Value.absent(),
+                Value<String> questionId = const Value.absent(),
+                Value<int> questionOrder = const Value.absent(),
+                Value<int?> selectedIndex = const Value.absent(),
+                Value<bool?> isCorrect = const Value.absent(),
+                Value<DateTime?> answeredAt = const Value.absent(),
+              }) => ExamAttemptAnswersCompanion(
+                id: id,
+                examAttemptId: examAttemptId,
+                questionId: questionId,
+                questionOrder: questionOrder,
+                selectedIndex: selectedIndex,
+                isCorrect: isCorrect,
+                answeredAt: answeredAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int examAttemptId,
+                required String questionId,
+                required int questionOrder,
+                Value<int?> selectedIndex = const Value.absent(),
+                Value<bool?> isCorrect = const Value.absent(),
+                Value<DateTime?> answeredAt = const Value.absent(),
+              }) => ExamAttemptAnswersCompanion.insert(
+                id: id,
+                examAttemptId: examAttemptId,
+                questionId: questionId,
+                questionOrder: questionOrder,
+                selectedIndex: selectedIndex,
+                isCorrect: isCorrect,
+                answeredAt: answeredAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExamAttemptAnswersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExamAttemptAnswersTable,
+      ExamAttemptAnswer,
+      $$ExamAttemptAnswersTableFilterComposer,
+      $$ExamAttemptAnswersTableOrderingComposer,
+      $$ExamAttemptAnswersTableAnnotationComposer,
+      $$ExamAttemptAnswersTableCreateCompanionBuilder,
+      $$ExamAttemptAnswersTableUpdateCompanionBuilder,
+      (
+        ExamAttemptAnswer,
+        BaseReferences<
+          _$AppDatabase,
+          $ExamAttemptAnswersTable,
+          ExamAttemptAnswer
+        >,
+      ),
+      ExamAttemptAnswer,
+      PrefetchHooks Function()
+    >;
+typedef $$AppSettingsTableCreateCompanionBuilder =
+    AppSettingsCompanion Function({
+      required String key,
+      required String value,
+      Value<int> rowid,
+    });
+typedef $$AppSettingsTableUpdateCompanionBuilder =
+    AppSettingsCompanion Function({
+      Value<String> key,
+      Value<String> value,
+      Value<int> rowid,
+    });
+
+class $$AppSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AppSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AppSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+}
+
+class $$AppSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppSettingsTable,
+          AppSetting,
+          $$AppSettingsTableFilterComposer,
+          $$AppSettingsTableOrderingComposer,
+          $$AppSettingsTableAnnotationComposer,
+          $$AppSettingsTableCreateCompanionBuilder,
+          $$AppSettingsTableUpdateCompanionBuilder,
+          (
+            AppSetting,
+            BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>,
+          ),
+          AppSetting,
+          PrefetchHooks Function()
+        > {
+  $$AppSettingsTableTableManager(_$AppDatabase db, $AppSettingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AppSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AppSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AppSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> key = const Value.absent(),
+                Value<String> value = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsCompanion(key: key, value: value, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String key,
+                required String value,
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsCompanion.insert(
+                key: key,
+                value: value,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppSettingsTable,
+      AppSetting,
+      $$AppSettingsTableFilterComposer,
+      $$AppSettingsTableOrderingComposer,
+      $$AppSettingsTableAnnotationComposer,
+      $$AppSettingsTableCreateCompanionBuilder,
+      $$AppSettingsTableUpdateCompanionBuilder,
+      (
+        AppSetting,
+        BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>,
+      ),
+      AppSetting,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2710,4 +5535,12 @@ class $AppDatabaseManager {
       $$StarredQuestionsTableTableManager(_db, _db.starredQuestions);
   $$PracticeSessionsTableTableManager get practiceSessions =>
       $$PracticeSessionsTableTableManager(_db, _db.practiceSessions);
+  $$ExamConfigurationsTableTableManager get examConfigurations =>
+      $$ExamConfigurationsTableTableManager(_db, _db.examConfigurations);
+  $$ExamAttemptsTableTableManager get examAttempts =>
+      $$ExamAttemptsTableTableManager(_db, _db.examAttempts);
+  $$ExamAttemptAnswersTableTableManager get examAttemptAnswers =>
+      $$ExamAttemptAnswersTableTableManager(_db, _db.examAttemptAnswers);
+  $$AppSettingsTableTableManager get appSettings =>
+      $$AppSettingsTableTableManager(_db, _db.appSettings);
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../features/practice/presentation/home_screen.dart';
 import '../../features/practice/presentation/practice_hub_screen.dart';
 import '../../features/progress/presentation/progress_screen.dart';
+import '../../features/exams/presentation/exams_home_screen.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -17,11 +18,7 @@ class _AppShellState extends State<AppShell> {
   static const pages = [
     HomeScreen(),
     PracticeHubScreen(),
-    _ComingSoonScreen(
-      title: 'Mock exams',
-      message: 'Untimed mock exams are planned for the next exam milestone.',
-      icon: Icons.fact_check_outlined,
-    ),
+    ExamsHomeScreen(),
     ProgressScreen(),
     _ComingSoonScreen(
       title: 'Settings',
