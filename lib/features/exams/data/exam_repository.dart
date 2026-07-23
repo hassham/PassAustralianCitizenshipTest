@@ -4,9 +4,11 @@ import 'package:drift/drift.dart';
 import 'package:flutter/services.dart';
 
 import '../../../data/database/app_database.dart';
+import '../../../core/errors/app_failure.dart';
 import '../../practice/data/practice_repository.dart';
 import 'package:pass_citizenship_test/features/practice/domain/study_question.dart';
 import '../domain/exam_models.dart';
+import '../domain/exam_history_models.dart';
 
 class ExamRepository {
   ExamRepository(this.database, this.practiceRepository);
@@ -15,7 +17,14 @@ class ExamRepository {
   final PracticeRepository practiceRepository;
   Future<ExamConfigModel>? _configFuture;
 
-  Future<ExamConfigModel> config() => _configFuture ??= _loadConfig();
+  Future<ExamConfigModel> config() async {
+    try {
+      return await (_configFuture ??= _loadConfig());
+    } catch (error, stackTrace) {
+      _configFuture = null;
+      Error.throwWithStackTrace(AppFailure.from(error), stackTrace);
+    }
+  }
 
   Future<ExamConfigModel> _loadConfig() async {
     final existing =
@@ -95,6 +104,14 @@ class ExamRepository {
     final ids = (jsonDecode(attempt.selectedQuestionsJson) as List<dynamic>)
         .cast<String>();
     final questions = await practiceRepository.questionsByIds(ids);
+    if (questions.length != ids.length) {
+      await abandonActiveExam();
+      throw const ContentFailure(
+        message:
+            'An active exam contained a question removed by a question-bank '
+            'update. Start a new exam to use the current bank.',
+      );
+    }
     final answerRows = await (database.select(
       database.examAttemptAnswers,
     )..where((row) => row.examAttemptId.equals(attempt.id))).get();
@@ -214,6 +231,115 @@ class ExamRepository {
     await (database.update(database.examAttempts)
           ..where((row) => row.isCompleted.equals(false)))
         .write(const ExamAttemptsCompanion(isCompleted: Value(true)));
+  }
+
+  Future<List<ExamHistorySummary>> history() async {
+    final attempts =
+        await (database.select(database.examAttempts)
+              ..where((row) => row.submittedAt.isNotNull())
+              ..orderBy([(row) => OrderingTerm.desc(row.submittedAt)]))
+            .get();
+    final result = <ExamHistorySummary>[];
+    for (final attempt in attempts) {
+      final correct =
+          await (database.selectOnly(database.examAttemptAnswers)
+                ..addColumns([database.examAttemptAnswers.id.count()])
+                ..where(
+                  database.examAttemptAnswers.examAttemptId.equals(attempt.id) &
+                      database.examAttemptAnswers.isCorrect.equals(true),
+                ))
+              .map(
+                (row) => row.read(database.examAttemptAnswers.id.count()) ?? 0,
+              )
+              .getSingle();
+      result.add(
+        ExamHistorySummary(
+          attemptId: attempt.id,
+          completedAt: attempt.submittedAt!,
+          score: attempt.score ?? 0,
+          passed: attempt.isPassed ?? false,
+          totalQuestions: attempt.totalQuestions,
+          correctAnswers: correct,
+        ),
+      );
+    }
+    return result;
+  }
+
+  Future<ExamHistoryDetail> historyDetail(int attemptId) async {
+    final summaries = await history();
+    final summary = summaries.firstWhere(
+      (item) => item.attemptId == attemptId,
+      orElse: () =>
+          throw StateError('Completed exam $attemptId was not found.'),
+    );
+    final answerRows =
+        await (database.select(database.examAttemptAnswers)
+              ..where((row) => row.examAttemptId.equals(attemptId))
+              ..orderBy([(row) => OrderingTerm.asc(row.questionOrder)]))
+            .get();
+    final questions = await practiceRepository.questionsByIdsIncludingRemoved(
+      answerRows.map((answer) => answer.questionId).toList(),
+    );
+    final questionsById = {
+      for (final question in questions) question.id: question,
+    };
+    final removalRows = await database
+        .customSelect(
+          'SELECT question_id, user_message FROM removed_questions '
+          'WHERE question_id IN (${List.filled(answerRows.length, '?').join(',')})',
+          variables: answerRows
+              .map((answer) => Variable.withString(answer.questionId))
+              .toList(),
+        )
+        .get();
+    final removalMessages = {
+      for (final row in removalRows)
+        row.read<String>('question_id'): row.read<String>('user_message'),
+    };
+    final selections = await database
+        .customSelect(
+          'SELECT owner_id, option_id FROM answer_option_selections '
+          'WHERE owner_type = ?',
+          variables: [Variable.withString('exam_answer')],
+        )
+        .get();
+    final selectedOptionIds = {
+      for (final row in selections)
+        row.read<int>('owner_id'): row.read<String>('option_id'),
+    };
+    return ExamHistoryDetail(
+      summary: summary,
+      answers: [
+        for (final answer in answerRows)
+          HistoricalAnswer(
+            order: answer.questionOrder,
+            questionId: answer.questionId,
+            question: questionsById[answer.questionId],
+            selectedIndex: _historicalSelectedIndex(
+              answer.selectedIndex,
+              selectedOptionIds[answer.id],
+              questionsById[answer.questionId],
+            ),
+            wasCorrect: answer.isCorrect,
+            removalMessage: removalMessages[answer.questionId],
+          ),
+      ],
+    );
+  }
+
+  int? _historicalSelectedIndex(
+    int? legacyIndex,
+    String? optionId,
+    StudyQuestionModel? question,
+  ) {
+    if (legacyIndex == null || question == null || optionId == null) {
+      return legacyIndex;
+    }
+    final stableIndex = question.options.indexWhere(
+      (option) => option.id == optionId,
+    );
+    return stableIndex < 0 ? legacyIndex : stableIndex;
   }
 
   ExamConfigModel _configModel(ExamConfiguration row) => ExamConfigModel(

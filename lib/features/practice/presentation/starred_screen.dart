@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/routing/app_routes.dart';
+import '../../../core/errors/app_failure.dart';
+import '../../../shared/presentation/failure_view.dart';
 import '../application/practice_controller.dart';
-import 'practice_screen.dart';
 
 class StarredScreen extends ConsumerWidget {
   const StarredScreen({super.key});
@@ -12,9 +15,7 @@ class StarredScreen extends ConsumerWidget {
         .read(practiceControllerProvider.notifier)
         .startStarred();
     if (started && context.mounted) {
-      await Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (_) => const PracticeScreen()));
+      await context.pushNamed(AppRoutes.practiceSession);
       ref.invalidate(starredQuestionsProvider);
       ref.invalidate(progressProvider);
     }
@@ -29,8 +30,12 @@ class StarredScreen extends ConsumerWidget {
       body: SafeArea(
         child: starred.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(
-            child: Text('Starred questions could not be loaded: $error'),
+          error: (error, _) => FailureView(
+            failure: AppFailure.from(error),
+            onRetry: () {
+              ref.invalidate(starredQuestionsProvider);
+              ref.invalidate(removedStarredQuestionsProvider);
+            },
           ),
           data: (questions) {
             final removedQuestions = removed.valueOrNull ?? const [];
@@ -115,6 +120,17 @@ class StarredScreen extends ConsumerWidget {
                           color: Color(0xFFF0A000),
                         ),
                         title: Text(question.text),
+                        trailing: IconButton(
+                          tooltip: 'Remove from starred questions',
+                          onPressed: () async {
+                            await ref
+                                .read(practiceRepositoryProvider)
+                                .toggleStarred(question.id);
+                            ref.invalidate(starredQuestionsProvider);
+                            ref.invalidate(homeDashboardProvider);
+                          },
+                          icon: const Icon(Icons.remove_circle_outline),
+                        ),
                       ),
                     ),
                   ),

@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
 
-import 'shared/presentation/app_shell.dart';
+import 'core/routing/app_router.dart';
 
-class CitizenshipStudyApp extends StatelessWidget {
+class CitizenshipStudyApp extends StatefulWidget {
   const CitizenshipStudyApp({super.key});
 
   @override
+  State<CitizenshipStudyApp> createState() => _CitizenshipStudyAppState();
+}
+
+class _CitizenshipStudyAppState extends State<CitizenshipStudyApp> {
+  late final router = createAppRouter();
+
+  @override
+  void dispose() {
+    router.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: router,
       title: 'Pass Australian Citizenship Test',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -33,8 +47,15 @@ class CitizenshipStudyApp extends StatelessWidget {
             ),
           ),
         ),
+        focusColor: const Color(0xFF005A9C).withValues(alpha: 0.22),
       ),
-      home: const AppShell(),
+      highContrastTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF003E6B),
+          contrastLevel: 1,
+        ),
+        useMaterial3: true,
+      ),
     );
   }
 }

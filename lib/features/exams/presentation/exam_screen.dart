@@ -1,11 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/routing/app_routes.dart';
 import '../application/exam_controller.dart';
-import 'exam_review_screen.dart';
 
 class ExamScreen extends ConsumerWidget {
   const ExamScreen({super.key});
+
+  Future<void> _confirmLeave(
+    BuildContext context,
+    WidgetRef ref,
+    bool didPop,
+  ) async {
+    if (didPop) return;
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Leave exam?'),
+        content: const Text(
+          'Your answers and current position are saved. You can continue the '
+          'exam later.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Keep reviewing'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
+    );
+    if (leave == true && context.mounted) {
+      context.goNamed(AppRoutes.exams);
+    }
+  }
 
   Future<void> _confirmSubmit(BuildContext context, WidgetRef ref) async {
     final state = ref.read(examControllerProvider);
@@ -45,107 +77,112 @@ class ExamScreen extends ConsumerWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final selected = state.answers[state.currentIndex];
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Question ${state.currentIndex + 1} of ${state.questions.length}',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => _confirmSubmit(context, ref),
-            child: const Text('Submit'),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) =>
+          _confirmLeave(context, ref, didPop),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Question ${state.currentIndex + 1} of ${state.questions.length}',
           ),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              LinearProgressIndicator(
-                value: (state.currentIndex + 1) / state.questions.length,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                question.text,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: question.options.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (context, index) => OutlinedButton(
-                    onPressed: () => ref
-                        .read(examControllerProvider.notifier)
-                        .selectAnswer(index),
-                    style: OutlinedButton.styleFrom(
-                      alignment: Alignment.centerLeft,
-                      minimumSize: const Size.fromHeight(58),
-                      padding: const EdgeInsets.all(16),
-                      backgroundColor: selected == index
-                          ? Theme.of(context).colorScheme.primaryContainer
-                          : Colors.white,
-                      side: BorderSide(
-                        color: selected == index
-                            ? Theme.of(context).colorScheme.primary
-                            : const Color(0xFFB7BDC5),
-                        width: selected == index ? 2 : 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          selected == index
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_off,
+          actions: [
+            TextButton(
+              onPressed: () => _confirmSubmit(context, ref),
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                LinearProgressIndicator(
+                  value: (state.currentIndex + 1) / state.questions.length,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  question.text,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: question.options.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) => OutlinedButton(
+                      onPressed: () => ref
+                          .read(examControllerProvider.notifier)
+                          .selectAnswer(index),
+                      style: OutlinedButton.styleFrom(
+                        alignment: Alignment.centerLeft,
+                        minimumSize: const Size.fromHeight(58),
+                        padding: const EdgeInsets.all(16),
+                        backgroundColor: selected == index
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : Colors.white,
+                        side: BorderSide(
+                          color: selected == index
+                              ? Theme.of(context).colorScheme.primary
+                              : const Color(0xFFB7BDC5),
+                          width: selected == index ? 2 : 1,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(child: Text(question.options[index].text)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              OutlinedButton(
-                onPressed: () => _showQuestionNavigator(context, ref),
-                child: Text(
-                  'Review questions (${state.answers.length}/${state.questions.length} answered)',
-                ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: state.currentIndex == 0
-                          ? null
-                          : () => ref
-                                .read(examControllerProvider.notifier)
-                                .goTo(state.currentIndex - 1),
-                      child: const Text('Previous'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed:
-                          state.currentIndex == state.questions.length - 1
-                          ? () => _confirmSubmit(context, ref)
-                          : () => ref
-                                .read(examControllerProvider.notifier)
-                                .goTo(state.currentIndex + 1),
-                      child: Text(
-                        state.currentIndex == state.questions.length - 1
-                            ? 'Review & submit'
-                            : 'Next',
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            selected == index
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_off,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(question.options[index].text)),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+                OutlinedButton(
+                  onPressed: () => _showQuestionNavigator(context, ref),
+                  child: Text(
+                    'Review questions (${state.answers.length}/${state.questions.length} answered)',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: state.currentIndex == 0
+                            ? null
+                            : () => ref
+                                  .read(examControllerProvider.notifier)
+                                  .goTo(state.currentIndex - 1),
+                        child: const Text('Previous'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed:
+                            state.currentIndex == state.questions.length - 1
+                            ? () => _confirmSubmit(context, ref)
+                            : () => ref
+                                  .read(examControllerProvider.notifier)
+                                  .goTo(state.currentIndex + 1),
+                        child: Text(
+                          state.currentIndex == state.questions.length - 1
+                              ? 'Review & submit'
+                              : 'Next',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -258,16 +295,12 @@ class _ExamResultsView extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
             FilledButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const ExamReviewScreen(),
-                ),
-              ),
+              onPressed: () => context.pushNamed(AppRoutes.examReview),
               child: const Text('Review answers'),
             ),
             const SizedBox(height: 10),
             OutlinedButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => context.goNamed(AppRoutes.exams),
               child: const Text('Back to exams'),
             ),
           ],

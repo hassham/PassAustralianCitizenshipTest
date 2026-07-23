@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/app_failure.dart';
 import '../../practice/application/practice_controller.dart';
 import '../../practice/domain/study_question.dart';
 import '../data/exam_repository.dart';
 import '../domain/exam_models.dart';
+import '../domain/exam_history_models.dart';
 
 final examRepositoryProvider = Provider<ExamRepository>(
   (ref) => ExamRepository(
@@ -14,6 +16,15 @@ final examRepositoryProvider = Provider<ExamRepository>(
 
 final examConfigProvider = FutureProvider<ExamConfigModel>(
   (ref) => ref.watch(examRepositoryProvider).config(),
+);
+
+final examHistoryProvider = FutureProvider<List<ExamHistorySummary>>(
+  (ref) => ref.watch(examRepositoryProvider).history(),
+);
+
+final examHistoryDetailProvider = FutureProvider.family<ExamHistoryDetail, int>(
+  (ref, attemptId) =>
+      ref.watch(examRepositoryProvider).historyDetail(attemptId),
 );
 
 class ExamState {
@@ -35,7 +46,7 @@ class ExamState {
   final Map<int, int> answers;
   final int currentIndex;
   final ExamResultModel? result;
-  final String? error;
+  final AppFailure? error;
   bool get active =>
       attemptId != null && questions.isNotEmpty && result == null;
   StudyQuestionModel? get current =>
@@ -49,7 +60,7 @@ class ExamState {
     Map<int, int>? answers,
     int? currentIndex,
     ExamResultModel? result,
-    String? error,
+    AppFailure? error,
   }) => ExamState(
     loading: loading ?? this.loading,
     attemptId: attemptId ?? this.attemptId,
@@ -67,6 +78,8 @@ class ExamController extends StateNotifier<ExamState> {
 
   final ExamRepository repository;
 
+  void reset() => state = const ExamState();
+
   Future<bool> restore() async {
     state = state.copyWith(loading: true);
     try {
@@ -78,7 +91,7 @@ class ExamController extends StateNotifier<ExamState> {
       state = _fromRestored(restored);
       return true;
     } catch (error) {
-      state = ExamState(error: error.toString());
+      state = ExamState(error: AppFailure.from(error));
       return false;
     }
   }
@@ -88,7 +101,7 @@ class ExamController extends StateNotifier<ExamState> {
     try {
       state = _fromRestored(await repository.startExam());
     } catch (error) {
-      state = ExamState(error: error.toString());
+      state = ExamState(error: AppFailure.from(error));
     }
   }
 
@@ -97,12 +110,16 @@ class ExamController extends StateNotifier<ExamState> {
     if (attemptId == null) return;
     final answers = {...state.answers, state.currentIndex: optionIndex};
     state = state.copyWith(answers: answers);
-    await repository.saveAnswer(
-      attemptId: attemptId,
-      questionOrder: state.currentIndex,
-      selectedIndex: optionIndex,
-      selectedOptionId: state.current!.options[optionIndex].id,
-    );
+    try {
+      await repository.saveAnswer(
+        attemptId: attemptId,
+        questionOrder: state.currentIndex,
+        selectedIndex: optionIndex,
+        selectedOptionId: state.current!.options[optionIndex].id,
+      );
+    } catch (error) {
+      state = state.copyWith(error: AppFailure.from(error));
+    }
   }
 
   Future<void> goTo(int index) async {
@@ -117,13 +134,17 @@ class ExamController extends StateNotifier<ExamState> {
     final attemptId = state.attemptId;
     final config = state.config;
     if (attemptId == null || config == null) return;
-    final result = await repository.submit(
-      attemptId: attemptId,
-      questions: state.questions,
-      answers: state.answers,
-      passPercentage: config.passPercentage,
-    );
-    state = state.copyWith(result: result);
+    try {
+      final result = await repository.submit(
+        attemptId: attemptId,
+        questions: state.questions,
+        answers: state.answers,
+        passPercentage: config.passPercentage,
+      );
+      state = state.copyWith(result: result);
+    } catch (error) {
+      state = state.copyWith(error: AppFailure.from(error));
+    }
   }
 
   ExamState _fromRestored(RestoredExamModel restored) => ExamState(

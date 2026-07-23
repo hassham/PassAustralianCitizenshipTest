@@ -5,6 +5,8 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/services/performance_monitor.dart';
+
 part 'app_database.g.dart';
 
 class Categories extends Table {
@@ -121,18 +123,26 @@ class AppDatabase extends _$AppDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async {
-      await migrator.createAll();
-      await _createNormalizedContentTables();
+      await PerformanceMonitor.measure('database_create', () async {
+        await migrator.createAll();
+        await _createNormalizedContentTables();
+      }, warningThreshold: const Duration(seconds: 2));
     },
     onUpgrade: (migrator, from, to) async {
-      if (from < 2) await migrator.createTable(starredQuestions);
-      if (from < 3) {
-        await migrator.createTable(examConfigurations);
-        await migrator.createTable(examAttempts);
-        await migrator.createTable(examAttemptAnswers);
-      }
-      if (from < 4) await migrator.createTable(appSettings);
-      if (from < 5) await _createNormalizedContentTables();
+      await PerformanceMonitor.measure(
+        'database_migration_${from}_to_$to',
+        () async {
+          if (from < 2) await migrator.createTable(starredQuestions);
+          if (from < 3) {
+            await migrator.createTable(examConfigurations);
+            await migrator.createTable(examAttempts);
+            await migrator.createTable(examAttemptAnswers);
+          }
+          if (from < 4) await migrator.createTable(appSettings);
+          if (from < 5) await _createNormalizedContentTables();
+        },
+        warningThreshold: const Duration(seconds: 2),
+      );
     },
   );
 
@@ -216,13 +226,21 @@ class AppDatabase extends _$AppDatabase {
             ..orderBy([(row) => OrderingTerm.desc(row.startedAt)])
             ..limit(1))
           .getSingleOrNull();
+
+  Future<void> deleteForRecovery() async {
+    await close();
+    final databaseFile = await _databaseFile();
+    if (await databaseFile.exists()) await databaseFile.delete();
+  }
 }
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final directory = await getApplicationDocumentsDirectory();
-    return NativeDatabase.createInBackground(
-      File(p.join(directory.path, 'citizenship_study.sqlite')),
-    );
+    return NativeDatabase.createInBackground(await _databaseFile());
   });
+}
+
+Future<File> _databaseFile() async {
+  final directory = await getApplicationDocumentsDirectory();
+  return File(p.join(directory.path, 'citizenship_study.sqlite'));
 }

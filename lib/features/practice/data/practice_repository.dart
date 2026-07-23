@@ -4,6 +4,9 @@ import 'package:drift/drift.dart';
 import 'package:flutter/services.dart';
 
 import '../../../data/database/app_database.dart';
+import '../../../core/errors/app_failure.dart';
+import '../../../core/services/app_logger.dart';
+import '../../../core/services/performance_monitor.dart';
 import '../domain/study_question.dart';
 import 'question_bank_validator.dart';
 
@@ -32,7 +35,49 @@ class PracticeRepository {
   final QuestionBankValidator _validator;
   Future<void>? _initialising;
 
-  Future<void> initialise() => _initialising ??= _initialise();
+  Future<void> initialise() => _initialising ??= _initialiseSafely();
+
+  Future<void> _initialiseSafely() async {
+    try {
+      await PerformanceMonitor.measure(
+        'question_bank_initialise',
+        _initialise,
+        warningThreshold: const Duration(seconds: 1),
+      );
+    } catch (error, stackTrace) {
+      _initialising = null;
+      AppLogger.error(
+        'Question bank initialisation failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      Error.throwWithStackTrace(AppFailure.from(error), stackTrace);
+    }
+  }
+
+  Future<void> retryInitialise() async {
+    _initialising = null;
+    await initialise();
+  }
+
+  Future<void> refreshBundledContent() async {
+    await database.transaction(() async {
+      for (final table in [
+        'question_options',
+        'question_metadata',
+        'question_references',
+        'source_editions',
+      ]) {
+        await database.customStatement('DELETE FROM $table');
+      }
+      await (database.delete(
+        database.appSettings,
+      )..where((row) => row.key.like('questions_%'))).go();
+    });
+    await retryInitialise();
+  }
+
+  Future<void> resetLocalDataForRecovery() => database.deleteForRecovery();
 
   Future<void> _initialise() async {
     final raw = await rootBundle.loadString(assetPath);
@@ -235,6 +280,10 @@ class PracticeRepository {
             ),
           );
     });
+    AppLogger.info(
+      'Question bank imported',
+      fields: {'version': version, 'questions': activeQuestionIds.length},
+    );
   }
 
   Future<void> _archiveQuestion(
@@ -281,6 +330,7 @@ class PracticeRepository {
 
   Future<List<StudyQuestionModel>> questionsFor({
     Set<String>? categoryIds,
+    Set<String>? difficulties,
     int? limit,
   }) async {
     await initialise();
@@ -292,8 +342,16 @@ class PracticeRepository {
     final rows = (await query.get())
         .where((row) => !removedIds.contains(row.id))
         .toList();
-    final items = await Future.wait(rows.map(_toModel))
-      ..shuffle();
+    final items =
+        (await Future.wait(rows.map(_toModel)))
+            .where(
+              (question) =>
+                  difficulties == null ||
+                  difficulties.isEmpty ||
+                  difficulties.contains(question.difficulty),
+            )
+            .toList()
+          ..shuffle();
     if (limit == null || limit >= items.length) return items;
     return items.take(limit).toList();
   }
@@ -307,6 +365,19 @@ class PracticeRepository {
             )..where((row) => row.id.isIn(ids))).get())
             .where((row) => !removedIds.contains(row.id))
             .toList();
+    final models = await Future.wait(rows.map(_toModel));
+    final byId = {for (final model in models) model.id: model};
+    return ids.map((id) => byId[id]).whereType<StudyQuestionModel>().toList();
+  }
+
+  Future<List<StudyQuestionModel>> questionsByIdsIncludingRemoved(
+    List<String> ids,
+  ) async {
+    await initialise();
+    if (ids.isEmpty) return [];
+    final rows = await (database.select(
+      database.studyQuestions,
+    )..where((row) => row.id.isIn(ids))).get();
     final models = await Future.wait(rows.map(_toModel));
     final byId = {for (final model in models) model.id: model};
     return ids.map((id) => byId[id]).whereType<StudyQuestionModel>().toList();
@@ -395,11 +466,21 @@ class PracticeRepository {
     final ids = (jsonDecode(session.questionIdsJson) as List<dynamic>)
         .cast<String>();
     final items = await questionsByIds(ids);
-    if (items.isEmpty || session.currentIndex >= items.length) return null;
+    if (items.isEmpty) {
+      await (database.update(database.practiceSessions)
+            ..where((row) => row.id.equals(session.id)))
+          .write(const PracticeSessionsCompanion(isComplete: Value(true)));
+      return null;
+    }
+    final completedIds = ids.take(session.currentIndex).toSet();
+    final adjustedIndex = items
+        .takeWhile((question) => completedIds.contains(question.id))
+        .length;
+    if (adjustedIndex >= items.length) return null;
     return RestoredSession(
       id: session.id,
       questions: items,
-      currentIndex: session.currentIndex,
+      currentIndex: adjustedIndex,
       correctCount: session.correctCount,
     );
   }
@@ -457,6 +538,25 @@ class PracticeRepository {
     );
   }
 
+  Future<HomeDashboardModel> homeDashboard() async {
+    await initialise();
+    final categoryRows = await categories();
+    final progressValue = await progress();
+    final activePractice = await database.activeSession();
+    final activeExam = await database.activeExamAttempt();
+    final stars = await starredQuestions();
+    return HomeDashboardModel(
+      progress: progressValue,
+      totalQuestions: categoryRows.fold(
+        0,
+        (total, category) => total + category.questionCount,
+      ),
+      starredQuestions: stars.length,
+      hasActivePractice: activePractice != null,
+      hasActiveExam: activeExam != null,
+    );
+  }
+
   Future<StudyQuestionModel> _toModel(StudyQuestion row) async {
     final metadata = await database
         .customSelect(
@@ -482,21 +582,36 @@ class PracticeRepository {
           variables: [Variable.withString(row.id)],
         )
         .get();
+    final options = optionRows.isNotEmpty
+        ? optionRows
+              .map(
+                (option) => QuestionOptionModel(
+                  id: option.read<String>('id'),
+                  text: option.read<String>('option_text'),
+                  isCorrect: option.read<int>('is_correct') == 1,
+                  explanation: option.read<String>('explanation'),
+                  displayOrder: option.read<int>('display_order'),
+                ),
+              )
+              .toList()
+        : (jsonDecode(row.optionsJson) as List<dynamic>)
+              .asMap()
+              .entries
+              .map(
+                (entry) => QuestionOptionModel(
+                  id: '${row.id}-legacy-${entry.key}',
+                  text: entry.value as String,
+                  isCorrect: entry.key == row.correctIndex,
+                  explanation: row.explanation,
+                  displayOrder: entry.key + 1,
+                ),
+              )
+              .toList();
     return StudyQuestionModel(
       id: row.id,
       categoryId: row.categoryId,
       text: row.questionText,
-      options: optionRows
-          .map(
-            (option) => QuestionOptionModel(
-              id: option.read<String>('id'),
-              text: option.read<String>('option_text'),
-              isCorrect: option.read<int>('is_correct') == 1,
-              explanation: option.read<String>('explanation'),
-              displayOrder: option.read<int>('display_order'),
-            ),
-          )
-          .toList(),
+      options: options,
       overallExplanation: row.explanation,
       difficulty: metadata?.read<String>('difficulty') ?? 'medium',
       isAustralianValuesQuestion:

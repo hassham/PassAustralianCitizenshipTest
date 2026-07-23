@@ -81,4 +81,30 @@ void main() {
       isTrue,
     );
   });
+
+  test('filters practice questions by difficulty', () async {
+    final questions = await repository.questionsFor(difficulties: {'easy'});
+
+    expect(questions, isNotEmpty);
+    expect(
+      questions.every((question) => question.difficulty == 'easy'),
+      isTrue,
+    );
+  });
+
+  test('builds Home dashboard counts and active-session state', () async {
+    final initial = await repository.homeDashboard();
+    expect(initial.totalQuestions, 120);
+    expect(initial.starredQuestions, 0);
+    expect(initial.hasActivePractice, isFalse);
+    expect(initial.hasActiveExam, isFalse);
+
+    final questions = await repository.questionsFor(limit: 5);
+    await repository.createSession(null, questions);
+    await repository.toggleStarred(questions.first.id);
+
+    final updated = await repository.homeDashboard();
+    expect(updated.hasActivePractice, isTrue);
+    expect(updated.starredQuestions, 1);
+  });
 }

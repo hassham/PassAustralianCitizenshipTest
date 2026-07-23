@@ -46,6 +46,18 @@ void main() {
     final second = started.questions[1];
     final wrongIndex = (second.correctIndex + 1) % second.options.length;
     final answers = {0: first.correctIndex, 1: wrongIndex};
+    await repository.saveAnswer(
+      attemptId: started.attemptId,
+      questionOrder: 0,
+      selectedIndex: first.correctIndex,
+      selectedOptionId: first.options[first.correctIndex].id,
+    );
+    await repository.saveAnswer(
+      attemptId: started.attemptId,
+      questionOrder: 1,
+      selectedIndex: wrongIndex,
+      selectedOptionId: second.options[wrongIndex].id,
+    );
 
     final result = await repository.submit(
       attemptId: started.attemptId,
@@ -60,5 +72,13 @@ void main() {
     expect(result.score, closeTo(5, 0.001));
     expect(result.passed, isFalse);
     expect(await repository.restoreExam(), isNull);
+
+    final history = await repository.history();
+    expect(history, hasLength(1));
+    expect(history.single.correctAnswers, 1);
+    final detail = await repository.historyDetail(started.attemptId);
+    expect(detail.answers, hasLength(20));
+    expect(detail.answers.first.selectedIndex, first.correctIndex);
+    expect(detail.answers.first.question?.id, first.id);
   });
 }

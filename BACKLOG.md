@@ -2,7 +2,7 @@
 
 ## Pass Australian Citizenship Test - Implementation Backlog
 
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-23
 
 **Priority Levels:** P0 (Critical/Blocker) | P1 (High/MVP Required) | P2 (Medium/Nice to Have) | P3 (Low/Future)
 
@@ -12,15 +12,15 @@
 
 ## Tracker Dashboard
 
-**Tracker updated:** 2026-07-20
+**Tracker updated:** 2026-07-23
 
 | Status | Meaning | Tasks | Share |
 |---|---|---:|---:|
-| COMPLETE | Every acceptance item in the task is implemented and verified | 1 | 2% |
-| PARTIAL | Useful scope is implemented, but acceptance items remain | 36 | 61% |
+| COMPLETE | Every acceptance item in the task is implemented and verified | 2 | 3% |
+| PARTIAL | Useful scope is implemented, but acceptance items remain | 42 | 71% |
 | IN PROGRESS | Actively being implemented | 0 | 0% |
 | BLOCKED | Cannot proceed until the recorded blocker is resolved | 0 | 0% |
-| NOT STARTED | No meaningful implementation yet | 22 | 37% |
+| NOT STARTED | No meaningful implementation yet | 15 | 25% |
 | **Total** |  | **59** | **100%** |
 
 ### Phase roll-up
@@ -31,12 +31,12 @@
 | 2. Database | 0 | 6 | 0 | 0 | 2 |
 | 3. Domain logic | 0 | 2 | 0 | 0 | 5 |
 | 4. State management | 0 | 3 | 0 | 0 | 0 |
-| 5. Feature engines | 0 | 4 | 0 | 0 | 2 |
-| 6. Screens | 0 | 7 | 0 | 0 | 3 |
+| 5. Feature engines | 0 | 5 | 0 | 0 | 1 |
+| 6. Screens | 1 | 8 | 0 | 0 | 1 |
 | 7. Shared UI | 0 | 3 | 0 | 0 | 0 |
 | 8. Testing | 0 | 4 | 0 | 0 | 0 |
 | 9. Content | 0 | 3 | 0 | 0 | 0 |
-| 10. Optimization | 0 | 0 | 0 | 0 | 4 |
+| 10. Optimization | 0 | 4 | 0 | 0 | 0 |
 | 11. Platforms | 0 | 2 | 0 | 0 | 1 |
 | 12. Release | 0 | 0 | 0 | 0 | 4 |
 
@@ -54,12 +54,12 @@
 
 | Order | Task | Outcome | Exit check |
 |---:|---|---|---|
-| 1 | 6.1 App Navigation | Replace local page pushes with named routes and finalize back-navigation behavior | All five sections preserve state and route predictably |
-| 2 | 8.4 Manual Testing | Walk through free exam start, navigation, resume, submission, and review | Checklist results and defects are recorded |
-| 3 | 1.2 Dependencies | Finalize only the dependencies needed for the next milestone | Dependency review passes and unused packages are removed |
-| 4 | 9.1 Question Dataset | Replace starter content with a reviewed production pipeline | Schema validation and content review gates pass |
-| 5 | 5.6 Error Handling | Add typed recovery paths for database/content failures | Failures show actionable messages and recover safely |
-| 6 | 6.2 Home Screen | Add starred count, exam entry, and stronger resume states | Home matches the free-user FSD dashboard scope |
+| 1 | 8.4 Manual Testing | Walk through named navigation, resume cards, back confirmation, and both recovery paths | Checklist results and defects are recorded |
+| 2 | 9.1 Question Dataset | Complete owner review and approve production questions | Content review gates pass |
+| 3 | 3.6 Timer Engine | Build persisted real-world timing for premium exams | Background/resume and expiry cases pass |
+| 4 | 6.9 Premium Screen | Define the premium purchase and restore experience | Purchase lifecycle acceptance cases pass |
+| 5 | 3.1 Readiness Score | Implement and verify the premium readiness algorithm | Algorithm cases and interpretation bands pass |
+| 6 | 3.2 Weak Area Analysis | Implement premium recommendations beyond the free category summaries | Algorithm and recommendation cases pass |
 
 ## Implementation Progress
 
@@ -143,6 +143,35 @@ Still required before production release:
 - Content-volume target decision and any additional approved questions
 - Final licensing/attribution review
 - Final manual emulator walkthrough of the production-format feedback and removal messages
+
+**Milestone 6 - Navigation, Recovery & Home Dashboard: Implemented (2026-07-23)**
+
+Completed in this milestone:
+- Named `go_router` routes for all five sections and active practice/exam flows
+- Stateful indexed navigation preserves each section while switching tabs
+- Explicit saved-progress confirmation for Android/system back from active sessions
+- Typed content, storage, and unexpected failures with actionable user messages
+- Retryable question-bank import and safe bundled-content refresh that preserves user data
+- Confirmed last-resort corrupted-database reset with a restart instruction
+- Home dashboard shows accuracy, attempts, question count, starred count, quick actions, and active practice/exam resume cards
+- Loading skeletons, pull-to-refresh, polished failure states, and focused coverage
+- Static analysis clean, all 14 automated tests passing, and Android debug APK built
+
+**Milestone 7 - Release Information, Free Analytics & History: Implemented (2026-07-23)**
+
+Completed in this milestone:
+- Category accuracy, question coverage, seven-day activity, strong/weak summaries, and useful Progress empty states
+- App and question-bank versions, source attribution, disclaimer, privacy/support links, content refresh, progress reset, and starred reset controls
+- Difficulty-filtered practice, direct removal from Starred, large-text-responsive layouts, and archived-session safeguards
+- Completed-exam history, result details, answer review, and removed-question notices for historical attempts
+- Ordered keyboard focus, screen-reader semantics, high-contrast theme support, and automated 200% text-scale coverage
+- Structured logs, low-storage detection, import/startup/database/migration timings, and resident-memory diagnostics
+- Static analysis clean and all 18 automated tests passing
+
+Still required before release:
+- Manual TalkBack/VoiceOver and keyboard walkthrough on target devices
+- Formal measured contrast audit and DevTools profiling under the final reviewed question bank
+- Owner editorial approval and final real-device release checklist
 
 ---
 
@@ -642,7 +671,9 @@ Create premium features:
 ---
 
 ## Task 5.6: Implement Error Handling Service
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Reliability milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Continuous | **Updated:** 2026-07-23
+**Evidence:** Typed content/storage/unexpected failures, retry UI, safe content refresh, confirmed corrupted-database reset, and focused failure-mapping tests are implemented.
+**Remaining:** Structured logging, low-disk detection, and purchase-specific error handling when purchases begin.
 **Priority:** P1 | **Effort:** M
 
 Create error handling:
@@ -662,9 +693,9 @@ Create error handling:
 # Phase 6: UI/Presentation Layer - Screens
 
 ## Task 6.1: Create App Shell & Navigation
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-21
-**Evidence:** Five-section navigation for Home, Practice, Exams, Progress, and Settings uses an indexed shell that preserves tab state.
-**Remaining:** Named/deep routes, route guards, and a finalized back-navigation policy.
+**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-23
+**Evidence:** Named routes, stateful five-section shell, full-screen session routes, not-found recovery, and saved-progress back confirmation are implemented and tested.
+**Remaining:** None for the current free-app navigation scope.
 **Priority:** P1 | **Effort:** M
 
 Create app structure:
@@ -680,9 +711,9 @@ Create app structure:
 ---
 
 ## Task 6.2: Implement Home Screen
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
-**Evidence:** Home shows practice entry points, category cards, accuracy, attempted count, and resume prompt.  
-**Remaining:** FSD-complete cards, premium/readiness states, recommendations, loading skeletons, and polished empty/error states.
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium analytics milestone | **Updated:** 2026-07-23
+**Evidence:** Home shows accuracy, attempts, total and starred counts, practice/exam quick actions, active-session resume cards, loading skeletons, pull-to-refresh, and actionable recovery states.
+**Remaining:** Premium readiness, weak-area, and recommendation cards after those engines exist.
 **Priority:** P1 | **Effort:** M
 
 Create home screen:
@@ -791,9 +822,9 @@ Create exam flows:
 ---
 
 ## Task 6.7: Implement Progress Screen
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-21
-**Evidence:** Overall accuracy and answered-question count are displayed from persisted attempts.
-**Remaining:** Category performance, readiness, weak areas, recommendations, premium states, and widget tests.
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium analytics milestone | **Updated:** 2026-07-23
+**Evidence:** `lib/features/progress/` provides overall/category accuracy, coverage, recent activity, strong/weak summaries, responsive statistics, and empty states.
+**Remaining:** Premium readiness score, premium recommendation engine, and dedicated Progress widget coverage.
 **Priority:** P1 | **Effort:** M
 
 Create progress tracking:
@@ -812,7 +843,9 @@ Create progress tracking:
 ---
 
 ## Task 6.8: Implement Exam History Screen
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium analytics milestone | **Updated:** 2026-07-23
+**Evidence:** `lib/features/exams/presentation/exam_history_screen.dart`, `exam_history_detail_screen.dart`, and repository providers list submitted exams and review stable historical answers, including removed-question notices.
+**Remaining:** Trend/improvement visualization, premium entitlement gating decision, and dedicated history widget tests.
 **Priority:** P2 | **Effort:** M
 
 Create history view (premium):
@@ -850,7 +883,9 @@ Create premium upsell:
 ---
 
 ## Task 6.10: Implement Settings Screen
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Settings milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Release settings milestone | **Updated:** 2026-07-23
+**Evidence:** `lib/features/settings/` displays app/content/source versions, attribution, disclaimer, privacy/support/licence links, storage/performance diagnostics, refresh, reset progress, and clear-starred controls.
+**Remaining:** Theme preference, notification settings if retained, explicit terms-of-service decision, and dedicated Settings widget tests.
 **Priority:** P1 | **Effort:** M
 
 Create settings:
@@ -912,9 +947,9 @@ Set up theming:
 ---
 
 ## Task 7.3: Implement Accessibility Support
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Continuous | **Updated:** 2026-07-20  
-**Evidence:** Semantic labels, selected state, live feedback region, large touch targets, and non-color answer indicators are present.  
-**Remaining:** Screen-reader audit, 200% text scaling, contrast measurement, keyboard navigation, focus order, and platform testing.
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Continuous | **Updated:** 2026-07-23
+**Evidence:** Semantic labels, selected state, live feedback, non-color indicators, ordered focus traversal, high-contrast theme, responsive layouts, and an automated 200% text-scale test are present.
+**Remaining:** Manual TalkBack/VoiceOver audit, measured contrast report, full keyboard walkthrough, and platform accessibility-scanner testing.
 **Priority:** P1 | **Effort:** M
 
 Add accessibility features:
@@ -1069,7 +1104,9 @@ Verify data:
 # Phase 10: Performance Optimization
 
 ## Task 10.1: Optimize Database Queries
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Optimization milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Final-content profiling | **Updated:** 2026-07-23
+**Evidence:** Progress analytics and content/database operations record structured duration samples; normalized lookup indexes are present.
+**Remaining:** EXPLAIN QUERY PLAN audit, final 500+ bank measurements, slow-query optimization, and caching only where measurements justify it.
 **Priority:** P2 | **Effort:** M
 
 Improve query performance:
@@ -1085,7 +1122,9 @@ Improve query performance:
 ---
 
 ## Task 10.2: Optimize App Launch Time
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Optimization milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Real-device profiling | **Updated:** 2026-07-23
+**Evidence:** First-frame startup duration is captured and shown in Settings diagnostics.
+**Remaining:** DevTools profile-mode baseline on target Android/iOS hardware and measured optimization against the 3-second target.
 **Priority:** P2 | **Effort:** M
 
 Reduce startup time:
@@ -1102,7 +1141,9 @@ Reduce startup time:
 ---
 
 ## Task 10.3: Optimize Memory Usage
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Optimization milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Real-device profiling | **Updated:** 2026-07-23
+**Evidence:** Resident memory is sampled cross-platform where supported and shown in Settings; repositories/controllers preserve bounded state.
+**Remaining:** DevTools allocation/leak analysis under sustained use and verification of the 150 MB target on real devices.
 **Priority:** P2 | **Effort:** M
 
 Reduce memory footprint:
@@ -1119,7 +1160,9 @@ Reduce memory footprint:
 ---
 
 ## Task 10.4: Performance Testing & Profiling
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Optimization milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Final-content profiling | **Updated:** 2026-07-23
+**Evidence:** Structured performance samples cover startup, database creation/migration, content import, and Progress analytics.
+**Remaining:** Document release baselines, profile question loading and sustained memory under the final bank, and add non-flaky regression thresholds.
 **Priority:** P2 | **Effort:** M
 
 Create performance tests:
@@ -1352,6 +1395,8 @@ Phase 12: Deployment (12.1-12.4)
 
 | Date | Change | Verification |
 |---|---|---|
+| 2026-07-23 | Added free Progress analytics, release-ready Settings information/controls, difficulty filters, direct unstar, exam history/review, archived-question safeguards, accessibility improvements, and runtime diagnostics. | Analysis clean; all 18 automated tests passed, including 200% activity-chart scaling, history reconstruction, and progress reset preservation. |
+| 2026-07-23 | Added named stateful navigation, saved-session back handling, typed recovery paths, and the completed free Home dashboard. | Analysis clean; all 14 automated tests passed; Android debug APK built. |
 | 2026-07-23 | Added the production question-bank schema, normalized content pipeline, safe update/removal lifecycle, option explanations, source references, and stable answer IDs. | JSON integrity audit passed for 120 questions and 480 options; analysis clean; all 11 tests passed. |
 | 2026-07-22 | Added the configuration-driven free untimed mock-exam vertical slice and schema-v3 persistence. | Analysis clean; all 9 tests passed; Android debug APK built. |
 | 2026-07-22 | Added multi-category selection and configurable practice length; recorded user-completed emulator checks and reprioritized the queue. | Analysis clean; all 7 automated tests passed. |
