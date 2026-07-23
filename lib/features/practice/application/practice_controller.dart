@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/database/app_database.dart';
+import '../../../core/errors/app_failure.dart';
 import '../data/practice_repository.dart';
 import '../domain/study_question.dart';
 
@@ -20,6 +21,10 @@ final categoriesProvider = FutureProvider<List<CategoryModel>>(
 
 final progressProvider = FutureProvider<ProgressSummary>(
   (ref) => ref.watch(practiceRepositoryProvider).progress(),
+);
+
+final homeDashboardProvider = FutureProvider<HomeDashboardModel>(
+  (ref) => ref.watch(practiceRepositoryProvider).homeDashboard(),
 );
 
 final starredQuestionsProvider = FutureProvider<List<StudyQuestionModel>>(
@@ -52,7 +57,7 @@ class PracticeState {
   final int? selectedIndex;
   final bool complete;
   final Set<String> starredIds;
-  final String? error;
+  final AppFailure? error;
   StudyQuestionModel? get current =>
       questions.isEmpty || index >= questions.length ? null : questions[index];
 
@@ -66,7 +71,7 @@ class PracticeState {
     bool clearSelection = false,
     bool? complete,
     Set<String>? starredIds,
-    String? error,
+    AppFailure? error,
   }) => PracticeState(
     loading: loading ?? this.loading,
     sessionId: sessionId ?? this.sessionId,
@@ -84,21 +89,28 @@ class PracticeController extends StateNotifier<PracticeState> {
   PracticeController(this.repository) : super(const PracticeState());
   final PracticeRepository repository;
 
+  void reset() => state = const PracticeState();
+
   Future<bool> restore() async {
     state = state.copyWith(loading: true);
-    final restored = await repository.restoreSession();
-    if (restored == null) {
-      state = const PracticeState();
+    try {
+      final restored = await repository.restoreSession();
+      if (restored == null) {
+        state = const PracticeState();
+        return false;
+      }
+      state = PracticeState(
+        sessionId: restored.id,
+        questions: restored.questions,
+        index: restored.currentIndex,
+        correctCount: restored.correctCount,
+        starredIds: await repository.starredIds(),
+      );
+      return true;
+    } catch (error) {
+      state = PracticeState(error: AppFailure.from(error));
       return false;
     }
-    state = PracticeState(
-      sessionId: restored.id,
-      questions: restored.questions,
-      index: restored.currentIndex,
-      correctCount: restored.correctCount,
-      starredIds: await repository.starredIds(),
-    );
-    return true;
   }
 
   Future<void> start(String? categoryId) async {
@@ -107,6 +119,7 @@ class PracticeController extends StateNotifier<PracticeState> {
 
   Future<void> startSelection({
     Set<String>? categoryIds,
+    Set<String>? difficulties,
     int? questionCount,
   }) async {
     state = state.copyWith(loading: true, clearSelection: true);
@@ -114,6 +127,7 @@ class PracticeController extends StateNotifier<PracticeState> {
       await repository.abandonActiveSession();
       final questions = await repository.questionsFor(
         categoryIds: categoryIds,
+        difficulties: difficulties,
         limit: questionCount,
       );
       final categoryKey = categoryIds == null || categoryIds.isEmpty
@@ -126,7 +140,7 @@ class PracticeController extends StateNotifier<PracticeState> {
         starredIds: await repository.starredIds(),
       );
     } catch (error) {
-      state = PracticeState(error: error.toString());
+      state = PracticeState(error: AppFailure.from(error));
     }
   }
 
@@ -147,7 +161,7 @@ class PracticeController extends StateNotifier<PracticeState> {
       );
       return true;
     } catch (error) {
-      state = PracticeState(error: error.toString());
+      state = PracticeState(error: AppFailure.from(error));
       return false;
     }
   }

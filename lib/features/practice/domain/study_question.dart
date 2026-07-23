@@ -79,3 +79,19 @@ class ProgressSummary {
   final int correct;
   int get accuracy => attempted == 0 ? 0 : (correct * 100 / attempted).round();
 }
+
+class HomeDashboardModel {
+  const HomeDashboardModel({
+    required this.progress,
+    required this.totalQuestions,
+    required this.starredQuestions,
+    required this.hasActivePractice,
+    required this.hasActiveExam,
+  });
+
+  final ProgressSummary progress;
+  final int totalQuestions;
+  final int starredQuestions;
+  final bool hasActivePractice;
+  final bool hasActiveExam;
+}

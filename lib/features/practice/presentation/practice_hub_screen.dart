@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/routing/app_routes.dart';
+import '../../../core/errors/app_failure.dart';
+import '../../../shared/presentation/failure_view.dart';
 import '../application/practice_controller.dart';
 import '../domain/study_question.dart';
-import 'practice_screen.dart';
-import 'starred_screen.dart';
 
 class PracticeHubScreen extends ConsumerStatefulWidget {
   const PracticeHubScreen({super.key});
@@ -15,6 +17,7 @@ class PracticeHubScreen extends ConsumerStatefulWidget {
 
 class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
   final selectedCategoryIds = <String>{};
+  final selectedDifficulties = <String>{'easy', 'medium', 'hard'};
   int selectedQuestionCount = 0;
   bool selectionInitialised = false;
 
@@ -25,14 +28,13 @@ class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
         .read(practiceControllerProvider.notifier)
         .startSelection(
           categoryIds: allSelected ? null : selectedCategoryIds,
+          difficulties: selectedDifficulties,
           questionCount: selectedQuestionCount == 0
               ? null
               : selectedQuestionCount,
         );
     if (mounted) {
-      await Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (_) => const PracticeScreen()));
+      await context.pushNamed(AppRoutes.practiceSession);
       ref.invalidate(progressProvider);
       ref.invalidate(starredQuestionsProvider);
     }
@@ -53,11 +55,12 @@ class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
       body: SafeArea(
         child: categories.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text('Categories could not be loaded: $error'),
-            ),
+          error: (error, _) => FailureView(
+            failure: AppFailure.from(error),
+            onRetry: () {
+              ref.invalidate(categoriesProvider);
+              ref.invalidate(starredQuestionsProvider);
+            },
           ),
           data: (items) {
             _initialiseSelection(items);
@@ -121,6 +124,33 @@ class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
+                  'Difficulty',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: const ['easy', 'medium', 'hard']
+                      .map(
+                        (difficulty) => FilterChip(
+                          label: Text(
+                            '${difficulty[0].toUpperCase()}${difficulty.substring(1)}',
+                          ),
+                          selected: selectedDifficulties.contains(difficulty),
+                          onSelected: (selected) => setState(() {
+                            if (selected) {
+                              selectedDifficulties.add(difficulty);
+                            } else if (selectedDifficulties.length > 1) {
+                              selectedDifficulties.remove(difficulty);
+                            }
+                          }),
+                        ),
+                      )
+                      .toList(),
+                ),
+                const SizedBox(height: 20),
+                Text(
                   'Number of questions',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -160,11 +190,7 @@ class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
                 ),
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const StarredScreen(),
-                    ),
-                  ),
+                  onPressed: () => context.pushNamed(AppRoutes.starred),
                   icon: const Icon(Icons.star_outline),
                   label: Text(
                     starred.maybeWhen(

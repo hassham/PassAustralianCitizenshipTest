@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/errors/app_failure.dart';
+import '../../../core/routing/app_routes.dart';
 import '../application/exam_controller.dart';
-import 'exam_screen.dart';
 
 class ExamsHomeScreen extends ConsumerStatefulWidget {
   const ExamsHomeScreen({super.key});
@@ -47,9 +49,7 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
   }
 
   void _openExam() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const ExamScreen()));
+    context.pushNamed(AppRoutes.examSession);
   }
 
   @override
@@ -115,7 +115,7 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
                     const SizedBox(height: 8),
                     config.when(
                       loading: () => const Text('Loading exam rules…'),
-                      error: (error, _) => Text('Rules unavailable: $error'),
+                      error: (error, _) => Text(AppFailure.from(error).message),
                       data: (value) => Text(
                         'Up to ${value.questionCount} questions • '
                         '${value.passPercentage.toStringAsFixed(0)}% pass mark • No timer',
@@ -131,6 +131,12 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: () => context.pushNamed(AppRoutes.examHistory),
+              icon: const Icon(Icons.history),
+              label: const Text('View completed exams'),
+            ),
+            const SizedBox(height: 16),
             const Card(
               child: ListTile(
                 leading: Icon(Icons.lock_outline),
@@ -140,9 +146,27 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
             ),
             if (state.error != null) ...[
               const SizedBox(height: 16),
-              Text(
-                'Exam could not be loaded: ${state.error}',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              Card(
+                color: Theme.of(context).colorScheme.errorContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        state.error!.title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(state.error!.message),
+                      TextButton(
+                        onPressed: () =>
+                            ref.read(examControllerProvider.notifier).restore(),
+                        child: const Text('Try again'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ],
