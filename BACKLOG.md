@@ -126,6 +126,24 @@ Completed in this milestone:
 - Repository coverage for configuration, persistence, ordering, scoring, and completion
 - Static analysis clean, all 9 automated tests passing, and Android debug APK built
 
+**Milestone 5 - Production Question-Bank Pipeline: Implemented (2026-07-23)**
+
+Completed in this milestone:
+- Formal Draft 2020-12 question-bank schema added under `docs/`
+- 120-question production-format bank imported while content remains `ready_for_review`
+- Structural and semantic validation for IDs, categories, sources, options, correct answers, and page ranges
+- Normalized option, source-edition, reference, metadata, removal, and stable answer-selection storage
+- Version-aware transactional updates replace destructive question-bank refreshes
+- Removed questions are retained as tombstones for starred items and historical attempts
+- Practice and exam review show option-level explanations and official source pages
+- Starred-question removal notice and acknowledgement flow added
+
+Still required before production release:
+- Owner editorial approval of every question
+- Content-volume target decision and any additional approved questions
+- Final licensing/attribution review
+- Final manual emulator walkthrough of the production-format feedback and removal messages
+
 ---
 
 # Phase 1: Project Setup & Infrastructure
@@ -227,8 +245,8 @@ Set up Drift SQLite:
 
 ## Task 2.2: Create Database Models - Content Tables
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Content milestone | **Updated:** 2026-07-20  
-**Evidence:** Categories and questions are persisted; options and explanations are stored with each question.  
-**Remaining:** Normalize options/explanations and add official-reference and content-version tables per the full schema.
+**Evidence:** Categories, questions, normalized options, source editions, page references, question metadata, and removal tombstones are persisted through the schema-v5 migration.
+**Remaining:** Reconcile the broader 14-table documentation model and add migration performance measurements.
 **Priority:** P0 | **Effort:** L
 
 Create Drift models for content tables:
@@ -315,8 +333,8 @@ Create data access objects:
 
 ## Task 2.7: Create Database Initialization & JSON Import
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Content milestone | **Updated:** 2026-07-20  
-**Evidence:** Bundled JSON imports transactionally and idempotently, including protection against concurrent startup imports.  
-**Remaining:** Formal schema validation, version migrations, corruption recovery, import diagnostics, and production content volume tests.
+**Evidence:** Bundled JSON validates structurally and semantically, imports transactionally by bank version, updates records without deleting user history, and records removed-question tombstones.
+**Remaining:** Corruption recovery UI, richer import diagnostics, and production-volume performance measurements.
 **Priority:** P0 | **Effort:** L
 
 Implement content loading:
@@ -997,8 +1015,8 @@ Perform manual testing:
 
 ## Task 9.1: Create Question Dataset Structure
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Content milestone | **Updated:** 2026-07-20  
-**Evidence:** Versioned starter JSON contains 12 questions with IDs, categories, four options, a correct index, and explanations.  
-**Remaining:** Difficulty, option-specific explanations, official references, schema documentation, 500+ reviewed questions, and licensing review.
+**Evidence:** Draft 2020-12 schema and a 120-question bank contain stable question/option IDs, difficulty, per-option explanations, source editions, page references, lifecycle status, review metadata, and attribution.
+**Remaining:** Editorial approval, final licensing review, and expansion if the 500+ content target is retained.
 **Priority:** P0 | **Effort:** S
 
 Set up JSON structure:
@@ -1030,8 +1048,8 @@ Create supporting content:
 
 ## Task 9.3: Validate & Test Content Import
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Content milestone | **Updated:** 2026-07-20  
-**Evidence:** Automated tests verify repeat-safe import and expected starter category/question counts.  
-**Remaining:** JSON schema validation, duplicate/reference checks, 500+ item performance tests, and user-facing failure recovery.
+**Evidence:** Runtime validation covers required structure, duplicate IDs, category/source/replacement references, exactly four options, exactly one correct answer, display orders, and page ranges. Focused validation/import tests were added.
+**Remaining:** Run the updated Flutter suite, add production-volume performance tests, and add user-facing recovery for invalid bundled content.
 **Priority:** P1 | **Effort:** M
 
 Verify data:
@@ -1334,6 +1352,7 @@ Phase 12: Deployment (12.1-12.4)
 
 | Date | Change | Verification |
 |---|---|---|
+| 2026-07-23 | Added the production question-bank schema, normalized content pipeline, safe update/removal lifecycle, option explanations, source references, and stable answer IDs. | JSON integrity audit passed for 120 questions and 480 options; analysis clean; all 11 tests passed. |
 | 2026-07-22 | Added the configuration-driven free untimed mock-exam vertical slice and schema-v3 persistence. | Analysis clean; all 9 tests passed; Android debug APK built. |
 | 2026-07-22 | Added multi-category selection and configurable practice length; recorded user-completed emulator checks and reprioritized the queue. | Analysis clean; all 7 automated tests passed. |
 | 2026-07-21 | Added Android debug-build/install evidence, persistent starred questions, five-section navigation, Practice hub, and basic Progress screen; reprioritized the next-up queue. | `flutter doctor` clean; analysis clean; debug APK installed on emulator; all 5 automated tests passed. |

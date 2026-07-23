@@ -102,7 +102,7 @@ class ExamScreen extends ConsumerWidget {
                               : Icons.radio_button_off,
                         ),
                         const SizedBox(width: 12),
-                        Expanded(child: Text(question.options[index])),
+                        Expanded(child: Text(question.options[index].text)),
                       ],
                     ),
                   ),

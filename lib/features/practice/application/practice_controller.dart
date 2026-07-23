@@ -26,6 +26,11 @@ final starredQuestionsProvider = FutureProvider<List<StudyQuestionModel>>(
   (ref) => ref.watch(practiceRepositoryProvider).starredQuestions(),
 );
 
+final removedStarredQuestionsProvider =
+    FutureProvider<List<RemovedStarredQuestionModel>>(
+      (ref) => ref.watch(practiceRepositoryProvider).removedStarredQuestions(),
+    );
+
 class PracticeState {
   const PracticeState({
     this.loading = false,

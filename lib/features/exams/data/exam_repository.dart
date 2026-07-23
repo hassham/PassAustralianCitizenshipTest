@@ -98,6 +98,17 @@ class ExamRepository {
     final answerRows = await (database.select(
       database.examAttemptAnswers,
     )..where((row) => row.examAttemptId.equals(attempt.id))).get();
+    final savedOptions = await database
+        .customSelect(
+          'SELECT owner_id, option_id FROM answer_option_selections '
+          'WHERE owner_type = ?',
+          variables: [Variable.withString('exam_answer')],
+        )
+        .get();
+    final optionIdByAnswerId = {
+      for (final row in savedOptions)
+        row.read<int>('owner_id'): row.read<String>('option_id'),
+    };
     return RestoredExamModel(
       attemptId: attempt.id,
       config: _configModel(examConfig),
@@ -105,7 +116,12 @@ class ExamRepository {
       answers: {
         for (final answer in answerRows)
           if (answer.selectedIndex != null)
-            answer.questionOrder: answer.selectedIndex!,
+            answer.questionOrder: _restoredOptionIndex(
+              answer.questionOrder,
+              answer.selectedIndex!,
+              optionIdByAnswerId[answer.id],
+              questions,
+            ),
       },
       currentIndex: attempt.currentQuestionIndex.clamp(0, questions.length - 1),
     );
@@ -115,6 +131,7 @@ class ExamRepository {
     required int attemptId,
     required int questionOrder,
     required int selectedIndex,
+    required String selectedOptionId,
   }) async {
     await (database.update(database.examAttemptAnswers)..where(
           (row) =>
@@ -127,6 +144,18 @@ class ExamRepository {
             answeredAt: Value(DateTime.now()),
           ),
         );
+    final answer =
+        await (database.select(database.examAttemptAnswers)..where(
+              (row) =>
+                  row.examAttemptId.equals(attemptId) &
+                  row.questionOrder.equals(questionOrder),
+            ))
+            .getSingle();
+    await database.customStatement(
+      'INSERT OR REPLACE INTO answer_option_selections '
+      '(owner_type, owner_id, option_id) VALUES (?, ?, ?)',
+      ['exam_answer', answer.id, selectedOptionId],
+    );
   }
 
   Future<void> savePosition(int attemptId, int index) async {
@@ -193,4 +222,19 @@ class ExamRepository {
     durationMinutes: row.durationMinutes,
     passPercentage: row.passPercentage,
   );
+
+  int _restoredOptionIndex(
+    int questionOrder,
+    int legacyIndex,
+    String? optionId,
+    List<StudyQuestionModel> questions,
+  ) {
+    if (optionId == null || questionOrder >= questions.length) {
+      return legacyIndex;
+    }
+    final index = questions[questionOrder].options.indexWhere(
+      (option) => option.id == optionId,
+    );
+    return index < 0 ? legacyIndex : index;
+  }
 }

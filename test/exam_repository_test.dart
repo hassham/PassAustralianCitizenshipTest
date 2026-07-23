@@ -21,12 +21,13 @@ void main() {
     final started = await repository.startExam();
     expect(started.config.questionCount, 20);
     expect(started.config.passPercentage, 75);
-    expect(started.questions, hasLength(12));
+    expect(started.questions, hasLength(20));
 
     await repository.saveAnswer(
       attemptId: started.attemptId,
       questionOrder: 0,
       selectedIndex: 2,
+      selectedOptionId: started.questions.first.options[2].id,
     );
     await repository.savePosition(started.attemptId, 3);
 
@@ -55,8 +56,8 @@ void main() {
 
     expect(result.correct, 1);
     expect(result.incorrect, 1);
-    expect(result.unanswered, 10);
-    expect(result.score, closeTo(100 / 12, 0.001));
+    expect(result.unanswered, 18);
+    expect(result.score, closeTo(5, 0.001));
     expect(result.passed, isFalse);
     expect(await repository.restoreExam(), isNull);
   });

@@ -23,8 +23,14 @@ void main() {
     final categories = await repository.categories();
     final questions = await repository.questions();
 
-    expect(categories, hasLength(3));
-    expect(questions, hasLength(12));
+    expect(categories, hasLength(4));
+    expect(questions, hasLength(120));
+    expect(questions.first.options, hasLength(4));
+    expect(
+      questions.first.options.every((option) => option.explanation.isNotEmpty),
+      isTrue,
+    );
+    expect(questions.first.references, isNotEmpty);
   });
 
   test('records progress and restores an unfinished session', () async {
@@ -63,14 +69,14 @@ void main() {
 
   test('filters multiple categories and limits the session length', () async {
     final questions = await repository.questionsFor(
-      categoryIds: {'values', 'history'},
+      categoryIds: {'values', 'people'},
       limit: 5,
     );
 
     expect(questions, hasLength(5));
     expect(
       questions.every(
-        (question) => {'values', 'history'}.contains(question.categoryId),
+        (question) => {'values', 'people'}.contains(question.categoryId),
       ),
       isTrue,
     );

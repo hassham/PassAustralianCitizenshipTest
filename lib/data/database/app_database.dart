@@ -116,11 +116,14 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (migrator) => migrator.createAll(),
+    onCreate: (migrator) async {
+      await migrator.createAll();
+      await _createNormalizedContentTables();
+    },
     onUpgrade: (migrator, from, to) async {
       if (from < 2) await migrator.createTable(starredQuestions);
       if (from < 3) {
@@ -128,11 +131,77 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(examAttempts);
         await migrator.createTable(examAttemptAnswers);
       }
-      if (from < 4) {
-        await migrator.createTable(appSettings);
-      }
+      if (from < 4) await migrator.createTable(appSettings);
+      if (from < 5) await _createNormalizedContentTables();
     },
   );
+
+  Future<void> _createNormalizedContentTables() async {
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS question_options (
+        id TEXT PRIMARY KEY NOT NULL,
+        question_id TEXT NOT NULL,
+        option_text TEXT NOT NULL,
+        is_correct INTEGER NOT NULL CHECK (is_correct IN (0, 1)),
+        explanation TEXT NOT NULL,
+        display_order INTEGER NOT NULL
+      )
+    ''');
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS question_metadata (
+        question_id TEXT PRIMARY KEY NOT NULL,
+        revision INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        difficulty TEXT NOT NULL,
+        is_australian_values INTEGER NOT NULL CHECK (is_australian_values IN (0, 1))
+      )
+    ''');
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_question_options_question '
+      'ON question_options(question_id, display_order)',
+    );
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS source_editions (
+        id TEXT PRIMARY KEY NOT NULL,
+        title TEXT NOT NULL,
+        publisher TEXT NOT NULL,
+        edition TEXT NOT NULL,
+        publication_year INTEGER NOT NULL,
+        url TEXT NOT NULL,
+        licence TEXT NOT NULL
+      )
+    ''');
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS question_references (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        question_id TEXT NOT NULL,
+        source_edition_id TEXT NOT NULL,
+        part TEXT NOT NULL,
+        chapter TEXT,
+        section TEXT NOT NULL,
+        page_start INTEGER NOT NULL,
+        page_end INTEGER NOT NULL,
+        notes TEXT
+      )
+    ''');
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS removed_questions (
+        question_id TEXT PRIMARY KEY NOT NULL,
+        removed_at TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        replacement_question_id TEXT,
+        user_message TEXT NOT NULL
+      )
+    ''');
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS answer_option_selections (
+        owner_type TEXT NOT NULL,
+        owner_id INTEGER NOT NULL,
+        option_id TEXT NOT NULL,
+        PRIMARY KEY (owner_type, owner_id)
+      )
+    ''');
+  }
 
   Future<PracticeSession?> activeSession() =>
       (select(practiceSessions)

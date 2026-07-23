@@ -101,6 +101,7 @@ class ExamController extends StateNotifier<ExamState> {
       attemptId: attemptId,
       questionOrder: state.currentIndex,
       selectedIndex: optionIndex,
+      selectedOptionId: state.current!.options[optionIndex].id,
     );
   }
 

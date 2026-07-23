@@ -15,11 +15,21 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [databaseProvider.overrideWithValue(database)],
+        overrides: [
+          databaseProvider.overrideWithValue(database),
+          categoriesProvider.overrideWith(
+            (_) async => const [
+              CategoryModel('values', 'Australian values', 30),
+            ],
+          ),
+          progressProvider.overrideWith(
+            (_) async => const ProgressSummary(0, 0),
+          ),
+        ],
         child: const CitizenshipStudyApp(),
       ),
     );
-    await tester.pump(const Duration(seconds: 2));
+    await tester.pump(const Duration(seconds: 5));
 
     expect(find.text('Learn with confidence'), findsOneWidget);
     expect(find.text('Practice all categories'), findsOneWidget);
@@ -32,11 +42,17 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [databaseProvider.overrideWithValue(database)],
+        overrides: [
+          databaseProvider.overrideWithValue(database),
+          categoriesProvider.overrideWith((_) async => const []),
+          progressProvider.overrideWith(
+            (_) async => const ProgressSummary(0, 0),
+          ),
+        ],
         child: const CitizenshipStudyApp(),
       ),
     );
-    await tester.pump(const Duration(seconds: 2));
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Practice'), findsOneWidget);

@@ -52,13 +52,31 @@ class ExamReviewScreen extends ConsumerWidget {
                   Text(
                     selected == null
                         ? 'Your answer: Unanswered'
-                        : 'Your answer: ${question.options[selected]}',
+                        : 'Your answer: ${question.options[selected].text}',
                   ),
-                  Text(
-                    'Correct answer: ${question.options[question.correctIndex]}',
-                  ),
+                  Text('Correct answer: ${question.correctOption.text}'),
                   const SizedBox(height: 8),
-                  Text(question.explanation),
+                  if (selected != null) ...[
+                    const SizedBox(height: 8),
+                    Text(question.options[selected].explanation),
+                  ],
+                  if (!correct && selected != null) ...[
+                    const SizedBox(height: 8),
+                    Text(question.correctOption.explanation),
+                  ],
+                  if (question.overallExplanation.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(question.overallExplanation),
+                  ],
+                  if (question.references.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      '${question.references.first.sourceTitle}, '
+                      '${question.references.first.section}, '
+                      '${question.references.first.pageLabel}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
                 ],
               ),
             ),

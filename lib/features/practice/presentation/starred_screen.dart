@@ -23,6 +23,7 @@ class StarredScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final starred = ref.watch(starredQuestionsProvider);
+    final removed = ref.watch(removedStarredQuestionsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Starred questions')),
       body: SafeArea(
@@ -32,7 +33,8 @@ class StarredScreen extends ConsumerWidget {
             child: Text('Starred questions could not be loaded: $error'),
           ),
           data: (questions) {
-            if (questions.isEmpty) {
+            final removedQuestions = removed.valueOrNull ?? const [];
+            if (questions.isEmpty && removedQuestions.isEmpty) {
               return const Center(
                 child: Padding(
                   padding: EdgeInsets.all(32),
@@ -61,16 +63,47 @@ class StarredScreen extends ConsumerWidget {
             return ListView(
               padding: const EdgeInsets.all(20),
               children: [
+                if (removedQuestions.isNotEmpty) ...[
+                  Card(
+                    color: Theme.of(context).colorScheme.errorContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            removedQuestions.length == 1
+                                ? removedQuestions.first.message
+                                : '${removedQuestions.length} starred questions are no longer available because the question bank was updated.',
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: () async {
+                              await ref
+                                  .read(practiceRepositoryProvider)
+                                  .acknowledgeRemovedStarred();
+                              ref.invalidate(removedStarredQuestionsProvider);
+                              ref.invalidate(starredQuestionsProvider);
+                            },
+                            child: const Text('Dismiss'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 Text(
                   '${questions.length} saved',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 12),
-                FilledButton.icon(
-                  onPressed: () => _start(context, ref),
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('Practise starred questions'),
-                ),
+                if (questions.isNotEmpty)
+                  FilledButton.icon(
+                    onPressed: () => _start(context, ref),
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Practise starred questions'),
+                  ),
                 const SizedBox(height: 20),
                 ...questions.map(
                   (question) => Padding(

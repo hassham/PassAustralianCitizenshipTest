@@ -64,6 +64,8 @@ class PracticeScreen extends ConsumerWidget {
                     if (index == question.options.length) {
                       final correct =
                           state.selectedIndex == question.correctIndex;
+                      final selectedOption =
+                          question.options[state.selectedIndex!];
                       return Semantics(
                         liveRegion: true,
                         child: Card(
@@ -82,7 +84,33 @@ class PracticeScreen extends ConsumerWidget {
                                   ).textTheme.titleMedium,
                                 ),
                                 const SizedBox(height: 6),
-                                Text(question.explanation),
+                                Text(selectedOption.explanation),
+                                if (!correct) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Correct answer: ${question.correctOption.text}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(question.correctOption.explanation),
+                                ],
+                                if (question.overallExplanation.isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  Text(question.overallExplanation),
+                                ],
+                                if (question.references.isNotEmpty) ...[
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    '${question.references.first.sourceTitle}, '
+                                    '${question.references.first.section}, '
+                                    '${question.references.first.pageLabel}',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
+                                ],
                               ],
                             ),
                           ),
@@ -98,7 +126,8 @@ class PracticeScreen extends ConsumerWidget {
                     return Semantics(
                       button: true,
                       selected: index == state.selectedIndex,
-                      label: 'Answer ${index + 1}: ${question.options[index]}',
+                      label:
+                          'Answer ${index + 1}: ${question.options[index].text}',
                       child: OutlinedButton(
                         onPressed: answered
                             ? null
@@ -128,7 +157,7 @@ class PracticeScreen extends ConsumerWidget {
                                 : 1,
                           ),
                         ),
-                        child: Text(question.options[index]),
+                        child: Text(question.options[index].text),
                       ),
                     );
                   },
