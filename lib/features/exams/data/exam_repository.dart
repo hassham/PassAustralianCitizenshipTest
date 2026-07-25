@@ -9,6 +9,7 @@ import '../../practice/data/practice_repository.dart';
 import 'package:pass_citizenship_test/features/practice/domain/study_question.dart';
 import '../domain/exam_models.dart';
 import '../domain/exam_history_models.dart';
+import '../domain/exam_timer_engine.dart';
 
 class ExamRepository {
   ExamRepository(this.database, this.practiceRepository);
@@ -55,9 +56,14 @@ class ExamRepository {
     );
   }
 
-  Future<RestoredExamModel> startExam() async {
+  Future<RestoredExamModel> startExam({
+    bool timed = false,
+    DateTime? now,
+  }) async {
     await abandonActiveExam();
     final examConfig = await config();
+    final startedAt = now ?? DateTime.now();
+    final durationSeconds = examConfig.durationMinutes * 60;
     final questions = await practiceRepository.questionsFor(
       limit: examConfig.questionCount,
     );
@@ -70,7 +76,10 @@ class ExamRepository {
               questions.map((question) => question.id).toList(),
             ),
             totalQuestions: questions.length,
-            startedAt: DateTime.now(),
+            startedAt: startedAt,
+            isPremiumTimed: Value(timed),
+            remainingTimeSeconds: Value(timed ? durationSeconds : null),
+            lastObservedAt: Value(timed ? startedAt : null),
           ),
         );
     await database.batch((batch) {
@@ -92,10 +101,13 @@ class ExamRepository {
       questions: questions,
       answers: const {},
       currentIndex: 0,
+      isTimed: timed,
+      remainingSeconds: timed ? durationSeconds : null,
+      lastObservedAt: timed ? startedAt : null,
     );
   }
 
-  Future<RestoredExamModel?> restoreExam() async {
+  Future<RestoredExamModel?> restoreExam({DateTime? now}) async {
     final attempt = await database.activeExamAttempt();
     if (attempt == null) return null;
     final examConfig = await (database.select(
@@ -126,6 +138,23 @@ class ExamRepository {
       for (final row in savedOptions)
         row.read<int>('owner_id'): row.read<String>('option_id'),
     };
+    int? remainingSeconds = attempt.remainingTimeSeconds;
+    DateTime? lastObservedAt = attempt.lastObservedAt;
+    var timerLocked = attempt.timerLocked;
+    if (attempt.isPremiumTimed &&
+        remainingSeconds != null &&
+        lastObservedAt != null) {
+      final snapshot = ExamTimerEngine.advance(
+        remainingSeconds: remainingSeconds,
+        lastObservedAt: lastObservedAt,
+        now: now ?? DateTime.now(),
+        locked: timerLocked,
+      );
+      remainingSeconds = snapshot.remainingSeconds;
+      lastObservedAt = snapshot.observedAt;
+      timerLocked = snapshot.locked;
+      await saveTimer(attempt.id, snapshot, clearBackgroundedAt: true);
+    }
     return RestoredExamModel(
       attemptId: attempt.id,
       config: _configModel(examConfig),
@@ -141,6 +170,45 @@ class ExamRepository {
             ),
       },
       currentIndex: attempt.currentQuestionIndex.clamp(0, questions.length - 1),
+      isTimed: attempt.isPremiumTimed,
+      remainingSeconds: remainingSeconds,
+      lastObservedAt: lastObservedAt,
+      timerLocked: timerLocked,
+    );
+  }
+
+  Future<void> saveTimer(
+    int attemptId,
+    ExamTimerSnapshot snapshot, {
+    bool clearBackgroundedAt = false,
+  }) async {
+    await (database.update(
+      database.examAttempts,
+    )..where((row) => row.id.equals(attemptId))).write(
+      ExamAttemptsCompanion(
+        remainingTimeSeconds: Value(snapshot.remainingSeconds),
+        lastObservedAt: Value(snapshot.observedAt),
+        timerLocked: Value(snapshot.locked),
+        backgroundedAt: clearBackgroundedAt
+            ? const Value(null)
+            : const Value.absent(),
+      ),
+    );
+  }
+
+  Future<void> markBackgrounded(
+    int attemptId,
+    ExamTimerSnapshot snapshot,
+  ) async {
+    await (database.update(
+      database.examAttempts,
+    )..where((row) => row.id.equals(attemptId))).write(
+      ExamAttemptsCompanion(
+        remainingTimeSeconds: Value(snapshot.remainingSeconds),
+        lastObservedAt: Value(snapshot.observedAt),
+        backgroundedAt: Value(snapshot.observedAt),
+        timerLocked: Value(snapshot.locked),
+      ),
     );
   }
 
@@ -186,6 +254,8 @@ class ExamRepository {
     required List<StudyQuestionModel> questions,
     required Map<int, int> answers,
     required double passPercentage,
+    bool timedOut = false,
+    int? remainingSeconds,
   }) async {
     var correct = 0;
     for (var index = 0; index < questions.length; index++) {
@@ -208,6 +278,18 @@ class ExamRepository {
     final incorrect = answers.length - correct;
     final score = questions.isEmpty ? 0.0 : correct * 100 / questions.length;
     final passed = score >= passPercentage;
+    final attempt = await (database.select(
+      database.examAttempts,
+    )..where((row) => row.id.equals(attemptId))).getSingle();
+    final configuredSeconds =
+        (await (database.select(
+              database.examConfigurations,
+            )..where((row) => row.id.equals(attempt.configId))).getSingle())
+            .durationMinutes *
+        60;
+    final timeTaken = attempt.isPremiumTimed
+        ? configuredSeconds - (remainingSeconds ?? 0)
+        : null;
     await (database.update(
       database.examAttempts,
     )..where((row) => row.id.equals(attemptId))).write(
@@ -216,6 +298,10 @@ class ExamRepository {
         isPassed: Value(passed),
         submittedAt: Value(DateTime.now()),
         isCompleted: const Value(true),
+        remainingTimeSeconds: attempt.isPremiumTimed
+            ? Value(remainingSeconds ?? 0)
+            : const Value.absent(),
+        timeTakenSeconds: Value(timeTaken),
       ),
     );
     return ExamResultModel(
@@ -224,6 +310,8 @@ class ExamRepository {
       correct: correct,
       incorrect: incorrect,
       unanswered: unanswered,
+      timedOut: timedOut,
+      timeTakenSeconds: timeTaken,
     );
   }
 
@@ -260,6 +348,8 @@ class ExamRepository {
           passed: attempt.isPassed ?? false,
           totalQuestions: attempt.totalQuestions,
           correctAnswers: correct,
+          isTimed: attempt.isPremiumTimed,
+          timeTakenSeconds: attempt.timeTakenSeconds,
         ),
       );
     }

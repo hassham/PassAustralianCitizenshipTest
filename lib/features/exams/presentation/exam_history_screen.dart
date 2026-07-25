@@ -53,10 +53,24 @@ class ExamHistoryScreen extends ConsumerWidget {
               onRefresh: () => ref.refresh(examHistoryProvider.future),
               child: ListView.separated(
                 padding: const EdgeInsets.all(20),
-                itemCount: attempts.length,
+                itemCount: attempts.length + (attempts.length >= 2 ? 1 : 0),
                 separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
-                  final attempt = attempts[index];
+                  if (attempts.length >= 2 && index == 0) {
+                    return Card(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      child: ListTile(
+                        leading: const Icon(Icons.trending_up),
+                        title: const Text('Exam trend'),
+                        subtitle: Text(
+                          '${attempts.last.score.toStringAsFixed(0)}% → '
+                          '${attempts.first.score.toStringAsFixed(0)}%',
+                        ),
+                      ),
+                    );
+                  }
+                  final attempt =
+                      attempts[index - (attempts.length >= 2 ? 1 : 0)];
                   return Card(
                     child: ListTile(
                       leading: CircleAvatar(
@@ -73,7 +87,8 @@ class ExamHistoryScreen extends ConsumerWidget {
                       ),
                       subtitle: Text(
                         '${attempt.correctAnswers}/${attempt.totalQuestions} correct · '
-                        '${MaterialLocalizations.of(context).formatMediumDate(attempt.completedAt)}',
+                        '${MaterialLocalizations.of(context).formatMediumDate(attempt.completedAt)}'
+                        '${attempt.timeTakenSeconds == null ? '' : ' · ${_duration(attempt.timeTakenSeconds!)}'}',
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => context.pushNamed(
@@ -90,4 +105,10 @@ class ExamHistoryScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+String _duration(int seconds) {
+  final minutes = seconds ~/ 60;
+  final remainder = seconds % 60;
+  return '$minutes:${remainder.toString().padLeft(2, '0')}';
 }

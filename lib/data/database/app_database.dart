@@ -79,6 +79,12 @@ class ExamAttempts extends Table {
   BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
   BoolColumn get isPremiumTimed =>
       boolean().withDefault(const Constant(false))();
+  IntColumn get remainingTimeSeconds => integer().nullable()();
+  DateTimeColumn get lastObservedAt => dateTime().nullable()();
+  DateTimeColumn get backgroundedAt => dateTime().nullable()();
+  BoolColumn get timerLocked => boolean().withDefault(const Constant(false))();
+  IntColumn get timeTakenSeconds => integer().nullable()();
+  RealColumn get readinessScore => real().nullable()();
 }
 
 class ExamAttemptAnswers extends Table {
@@ -118,7 +124,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -140,6 +146,20 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 4) await migrator.createTable(appSettings);
           if (from < 5) await _createNormalizedContentTables();
+          if (from < 6) {
+            await migrator.addColumn(
+              examAttempts,
+              examAttempts.remainingTimeSeconds,
+            );
+            await migrator.addColumn(examAttempts, examAttempts.lastObservedAt);
+            await migrator.addColumn(examAttempts, examAttempts.backgroundedAt);
+            await migrator.addColumn(examAttempts, examAttempts.timerLocked);
+            await migrator.addColumn(
+              examAttempts,
+              examAttempts.timeTakenSeconds,
+            );
+            await migrator.addColumn(examAttempts, examAttempts.readinessScore);
+          }
         },
         warningThreshold: const Duration(seconds: 2),
       );

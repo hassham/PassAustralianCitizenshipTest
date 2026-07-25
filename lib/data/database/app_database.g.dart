@@ -2313,6 +2313,77 @@ class $ExamAttemptsTable extends ExamAttempts
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _remainingTimeSecondsMeta =
+      const VerificationMeta('remainingTimeSeconds');
+  @override
+  late final GeneratedColumn<int> remainingTimeSeconds = GeneratedColumn<int>(
+    'remaining_time_seconds',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastObservedAtMeta = const VerificationMeta(
+    'lastObservedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastObservedAt =
+      GeneratedColumn<DateTime>(
+        'last_observed_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _backgroundedAtMeta = const VerificationMeta(
+    'backgroundedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> backgroundedAt =
+      GeneratedColumn<DateTime>(
+        'backgrounded_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _timerLockedMeta = const VerificationMeta(
+    'timerLocked',
+  );
+  @override
+  late final GeneratedColumn<bool> timerLocked = GeneratedColumn<bool>(
+    'timer_locked',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("timer_locked" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _timeTakenSecondsMeta = const VerificationMeta(
+    'timeTakenSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> timeTakenSeconds = GeneratedColumn<int>(
+    'time_taken_seconds',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _readinessScoreMeta = const VerificationMeta(
+    'readinessScore',
+  );
+  @override
+  late final GeneratedColumn<double> readinessScore = GeneratedColumn<double>(
+    'readiness_score',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2326,6 +2397,12 @@ class $ExamAttemptsTable extends ExamAttempts
     submittedAt,
     isCompleted,
     isPremiumTimed,
+    remainingTimeSeconds,
+    lastObservedAt,
+    backgroundedAt,
+    timerLocked,
+    timeTakenSeconds,
+    readinessScore,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2428,6 +2505,60 @@ class $ExamAttemptsTable extends ExamAttempts
         ),
       );
     }
+    if (data.containsKey('remaining_time_seconds')) {
+      context.handle(
+        _remainingTimeSecondsMeta,
+        remainingTimeSeconds.isAcceptableOrUnknown(
+          data['remaining_time_seconds']!,
+          _remainingTimeSecondsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_observed_at')) {
+      context.handle(
+        _lastObservedAtMeta,
+        lastObservedAt.isAcceptableOrUnknown(
+          data['last_observed_at']!,
+          _lastObservedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('backgrounded_at')) {
+      context.handle(
+        _backgroundedAtMeta,
+        backgroundedAt.isAcceptableOrUnknown(
+          data['backgrounded_at']!,
+          _backgroundedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('timer_locked')) {
+      context.handle(
+        _timerLockedMeta,
+        timerLocked.isAcceptableOrUnknown(
+          data['timer_locked']!,
+          _timerLockedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('time_taken_seconds')) {
+      context.handle(
+        _timeTakenSecondsMeta,
+        timeTakenSeconds.isAcceptableOrUnknown(
+          data['time_taken_seconds']!,
+          _timeTakenSecondsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('readiness_score')) {
+      context.handle(
+        _readinessScoreMeta,
+        readinessScore.isAcceptableOrUnknown(
+          data['readiness_score']!,
+          _readinessScoreMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -2481,6 +2612,30 @@ class $ExamAttemptsTable extends ExamAttempts
         DriftSqlType.bool,
         data['${effectivePrefix}is_premium_timed'],
       )!,
+      remainingTimeSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}remaining_time_seconds'],
+      ),
+      lastObservedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_observed_at'],
+      ),
+      backgroundedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}backgrounded_at'],
+      ),
+      timerLocked: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}timer_locked'],
+      )!,
+      timeTakenSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}time_taken_seconds'],
+      ),
+      readinessScore: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}readiness_score'],
+      ),
     );
   }
 
@@ -2502,6 +2657,12 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
   final DateTime? submittedAt;
   final bool isCompleted;
   final bool isPremiumTimed;
+  final int? remainingTimeSeconds;
+  final DateTime? lastObservedAt;
+  final DateTime? backgroundedAt;
+  final bool timerLocked;
+  final int? timeTakenSeconds;
+  final double? readinessScore;
   const ExamAttempt({
     required this.id,
     required this.configId,
@@ -2514,6 +2675,12 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
     this.submittedAt,
     required this.isCompleted,
     required this.isPremiumTimed,
+    this.remainingTimeSeconds,
+    this.lastObservedAt,
+    this.backgroundedAt,
+    required this.timerLocked,
+    this.timeTakenSeconds,
+    this.readinessScore,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2535,6 +2702,22 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
     }
     map['is_completed'] = Variable<bool>(isCompleted);
     map['is_premium_timed'] = Variable<bool>(isPremiumTimed);
+    if (!nullToAbsent || remainingTimeSeconds != null) {
+      map['remaining_time_seconds'] = Variable<int>(remainingTimeSeconds);
+    }
+    if (!nullToAbsent || lastObservedAt != null) {
+      map['last_observed_at'] = Variable<DateTime>(lastObservedAt);
+    }
+    if (!nullToAbsent || backgroundedAt != null) {
+      map['backgrounded_at'] = Variable<DateTime>(backgroundedAt);
+    }
+    map['timer_locked'] = Variable<bool>(timerLocked);
+    if (!nullToAbsent || timeTakenSeconds != null) {
+      map['time_taken_seconds'] = Variable<int>(timeTakenSeconds);
+    }
+    if (!nullToAbsent || readinessScore != null) {
+      map['readiness_score'] = Variable<double>(readinessScore);
+    }
     return map;
   }
 
@@ -2557,6 +2740,22 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
           : Value(submittedAt),
       isCompleted: Value(isCompleted),
       isPremiumTimed: Value(isPremiumTimed),
+      remainingTimeSeconds: remainingTimeSeconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remainingTimeSeconds),
+      lastObservedAt: lastObservedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastObservedAt),
+      backgroundedAt: backgroundedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(backgroundedAt),
+      timerLocked: Value(timerLocked),
+      timeTakenSeconds: timeTakenSeconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(timeTakenSeconds),
+      readinessScore: readinessScore == null && nullToAbsent
+          ? const Value.absent()
+          : Value(readinessScore),
     );
   }
 
@@ -2581,6 +2780,14 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
       submittedAt: serializer.fromJson<DateTime?>(json['submittedAt']),
       isCompleted: serializer.fromJson<bool>(json['isCompleted']),
       isPremiumTimed: serializer.fromJson<bool>(json['isPremiumTimed']),
+      remainingTimeSeconds: serializer.fromJson<int?>(
+        json['remainingTimeSeconds'],
+      ),
+      lastObservedAt: serializer.fromJson<DateTime?>(json['lastObservedAt']),
+      backgroundedAt: serializer.fromJson<DateTime?>(json['backgroundedAt']),
+      timerLocked: serializer.fromJson<bool>(json['timerLocked']),
+      timeTakenSeconds: serializer.fromJson<int?>(json['timeTakenSeconds']),
+      readinessScore: serializer.fromJson<double?>(json['readinessScore']),
     );
   }
   @override
@@ -2598,6 +2805,12 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
       'submittedAt': serializer.toJson<DateTime?>(submittedAt),
       'isCompleted': serializer.toJson<bool>(isCompleted),
       'isPremiumTimed': serializer.toJson<bool>(isPremiumTimed),
+      'remainingTimeSeconds': serializer.toJson<int?>(remainingTimeSeconds),
+      'lastObservedAt': serializer.toJson<DateTime?>(lastObservedAt),
+      'backgroundedAt': serializer.toJson<DateTime?>(backgroundedAt),
+      'timerLocked': serializer.toJson<bool>(timerLocked),
+      'timeTakenSeconds': serializer.toJson<int?>(timeTakenSeconds),
+      'readinessScore': serializer.toJson<double?>(readinessScore),
     };
   }
 
@@ -2613,6 +2826,12 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
     Value<DateTime?> submittedAt = const Value.absent(),
     bool? isCompleted,
     bool? isPremiumTimed,
+    Value<int?> remainingTimeSeconds = const Value.absent(),
+    Value<DateTime?> lastObservedAt = const Value.absent(),
+    Value<DateTime?> backgroundedAt = const Value.absent(),
+    bool? timerLocked,
+    Value<int?> timeTakenSeconds = const Value.absent(),
+    Value<double?> readinessScore = const Value.absent(),
   }) => ExamAttempt(
     id: id ?? this.id,
     configId: configId ?? this.configId,
@@ -2625,6 +2844,22 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
     submittedAt: submittedAt.present ? submittedAt.value : this.submittedAt,
     isCompleted: isCompleted ?? this.isCompleted,
     isPremiumTimed: isPremiumTimed ?? this.isPremiumTimed,
+    remainingTimeSeconds: remainingTimeSeconds.present
+        ? remainingTimeSeconds.value
+        : this.remainingTimeSeconds,
+    lastObservedAt: lastObservedAt.present
+        ? lastObservedAt.value
+        : this.lastObservedAt,
+    backgroundedAt: backgroundedAt.present
+        ? backgroundedAt.value
+        : this.backgroundedAt,
+    timerLocked: timerLocked ?? this.timerLocked,
+    timeTakenSeconds: timeTakenSeconds.present
+        ? timeTakenSeconds.value
+        : this.timeTakenSeconds,
+    readinessScore: readinessScore.present
+        ? readinessScore.value
+        : this.readinessScore,
   );
   ExamAttempt copyWithCompanion(ExamAttemptsCompanion data) {
     return ExamAttempt(
@@ -2651,6 +2886,24 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
       isPremiumTimed: data.isPremiumTimed.present
           ? data.isPremiumTimed.value
           : this.isPremiumTimed,
+      remainingTimeSeconds: data.remainingTimeSeconds.present
+          ? data.remainingTimeSeconds.value
+          : this.remainingTimeSeconds,
+      lastObservedAt: data.lastObservedAt.present
+          ? data.lastObservedAt.value
+          : this.lastObservedAt,
+      backgroundedAt: data.backgroundedAt.present
+          ? data.backgroundedAt.value
+          : this.backgroundedAt,
+      timerLocked: data.timerLocked.present
+          ? data.timerLocked.value
+          : this.timerLocked,
+      timeTakenSeconds: data.timeTakenSeconds.present
+          ? data.timeTakenSeconds.value
+          : this.timeTakenSeconds,
+      readinessScore: data.readinessScore.present
+          ? data.readinessScore.value
+          : this.readinessScore,
     );
   }
 
@@ -2667,7 +2920,13 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
           ..write('startedAt: $startedAt, ')
           ..write('submittedAt: $submittedAt, ')
           ..write('isCompleted: $isCompleted, ')
-          ..write('isPremiumTimed: $isPremiumTimed')
+          ..write('isPremiumTimed: $isPremiumTimed, ')
+          ..write('remainingTimeSeconds: $remainingTimeSeconds, ')
+          ..write('lastObservedAt: $lastObservedAt, ')
+          ..write('backgroundedAt: $backgroundedAt, ')
+          ..write('timerLocked: $timerLocked, ')
+          ..write('timeTakenSeconds: $timeTakenSeconds, ')
+          ..write('readinessScore: $readinessScore')
           ..write(')'))
         .toString();
   }
@@ -2685,6 +2944,12 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
     submittedAt,
     isCompleted,
     isPremiumTimed,
+    remainingTimeSeconds,
+    lastObservedAt,
+    backgroundedAt,
+    timerLocked,
+    timeTakenSeconds,
+    readinessScore,
   );
   @override
   bool operator ==(Object other) =>
@@ -2700,7 +2965,13 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
           other.startedAt == this.startedAt &&
           other.submittedAt == this.submittedAt &&
           other.isCompleted == this.isCompleted &&
-          other.isPremiumTimed == this.isPremiumTimed);
+          other.isPremiumTimed == this.isPremiumTimed &&
+          other.remainingTimeSeconds == this.remainingTimeSeconds &&
+          other.lastObservedAt == this.lastObservedAt &&
+          other.backgroundedAt == this.backgroundedAt &&
+          other.timerLocked == this.timerLocked &&
+          other.timeTakenSeconds == this.timeTakenSeconds &&
+          other.readinessScore == this.readinessScore);
 }
 
 class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
@@ -2715,6 +2986,12 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
   final Value<DateTime?> submittedAt;
   final Value<bool> isCompleted;
   final Value<bool> isPremiumTimed;
+  final Value<int?> remainingTimeSeconds;
+  final Value<DateTime?> lastObservedAt;
+  final Value<DateTime?> backgroundedAt;
+  final Value<bool> timerLocked;
+  final Value<int?> timeTakenSeconds;
+  final Value<double?> readinessScore;
   const ExamAttemptsCompanion({
     this.id = const Value.absent(),
     this.configId = const Value.absent(),
@@ -2727,6 +3004,12 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     this.submittedAt = const Value.absent(),
     this.isCompleted = const Value.absent(),
     this.isPremiumTimed = const Value.absent(),
+    this.remainingTimeSeconds = const Value.absent(),
+    this.lastObservedAt = const Value.absent(),
+    this.backgroundedAt = const Value.absent(),
+    this.timerLocked = const Value.absent(),
+    this.timeTakenSeconds = const Value.absent(),
+    this.readinessScore = const Value.absent(),
   });
   ExamAttemptsCompanion.insert({
     this.id = const Value.absent(),
@@ -2740,6 +3023,12 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     this.submittedAt = const Value.absent(),
     this.isCompleted = const Value.absent(),
     this.isPremiumTimed = const Value.absent(),
+    this.remainingTimeSeconds = const Value.absent(),
+    this.lastObservedAt = const Value.absent(),
+    this.backgroundedAt = const Value.absent(),
+    this.timerLocked = const Value.absent(),
+    this.timeTakenSeconds = const Value.absent(),
+    this.readinessScore = const Value.absent(),
   }) : configId = Value(configId),
        selectedQuestionsJson = Value(selectedQuestionsJson),
        totalQuestions = Value(totalQuestions),
@@ -2756,6 +3045,12 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     Expression<DateTime>? submittedAt,
     Expression<bool>? isCompleted,
     Expression<bool>? isPremiumTimed,
+    Expression<int>? remainingTimeSeconds,
+    Expression<DateTime>? lastObservedAt,
+    Expression<DateTime>? backgroundedAt,
+    Expression<bool>? timerLocked,
+    Expression<int>? timeTakenSeconds,
+    Expression<double>? readinessScore,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2771,6 +3066,13 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
       if (submittedAt != null) 'submitted_at': submittedAt,
       if (isCompleted != null) 'is_completed': isCompleted,
       if (isPremiumTimed != null) 'is_premium_timed': isPremiumTimed,
+      if (remainingTimeSeconds != null)
+        'remaining_time_seconds': remainingTimeSeconds,
+      if (lastObservedAt != null) 'last_observed_at': lastObservedAt,
+      if (backgroundedAt != null) 'backgrounded_at': backgroundedAt,
+      if (timerLocked != null) 'timer_locked': timerLocked,
+      if (timeTakenSeconds != null) 'time_taken_seconds': timeTakenSeconds,
+      if (readinessScore != null) 'readiness_score': readinessScore,
     });
   }
 
@@ -2786,6 +3088,12 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     Value<DateTime?>? submittedAt,
     Value<bool>? isCompleted,
     Value<bool>? isPremiumTimed,
+    Value<int?>? remainingTimeSeconds,
+    Value<DateTime?>? lastObservedAt,
+    Value<DateTime?>? backgroundedAt,
+    Value<bool>? timerLocked,
+    Value<int?>? timeTakenSeconds,
+    Value<double?>? readinessScore,
   }) {
     return ExamAttemptsCompanion(
       id: id ?? this.id,
@@ -2800,6 +3108,12 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
       submittedAt: submittedAt ?? this.submittedAt,
       isCompleted: isCompleted ?? this.isCompleted,
       isPremiumTimed: isPremiumTimed ?? this.isPremiumTimed,
+      remainingTimeSeconds: remainingTimeSeconds ?? this.remainingTimeSeconds,
+      lastObservedAt: lastObservedAt ?? this.lastObservedAt,
+      backgroundedAt: backgroundedAt ?? this.backgroundedAt,
+      timerLocked: timerLocked ?? this.timerLocked,
+      timeTakenSeconds: timeTakenSeconds ?? this.timeTakenSeconds,
+      readinessScore: readinessScore ?? this.readinessScore,
     );
   }
 
@@ -2841,6 +3155,24 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     if (isPremiumTimed.present) {
       map['is_premium_timed'] = Variable<bool>(isPremiumTimed.value);
     }
+    if (remainingTimeSeconds.present) {
+      map['remaining_time_seconds'] = Variable<int>(remainingTimeSeconds.value);
+    }
+    if (lastObservedAt.present) {
+      map['last_observed_at'] = Variable<DateTime>(lastObservedAt.value);
+    }
+    if (backgroundedAt.present) {
+      map['backgrounded_at'] = Variable<DateTime>(backgroundedAt.value);
+    }
+    if (timerLocked.present) {
+      map['timer_locked'] = Variable<bool>(timerLocked.value);
+    }
+    if (timeTakenSeconds.present) {
+      map['time_taken_seconds'] = Variable<int>(timeTakenSeconds.value);
+    }
+    if (readinessScore.present) {
+      map['readiness_score'] = Variable<double>(readinessScore.value);
+    }
     return map;
   }
 
@@ -2857,7 +3189,13 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
           ..write('startedAt: $startedAt, ')
           ..write('submittedAt: $submittedAt, ')
           ..write('isCompleted: $isCompleted, ')
-          ..write('isPremiumTimed: $isPremiumTimed')
+          ..write('isPremiumTimed: $isPremiumTimed, ')
+          ..write('remainingTimeSeconds: $remainingTimeSeconds, ')
+          ..write('lastObservedAt: $lastObservedAt, ')
+          ..write('backgroundedAt: $backgroundedAt, ')
+          ..write('timerLocked: $timerLocked, ')
+          ..write('timeTakenSeconds: $timeTakenSeconds, ')
+          ..write('readinessScore: $readinessScore')
           ..write(')'))
         .toString();
   }
@@ -4820,6 +5158,12 @@ typedef $$ExamAttemptsTableCreateCompanionBuilder =
       Value<DateTime?> submittedAt,
       Value<bool> isCompleted,
       Value<bool> isPremiumTimed,
+      Value<int?> remainingTimeSeconds,
+      Value<DateTime?> lastObservedAt,
+      Value<DateTime?> backgroundedAt,
+      Value<bool> timerLocked,
+      Value<int?> timeTakenSeconds,
+      Value<double?> readinessScore,
     });
 typedef $$ExamAttemptsTableUpdateCompanionBuilder =
     ExamAttemptsCompanion Function({
@@ -4834,6 +5178,12 @@ typedef $$ExamAttemptsTableUpdateCompanionBuilder =
       Value<DateTime?> submittedAt,
       Value<bool> isCompleted,
       Value<bool> isPremiumTimed,
+      Value<int?> remainingTimeSeconds,
+      Value<DateTime?> lastObservedAt,
+      Value<DateTime?> backgroundedAt,
+      Value<bool> timerLocked,
+      Value<int?> timeTakenSeconds,
+      Value<double?> readinessScore,
     });
 
 class $$ExamAttemptsTableFilterComposer
@@ -4897,6 +5247,36 @@ class $$ExamAttemptsTableFilterComposer
 
   ColumnFilters<bool> get isPremiumTimed => $composableBuilder(
     column: $table.isPremiumTimed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get remainingTimeSeconds => $composableBuilder(
+    column: $table.remainingTimeSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastObservedAt => $composableBuilder(
+    column: $table.lastObservedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get backgroundedAt => $composableBuilder(
+    column: $table.backgroundedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get timerLocked => $composableBuilder(
+    column: $table.timerLocked,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get timeTakenSeconds => $composableBuilder(
+    column: $table.timeTakenSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get readinessScore => $composableBuilder(
+    column: $table.readinessScore,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4964,6 +5344,36 @@ class $$ExamAttemptsTableOrderingComposer
     column: $table.isPremiumTimed,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get remainingTimeSeconds => $composableBuilder(
+    column: $table.remainingTimeSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastObservedAt => $composableBuilder(
+    column: $table.lastObservedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get backgroundedAt => $composableBuilder(
+    column: $table.backgroundedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get timerLocked => $composableBuilder(
+    column: $table.timerLocked,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get timeTakenSeconds => $composableBuilder(
+    column: $table.timeTakenSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get readinessScore => $composableBuilder(
+    column: $table.readinessScore,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ExamAttemptsTableAnnotationComposer
@@ -5019,6 +5429,36 @@ class $$ExamAttemptsTableAnnotationComposer
     column: $table.isPremiumTimed,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get remainingTimeSeconds => $composableBuilder(
+    column: $table.remainingTimeSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastObservedAt => $composableBuilder(
+    column: $table.lastObservedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get backgroundedAt => $composableBuilder(
+    column: $table.backgroundedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get timerLocked => $composableBuilder(
+    column: $table.timerLocked,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get timeTakenSeconds => $composableBuilder(
+    column: $table.timeTakenSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get readinessScore => $composableBuilder(
+    column: $table.readinessScore,
+    builder: (column) => column,
+  );
 }
 
 class $$ExamAttemptsTableTableManager
@@ -5063,6 +5503,12 @@ class $$ExamAttemptsTableTableManager
                 Value<DateTime?> submittedAt = const Value.absent(),
                 Value<bool> isCompleted = const Value.absent(),
                 Value<bool> isPremiumTimed = const Value.absent(),
+                Value<int?> remainingTimeSeconds = const Value.absent(),
+                Value<DateTime?> lastObservedAt = const Value.absent(),
+                Value<DateTime?> backgroundedAt = const Value.absent(),
+                Value<bool> timerLocked = const Value.absent(),
+                Value<int?> timeTakenSeconds = const Value.absent(),
+                Value<double?> readinessScore = const Value.absent(),
               }) => ExamAttemptsCompanion(
                 id: id,
                 configId: configId,
@@ -5075,6 +5521,12 @@ class $$ExamAttemptsTableTableManager
                 submittedAt: submittedAt,
                 isCompleted: isCompleted,
                 isPremiumTimed: isPremiumTimed,
+                remainingTimeSeconds: remainingTimeSeconds,
+                lastObservedAt: lastObservedAt,
+                backgroundedAt: backgroundedAt,
+                timerLocked: timerLocked,
+                timeTakenSeconds: timeTakenSeconds,
+                readinessScore: readinessScore,
               ),
           createCompanionCallback:
               ({
@@ -5089,6 +5541,12 @@ class $$ExamAttemptsTableTableManager
                 Value<DateTime?> submittedAt = const Value.absent(),
                 Value<bool> isCompleted = const Value.absent(),
                 Value<bool> isPremiumTimed = const Value.absent(),
+                Value<int?> remainingTimeSeconds = const Value.absent(),
+                Value<DateTime?> lastObservedAt = const Value.absent(),
+                Value<DateTime?> backgroundedAt = const Value.absent(),
+                Value<bool> timerLocked = const Value.absent(),
+                Value<int?> timeTakenSeconds = const Value.absent(),
+                Value<double?> readinessScore = const Value.absent(),
               }) => ExamAttemptsCompanion.insert(
                 id: id,
                 configId: configId,
@@ -5101,6 +5559,12 @@ class $$ExamAttemptsTableTableManager
                 submittedAt: submittedAt,
                 isCompleted: isCompleted,
                 isPremiumTimed: isPremiumTimed,
+                remainingTimeSeconds: remainingTimeSeconds,
+                lastObservedAt: lastObservedAt,
+                backgroundedAt: backgroundedAt,
+                timerLocked: timerLocked,
+                timeTakenSeconds: timeTakenSeconds,
+                readinessScore: readinessScore,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
