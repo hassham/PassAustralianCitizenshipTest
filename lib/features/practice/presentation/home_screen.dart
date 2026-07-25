@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../exams/application/exam_controller.dart';
+import '../../progress/application/progress_providers.dart';
+import '../../progress/domain/premium_analytics_models.dart';
 import '../application/practice_controller.dart';
 import '../domain/study_question.dart';
 
@@ -27,7 +29,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(practiceControllerProvider.notifier).restore(),
       ref.read(examControllerProvider.notifier).restore(),
     ]);
-    if (mounted) ref.invalidate(homeDashboardProvider);
+    if (!mounted) return;
+    ref.invalidate(homeDashboardProvider);
+    if (ref.read(examControllerProvider).result?.timedOut ?? false) {
+      await context.pushNamed(AppRoutes.examSession);
+    }
   }
 
   Future<void> _startPractice() async {
@@ -69,6 +75,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.invalidate(starredQuestionsProvider);
       ref.invalidate(homeDashboardProvider);
       ref.invalidate(examConfigProvider);
+      ref.invalidate(premiumAnalyticsProvider);
     }
   }
 
@@ -142,6 +149,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final dashboard = ref.watch(homeDashboardProvider);
+    final premium = ref.watch(premiumAnalyticsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Citizenship Test Study')),
       body: SafeArea(
@@ -157,6 +165,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             data: (value) => _HomeDashboardView(
               value: value,
+              premium: premium,
               onStartPractice: _startPractice,
               onContinuePractice: _continuePractice,
               onContinueExam: _continueExam,
@@ -174,12 +183,14 @@ class _HomeDashboardView extends StatelessWidget {
     required this.onStartPractice,
     required this.onContinuePractice,
     required this.onContinueExam,
+    required this.premium,
   });
 
   final HomeDashboardModel value;
   final VoidCallback onStartPractice;
   final VoidCallback onContinuePractice;
   final VoidCallback onContinueExam;
+  final AsyncValue<PremiumAnalyticsModel> premium;
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -218,6 +229,8 @@ class _HomeDashboardView extends StatelessWidget {
       ],
       const SizedBox(height: 24),
       _ProgressCard(value: value.progress),
+      const SizedBox(height: 12),
+      _ReadinessCard(value: premium),
       const SizedBox(height: 16),
       Row(
         children: [
@@ -263,6 +276,32 @@ class _HomeDashboardView extends StatelessWidget {
         label: Text('Review starred questions (${value.starredQuestions})'),
       ),
     ],
+  );
+}
+
+class _ReadinessCard extends StatelessWidget {
+  const _ReadinessCard({required this.value});
+  final AsyncValue<PremiumAnalyticsModel> value;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    color: Theme.of(context).colorScheme.secondaryContainer,
+    child: ListTile(
+      leading: const Icon(Icons.workspace_premium_outlined),
+      title: const Text('Premium readiness'),
+      subtitle: value.when(
+        loading: () => const Text('Calculating readiness…'),
+        error: (_, _) => const Text('Readiness unavailable'),
+        data: (analytics) => Text(
+          analytics.readiness.score == null
+              ? analytics.recommendations.first
+              : '${analytics.readiness.score}/100 · ${analytics.readiness.label}\n'
+                    '${analytics.recommendations.first}',
+        ),
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => context.goNamed(AppRoutes.progress),
+    ),
   );
 }
 

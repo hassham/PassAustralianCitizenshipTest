@@ -21,6 +21,10 @@ class RestoredExamModel {
     required this.questions,
     required this.answers,
     required this.currentIndex,
+    required this.isTimed,
+    this.remainingSeconds,
+    this.lastObservedAt,
+    this.timerLocked = false,
   });
 
   final int attemptId;
@@ -28,6 +32,10 @@ class RestoredExamModel {
   final List<StudyQuestionModel> questions;
   final Map<int, int> answers;
   final int currentIndex;
+  final bool isTimed;
+  final int? remainingSeconds;
+  final DateTime? lastObservedAt;
+  final bool timerLocked;
 }
 
 class ExamResultModel {
@@ -37,6 +45,8 @@ class ExamResultModel {
     required this.correct,
     required this.incorrect,
     required this.unanswered,
+    this.timedOut = false,
+    this.timeTakenSeconds,
   });
 
   final double score;
@@ -44,4 +54,6 @@ class ExamResultModel {
   final int correct;
   final int incorrect;
   final int unanswered;
+  final bool timedOut;
+  final int? timeTakenSeconds;
 }

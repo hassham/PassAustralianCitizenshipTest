@@ -2,6 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pass_citizenship_test/data/database/app_database.dart';
 import 'package:pass_citizenship_test/features/exams/data/exam_repository.dart';
+import 'package:pass_citizenship_test/features/exams/application/exam_controller.dart';
 import 'package:pass_citizenship_test/features/practice/data/practice_repository.dart';
 
 void main() {
@@ -81,4 +82,36 @@ void main() {
     expect(detail.answers.first.selectedIndex, first.correctIndex);
     expect(detail.answers.first.question?.id, first.id);
   });
+
+  test('restores a timed exam using elapsed real time', () async {
+    final start = DateTime.utc(2026, 7, 24, 10);
+    final started = await repository.startExam(timed: true, now: start);
+
+    final restored = await repository.restoreExam(
+      now: start.add(const Duration(minutes: 5)),
+    );
+
+    expect(started.isTimed, isTrue);
+    expect(restored?.remainingSeconds, 40 * 60);
+    expect(restored?.timerLocked, isFalse);
+  });
+
+  test(
+    'auto-submits an expired timed exam during controller restore',
+    () async {
+      final start = DateTime.utc(2026, 7, 24, 10);
+      await repository.startExam(timed: true, now: start);
+      final controller = ExamController(
+        repository,
+        clock: () => start.add(const Duration(minutes: 46)),
+      );
+      addTearDown(controller.dispose);
+
+      final restored = await controller.restore();
+
+      expect(restored, isTrue);
+      expect(controller.state.result?.timedOut, isTrue);
+      expect(controller.state.result?.unanswered, 20);
+    },
+  );
 }

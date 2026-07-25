@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/errors/app_failure.dart';
@@ -6,6 +8,7 @@ import '../../practice/domain/study_question.dart';
 import '../data/exam_repository.dart';
 import '../domain/exam_models.dart';
 import '../domain/exam_history_models.dart';
+import '../domain/exam_timer_engine.dart';
 
 final examRepositoryProvider = Provider<ExamRepository>(
   (ref) => ExamRepository(
@@ -37,6 +40,11 @@ class ExamState {
     this.currentIndex = 0,
     this.result,
     this.error,
+    this.isTimed = false,
+    this.remainingSeconds,
+    this.lastObservedAt,
+    this.timerLocked = false,
+    this.timerWarning = '',
   });
 
   final bool loading;
@@ -47,6 +55,11 @@ class ExamState {
   final int currentIndex;
   final ExamResultModel? result;
   final AppFailure? error;
+  final bool isTimed;
+  final int? remainingSeconds;
+  final DateTime? lastObservedAt;
+  final bool timerLocked;
+  final String timerWarning;
   bool get active =>
       attemptId != null && questions.isNotEmpty && result == null;
   StudyQuestionModel? get current =>
@@ -61,6 +74,11 @@ class ExamState {
     int? currentIndex,
     ExamResultModel? result,
     AppFailure? error,
+    bool? isTimed,
+    int? remainingSeconds,
+    DateTime? lastObservedAt,
+    bool? timerLocked,
+    String? timerWarning,
   }) => ExamState(
     loading: loading ?? this.loading,
     attemptId: attemptId ?? this.attemptId,
@@ -70,25 +88,45 @@ class ExamState {
     currentIndex: currentIndex ?? this.currentIndex,
     result: result ?? this.result,
     error: error,
+    isTimed: isTimed ?? this.isTimed,
+    remainingSeconds: remainingSeconds ?? this.remainingSeconds,
+    lastObservedAt: lastObservedAt ?? this.lastObservedAt,
+    timerLocked: timerLocked ?? this.timerLocked,
+    timerWarning: timerWarning ?? this.timerWarning,
   );
 }
 
 class ExamController extends StateNotifier<ExamState> {
-  ExamController(this.repository) : super(const ExamState());
+  ExamController(this.repository, {DateTime Function()? clock})
+    : _clock = clock ?? DateTime.now,
+      super(const ExamState());
 
   final ExamRepository repository;
+  final DateTime Function() _clock;
+  Timer? _timer;
+  int _ticksSincePersistence = 0;
 
-  void reset() => state = const ExamState();
+  void reset() {
+    _timer?.cancel();
+    state = const ExamState();
+  }
 
   Future<bool> restore() async {
     state = state.copyWith(loading: true);
     try {
-      final restored = await repository.restoreExam();
+      final restored = await repository.restoreExam(now: _clock());
       if (restored == null) {
         state = const ExamState();
         return false;
       }
       state = _fromRestored(restored);
+      if (state.isTimed) {
+        if ((state.remainingSeconds ?? 0) <= 0) {
+          await submit(timedOut: true);
+        } else if (!state.timerLocked) {
+          _startTimer();
+        }
+      }
       return true;
     } catch (error) {
       state = ExamState(error: AppFailure.from(error));
@@ -96,10 +134,14 @@ class ExamController extends StateNotifier<ExamState> {
     }
   }
 
-  Future<void> start() async {
+  Future<void> start({bool timed = false}) async {
+    _timer?.cancel();
     state = state.copyWith(loading: true);
     try {
-      state = _fromRestored(await repository.startExam());
+      state = _fromRestored(
+        await repository.startExam(timed: timed, now: _clock()),
+      );
+      if (timed) _startTimer();
     } catch (error) {
       state = ExamState(error: AppFailure.from(error));
     }
@@ -107,7 +149,7 @@ class ExamController extends StateNotifier<ExamState> {
 
   Future<void> selectAnswer(int optionIndex) async {
     final attemptId = state.attemptId;
-    if (attemptId == null) return;
+    if (attemptId == null || state.timerLocked) return;
     final answers = {...state.answers, state.currentIndex: optionIndex};
     state = state.copyWith(answers: answers);
     try {
@@ -130,7 +172,7 @@ class ExamController extends StateNotifier<ExamState> {
     }
   }
 
-  Future<void> submit() async {
+  Future<void> submit({bool timedOut = false}) async {
     final attemptId = state.attemptId;
     final config = state.config;
     if (attemptId == null || config == null) return;
@@ -140,11 +182,66 @@ class ExamController extends StateNotifier<ExamState> {
         questions: state.questions,
         answers: state.answers,
         passPercentage: config.passPercentage,
+        timedOut: timedOut,
+        remainingSeconds: state.remainingSeconds,
       );
+      _timer?.cancel();
       state = state.copyWith(result: result);
     } catch (error) {
       state = state.copyWith(error: AppFailure.from(error));
     }
+  }
+
+  Future<void> handleBackgrounded() async {
+    if (!state.isTimed || !state.active || state.timerLocked) return;
+    final snapshot = _advance(_clock());
+    final attemptId = state.attemptId;
+    if (attemptId != null) {
+      await repository.markBackgrounded(attemptId, snapshot);
+    }
+    _timer?.cancel();
+  }
+
+  Future<void> handleResumed() async {
+    if (!state.isTimed || !state.active) return;
+    final snapshot = _advance(_clock());
+    final attemptId = state.attemptId;
+    if (attemptId != null) await repository.saveTimer(attemptId, snapshot);
+    if (snapshot.expired) {
+      await submit(timedOut: true);
+    } else if (!snapshot.locked) {
+      _startTimer();
+    }
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) async {
+      final snapshot = _advance(_clock());
+      _ticksSincePersistence++;
+      if (_ticksSincePersistence >= 5 && state.attemptId != null) {
+        _ticksSincePersistence = 0;
+        await repository.saveTimer(state.attemptId!, snapshot);
+      }
+      if (snapshot.expired) await submit(timedOut: true);
+    });
+  }
+
+  ExamTimerSnapshot _advance(DateTime now) {
+    final snapshot = ExamTimerEngine.advance(
+      remainingSeconds: state.remainingSeconds ?? 0,
+      lastObservedAt: state.lastObservedAt ?? now,
+      now: now,
+      locked: state.timerLocked,
+    );
+    state = state.copyWith(
+      remainingSeconds: snapshot.remainingSeconds,
+      lastObservedAt: snapshot.observedAt,
+      timerLocked: snapshot.locked,
+      timerWarning: ExamTimerEngine.warningFor(snapshot.remainingSeconds),
+    );
+    if (snapshot.locked) _timer?.cancel();
+    return snapshot;
   }
 
   ExamState _fromRestored(RestoredExamModel restored) => ExamState(
@@ -153,7 +250,17 @@ class ExamController extends StateNotifier<ExamState> {
     questions: restored.questions,
     answers: restored.answers,
     currentIndex: restored.currentIndex,
+    isTimed: restored.isTimed,
+    remainingSeconds: restored.remainingSeconds,
+    lastObservedAt: restored.lastObservedAt,
+    timerLocked: restored.timerLocked,
   );
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 }
 
 final examControllerProvider = StateNotifierProvider<ExamController, ExamState>(

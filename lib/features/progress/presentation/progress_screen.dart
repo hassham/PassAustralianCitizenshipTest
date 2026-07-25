@@ -6,6 +6,7 @@ import '../../../core/errors/app_failure.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../../shared/presentation/failure_view.dart';
 import '../application/progress_providers.dart';
+import '../domain/premium_analytics_models.dart';
 import '../domain/progress_models.dart';
 
 class ProgressScreen extends ConsumerWidget {
@@ -14,6 +15,7 @@ class ProgressScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(progressAnalyticsProvider);
+    final premium = ref.watch(premiumAnalyticsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Progress')),
       body: SafeArea(
@@ -24,8 +26,8 @@ class ProgressScreen extends ConsumerWidget {
             onRetry: () => ref.invalidate(progressAnalyticsProvider),
           ),
           data: (value) => value.attempted == 0
-              ? const _EmptyProgressView()
-              : _ProgressView(value: value),
+              ? _EmptyProgressView(premium: premium)
+              : _ProgressView(value: value, premium: premium),
         ),
       ),
     );
@@ -33,14 +35,14 @@ class ProgressScreen extends ConsumerWidget {
 }
 
 class _EmptyProgressView extends StatelessWidget {
-  const _EmptyProgressView();
+  const _EmptyProgressView({required this.premium});
+  final AsyncValue<PremiumAnalyticsModel> premium;
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: SingleChildScrollView(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+  Widget build(BuildContext context) => ListView(
+    padding: const EdgeInsets.all(32),
+    children: [
+      Column(
         children: [
           const Icon(Icons.insights_outlined, size: 72),
           const SizedBox(height: 16),
@@ -62,19 +64,23 @@ class _EmptyProgressView extends StatelessWidget {
           ),
         ],
       ),
-    ),
+      const SizedBox(height: 24),
+      _PremiumAnalyticsSection(value: premium),
+    ],
   );
 }
 
 class _ProgressView extends StatelessWidget {
-  const _ProgressView({required this.value});
+  const _ProgressView({required this.value, required this.premium});
   final ProgressAnalyticsModel value;
+  final AsyncValue<PremiumAnalyticsModel> premium;
 
   @override
   Widget build(BuildContext context) => RefreshIndicator(
     onRefresh: () async {
       final container = ProviderScope.containerOf(context);
       container.invalidate(progressAnalyticsProvider);
+      container.invalidate(premiumAnalyticsProvider);
       await container.read(progressAnalyticsProvider.future);
     },
     child: ListView(
@@ -172,7 +178,122 @@ class _ProgressView extends StatelessWidget {
             child: _CategoryCard(category: category),
           ),
         ),
+        const SizedBox(height: 14),
+        _PremiumAnalyticsSection(value: premium),
       ],
+    ),
+  );
+}
+
+class _PremiumAnalyticsSection extends StatelessWidget {
+  const _PremiumAnalyticsSection({required this.value});
+  final AsyncValue<PremiumAnalyticsModel> value;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    color: Theme.of(context).colorScheme.secondaryContainer,
+    child: Padding(
+      padding: const EdgeInsets.all(20),
+      child: value.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, _) => const Text(
+          'Premium analytics could not be calculated. Pull to refresh.',
+        ),
+        data: (analytics) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.workspace_premium_outlined),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Premium analytics preview',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (analytics.readiness.score == null) ...[
+              Text(
+                'Readiness: Not enough data',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const Text('Complete at least 10 practice questions.'),
+            ] else
+              Semantics(
+                label:
+                    'Readiness score ${analytics.readiness.score} out of 100, '
+                    '${analytics.readiness.label}',
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 72,
+                      height: 72,
+                      child: CircularProgressIndicator(
+                        value: analytics.readiness.score! / 100,
+                        strokeWidth: 8,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${analytics.readiness.score}/100',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          Text(analytics.readiness.label),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 20),
+            Text('Weak areas', style: Theme.of(context).textTheme.titleMedium),
+            if (analytics.weakAreas.isEmpty)
+              const Text('No weak areas detected yet.')
+            else
+              ...analytics.weakAreas.map(
+                (area) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.trending_down),
+                  title: Text(area.categoryName),
+                  subtitle: Text(
+                    '${area.accuracy}% accuracy · target ${area.targetAccuracy}%',
+                  ),
+                ),
+              ),
+            const SizedBox(height: 12),
+            Text(
+              'Recommendations',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            ...analytics.recommendations.map(
+              (recommendation) => ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.arrow_right),
+                title: Text(recommendation),
+              ),
+            ),
+            if (analytics.examScores.length >= 2) ...[
+              const Divider(),
+              Text(
+                'Exam trend',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(
+                '${analytics.examScores.first.toStringAsFixed(0)}% → '
+                '${analytics.examScores.last.toStringAsFixed(0)}%',
+              ),
+            ],
+          ],
+        ),
+      ),
     ),
   );
 }

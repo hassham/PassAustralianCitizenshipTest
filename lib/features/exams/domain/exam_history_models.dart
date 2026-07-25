@@ -8,6 +8,8 @@ class ExamHistorySummary {
     required this.passed,
     required this.totalQuestions,
     required this.correctAnswers,
+    required this.isTimed,
+    this.timeTakenSeconds,
   });
 
   final int attemptId;
@@ -16,6 +18,8 @@ class ExamHistorySummary {
   final bool passed;
   final int totalQuestions;
   final int correctAnswers;
+  final bool isTimed;
+  final int? timeTakenSeconds;
 }
 
 class HistoricalAnswer {

@@ -2,7 +2,7 @@
 
 ## Pass Australian Citizenship Test - Implementation Backlog
 
-**Last Updated:** 2026-07-23
+**Last Updated:** 2026-07-24
 
 **Priority Levels:** P0 (Critical/Blocker) | P1 (High/MVP Required) | P2 (Medium/Nice to Have) | P3 (Low/Future)
 
@@ -12,15 +12,15 @@
 
 ## Tracker Dashboard
 
-**Tracker updated:** 2026-07-23
+**Tracker updated:** 2026-07-24
 
 | Status | Meaning | Tasks | Share |
 |---|---|---:|---:|
-| COMPLETE | Every acceptance item in the task is implemented and verified | 2 | 3% |
-| PARTIAL | Useful scope is implemented, but acceptance items remain | 42 | 71% |
+| COMPLETE | Every acceptance item in the task is implemented and verified | 9 | 15% |
+| PARTIAL | Useful scope is implemented, but acceptance items remain | 40 | 68% |
 | IN PROGRESS | Actively being implemented | 0 | 0% |
 | BLOCKED | Cannot proceed until the recorded blocker is resolved | 0 | 0% |
-| NOT STARTED | No meaningful implementation yet | 15 | 25% |
+| NOT STARTED | No meaningful implementation yet | 10 | 17% |
 | **Total** |  | **59** | **100%** |
 
 ### Phase roll-up
@@ -29,10 +29,10 @@
 |---|---:|---:|---:|---:|---:|
 | 1. Setup | 1 | 2 | 0 | 0 | 1 |
 | 2. Database | 0 | 6 | 0 | 0 | 2 |
-| 3. Domain logic | 0 | 2 | 0 | 0 | 5 |
-| 4. State management | 0 | 3 | 0 | 0 | 0 |
+| 3. Domain logic | 5 | 2 | 0 | 0 | 0 |
+| 4. State management | 1 | 2 | 0 | 0 | 0 |
 | 5. Feature engines | 0 | 5 | 0 | 0 | 1 |
-| 6. Screens | 1 | 8 | 0 | 0 | 1 |
+| 6. Screens | 2 | 7 | 0 | 0 | 1 |
 | 7. Shared UI | 0 | 3 | 0 | 0 | 0 |
 | 8. Testing | 0 | 4 | 0 | 0 | 0 |
 | 9. Content | 0 | 3 | 0 | 0 | 0 |
@@ -54,12 +54,12 @@
 
 | Order | Task | Outcome | Exit check |
 |---:|---|---|---|
-| 1 | 8.4 Manual Testing | Walk through named navigation, resume cards, back confirmation, and both recovery paths | Checklist results and defects are recorded |
-| 2 | 9.1 Question Dataset | Complete owner review and approve production questions | Content review gates pass |
-| 3 | 3.6 Timer Engine | Build persisted real-world timing for premium exams | Background/resume and expiry cases pass |
-| 4 | 6.9 Premium Screen | Define the premium purchase and restore experience | Purchase lifecycle acceptance cases pass |
-| 5 | 3.1 Readiness Score | Implement and verify the premium readiness algorithm | Algorithm cases and interpretation bands pass |
-| 6 | 3.2 Weak Area Analysis | Implement premium recommendations beyond the free category summaries | Algorithm and recommendation cases pass |
+| 1 | 5.5 Premium Manager | Add store-backed entitlement and feature gating | Premium access survives purchase and restore |
+| 2 | 11.3 In-App Purchases | Integrate Google Play and Apple purchase lifecycles | Sandbox purchase, restore, retry, and cancellation pass |
+| 3 | 6.9 Premium Screen | Add pricing, purchase, restore, and confirmation UI | Purchase entry points match the FSD |
+| 4 | 8.4 Manual Testing | Validate timer backgrounding, expiry, clock lock, and analytics on devices | Checklist results and defects are recorded |
+| 5 | 9.1 Question Dataset | Complete owner review when the app is production-ready | Content review gates pass |
+| 6 | 12.4 Beta Testing | Run signed beta builds after purchases and content approval | Release-candidate defects are closed |
 
 ## Implementation Progress
 
@@ -172,6 +172,22 @@ Still required before release:
 - Manual TalkBack/VoiceOver and keyboard walkthrough on target devices
 - Formal measured contrast audit and DevTools profiling under the final reviewed question bank
 - Owner editorial approval and final real-device release checklist
+
+**Milestone 8 - Premium Exams & Analytics Foundation: Implemented (2026-07-24)**
+
+Completed in this milestone:
+- Schema-v6 timed-exam persistence for remaining time, lifecycle timestamps, clock lock, time taken, and analytics snapshots
+- Real-world timer with background/restart recalculation, warning bands, automatic expiry submission, and backwards-clock protection
+- Timed premium-preview entry, always-visible timer, saved recovery, timeout results, and timed history duration
+- Seven-step readiness score with documented bands, minimum-data handling, mock confidence penalty, and trends
+- Ranked weak-area analysis using sample thresholds, severity gaps, and repeated medium/hard misses
+- Six-rule prioritized recommendations and exam-score trend summaries
+- Premium analytics on Home, Progress, and timed-exam results, ready for entitlement gating
+- Static analysis clean and all 30 automated tests passing
+
+Explicitly deferred:
+- Store purchases, restore purchases, entitlement persistence, pricing UI, and production feature gating
+- Owner editorial question review until the app reaches production readiness
 
 ---
 
@@ -310,9 +326,9 @@ Create Drift models for progress tracking:
 ---
 
 ## Task 2.4: Create Database Models - Exam Tables
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-22
-**Evidence:** Schema v3 adds configuration, attempt, and per-question answer tables with persisted order, selection, position, score, pass state, timestamps, completion, and timed/free mode flag.
-**Remaining:** Timer/background fields, attempt numbering, richer constraints/indexes, and production migration tests.
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Architecture cleanup | **Updated:** 2026-07-24
+**Evidence:** Schema v6 includes configuration, answers, stable selections, timed state, lifecycle timestamps, clock lock, time taken, score, and completion.
+**Remaining:** Attempt numbering, richer foreign-key constraints/indexes, and production upgrade-path tests.
 **Priority:** P0 | **Effort:** L
 
 Create Drift models for exam data:
@@ -398,7 +414,9 @@ Implement database views:
 # Phase 3: Core Domain Logic & Engines
 
 ## Task 3.1: Implement Readiness Score Calculator
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-24
+**Evidence:** Pure seven-step calculator implements minimum data, mock confidence, coverage/mastery, difficulty, recency, trends, bounds, bands, and the documented example tests.
+**Remaining:** None.
 **Priority:** P1 | **Effort:** L
 
 Create readiness score calculation engine:
@@ -415,7 +433,9 @@ Create readiness score calculation engine:
 ---
 
 ## Task 3.2: Implement Weak Area Analysis Engine
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-24
+**Evidence:** Analytics ranks up to three weak categories by severity using the documented sample and accuracy thresholds and identifies repeated medium/hard misses.
+**Remaining:** None.
 **Priority:** P1 | **Effort:** M
 
 Create weak area analysis:
@@ -432,7 +452,9 @@ Create weak area analysis:
 ---
 
 ## Task 3.3: Implement Performance Metrics Calculator
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-20
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Final-content profiling | **Updated:** 2026-07-24
+**Evidence:** Overall, category, difficulty, recency, coverage, mock-exam, and trend metrics are calculated locally and performance-instrumented.
+**Remaining:** Decide whether persisted aggregate caching is justified after final-bank profiling and add regression thresholds.
 **Priority:** P1 | **Effort:** M
 
 Create performance metrics aggregation:
@@ -449,7 +471,9 @@ Create performance metrics aggregation:
 ---
 
 ## Task 3.4: Implement Recommendation Engine
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-24
+**Evidence:** Pure prioritized engine implements all six documented rules for exams, readiness, weak areas, coverage, and inactivity with focused tests.
+**Remaining:** None.
 **Priority:** P2 | **Effort:** M
 
 Create recommendation logic:
@@ -483,7 +507,9 @@ Create exam scoring:
 ---
 
 ## Task 3.6: Implement Timer Engine (Timed Exams)
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-20
+**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-24
+**Evidence:** Pure real-time engine plus lifecycle integration handles persistence, background/resume, restart, warnings, expiry, auto-submit, and backwards-clock locking.
+**Remaining:** None.
 **Priority:** P1 | **Effort:** M
 
 Create timer handling:
@@ -500,9 +526,9 @@ Create timer handling:
 ---
 
 ## Task 3.7: Implement Session Persistence Service
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20  
-**Evidence:** Practice and untimed-exam question order, answers, current position, score, completion state, and restart restoration are persisted.
-**Remaining:** Timed-exam timestamps, lifecycle handling, clock-change detection, and auto-submit.
+**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-24
+**Evidence:** Practice, untimed, and timed exams persist question order, answers, position, lifecycle/timer state, scoring, completion, restoration, and expiry submission.
+**Remaining:** None.
 **Priority:** P1 | **Effort:** M
 
 Create session management:
@@ -540,7 +566,7 @@ Set up state management:
 ## Task 4.2: Create Riverpod Providers - Business Logic
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-20  
 **Evidence:** Category and progress summary providers are implemented.  
-**Remaining:** Readiness, weak-area, metrics, recommendation, and premium providers.
+**Remaining:** Store-backed premium entitlement provider when purchases begin.
 **Priority:** P1 | **Effort:** M
 
 Create business logic providers:
@@ -555,9 +581,9 @@ Create business logic providers:
 ---
 
 ## Task 4.3: Create Riverpod Providers - Session Management
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Mock exam milestone | **Updated:** 2026-07-20  
-**Evidence:** `PracticeController` and `ExamController` manage loading, answer state, navigation, persistence, completion, and restoration.
-**Remaining:** Timer controller and timed-exam lifecycle integration.
+**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-24
+**Evidence:** Controllers manage loading, answers, navigation, persistence, restoration, real-time countdown, app lifecycle, clock lock, and timeout submission.
+**Remaining:** None.
 **Priority:** P1 | **Effort:** M
 
 Create session providers:
@@ -597,7 +623,7 @@ Create practice flow:
 ## Task 5.2: Implement Mock Exam Engine
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-22
 **Evidence:** Free untimed exams support configuration-based randomized creation, answer persistence, navigation, resume, submission, scoring, and review.
-**Remaining:** Timed exam support, auto-submit, formal domain use cases, and device-level integration coverage.
+**Remaining:** Store entitlement gating, further domain-use-case extraction, and device-level integration coverage.
 **Priority:** P1 | **Effort:** L
 
 Create exam flow:
@@ -713,7 +739,7 @@ Create app structure:
 ## Task 6.2: Implement Home Screen
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium analytics milestone | **Updated:** 2026-07-23
 **Evidence:** Home shows accuracy, attempts, total and starred counts, practice/exam quick actions, active-session resume cards, loading skeletons, pull-to-refresh, and actionable recovery states.
-**Remaining:** Premium readiness, weak-area, and recommendation cards after those engines exist.
+**Remaining:** Replace the premium preview with store entitlement state and complete final visual/device QA.
 **Priority:** P1 | **Effort:** M
 
 Create home screen:
@@ -800,7 +826,7 @@ Create starred view:
 ## Task 6.6: Implement Mock Exams Screen
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-22
 **Evidence:** Exams home, free exam question flow, unanswered navigator, confirmation, results, answer review, and resume card are implemented.
-**Remaining:** Timed layout, timer, premium gating, visual/accessibility QA, and expanded widget/integration tests.
+**Remaining:** Store entitlement gating plus final device-level timer and accessibility validation.
 **Priority:** P1 | **Effort:** L
 
 Create exam flows:
@@ -822,9 +848,9 @@ Create exam flows:
 ---
 
 ## Task 6.7: Implement Progress Screen
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium analytics milestone | **Updated:** 2026-07-23
-**Evidence:** `lib/features/progress/` provides overall/category accuracy, coverage, recent activity, strong/weak summaries, responsive statistics, and empty states.
-**Remaining:** Premium readiness score, premium recommendation engine, and dedicated Progress widget coverage.
+**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-24
+**Evidence:** Progress displays overall/category accuracy, coverage, activity, readiness, weak areas, prioritized recommendations, trends, responsive states, and large-text regression coverage.
+**Remaining:** None for the screen; purchase gating belongs to the premium manager.
 **Priority:** P1 | **Effort:** M
 
 Create progress tracking:
@@ -845,7 +871,7 @@ Create progress tracking:
 ## Task 6.8: Implement Exam History Screen
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium analytics milestone | **Updated:** 2026-07-23
 **Evidence:** `lib/features/exams/presentation/exam_history_screen.dart`, `exam_history_detail_screen.dart`, and repository providers list submitted exams and review stable historical answers, including removed-question notices.
-**Remaining:** Trend/improvement visualization, premium entitlement gating decision, and dedicated history widget tests.
+**Remaining:** Store entitlement gating and dedicated history widget tests.
 **Priority:** P2 | **Effort:** M
 
 Create history view (premium):
@@ -1395,6 +1421,7 @@ Phase 12: Deployment (12.1-12.4)
 
 | Date | Change | Verification |
 |---|---|---|
+| 2026-07-24 | Added persisted timed premium exams, lifecycle-safe recovery, timeout submission, readiness scoring, weak-area analysis, prioritized recommendations, and exam trends. | Analysis clean; all 30 automated tests passed; Android debug APK built. |
 | 2026-07-23 | Added free Progress analytics, release-ready Settings information/controls, difficulty filters, direct unstar, exam history/review, archived-question safeguards, accessibility improvements, and runtime diagnostics. | Analysis clean; all 18 automated tests passed, including 200% activity-chart scaling, history reconstruction, and progress reset preservation. |
 | 2026-07-23 | Added named stateful navigation, saved-session back handling, typed recovery paths, and the completed free Home dashboard. | Analysis clean; all 14 automated tests passed; Android debug APK built. |
 | 2026-07-23 | Added the production question-bank schema, normalized content pipeline, safe update/removal lifecycle, option explanations, source references, and stable answer IDs. | JSON integrity audit passed for 120 questions and 480 options; analysis clean; all 11 tests passed. |

@@ -17,8 +17,12 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(examControllerProvider.notifier).restore();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(examControllerProvider.notifier).restore();
+      if (mounted &&
+          (ref.read(examControllerProvider).result?.timedOut ?? false)) {
+        _openExam();
+      }
     });
   }
 
@@ -45,6 +49,34 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
     );
     if (confirmed != true) return;
     await ref.read(examControllerProvider.notifier).start();
+    if (mounted) _openExam();
+  }
+
+  Future<void> _startTimedExam() async {
+    final config = await ref.read(examConfigProvider.future);
+    if (!mounted) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Start timed premium exam?'),
+        content: Text(
+          'You will have ${config.durationMinutes} minutes. The timer cannot '
+          'be paused and continues while the app is in the background.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Start timed exam'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await ref.read(examControllerProvider.notifier).start(timed: true);
     if (mounted) _openExam();
   }
 
@@ -83,13 +115,19 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'Exam in progress',
+                        state.isTimed
+                            ? 'Timed exam in progress'
+                            : 'Exam in progress',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 6),
                       Text(
                         '${state.answers.length} of ${state.questions.length} answered',
                       ),
+                      if (state.isTimed)
+                        Text(
+                          '${(state.remainingSeconds ?? 0) ~/ 60} minutes remaining',
+                        ),
                       const SizedBox(height: 16),
                       FilledButton(
                         onPressed: _openExam,
@@ -137,11 +175,30 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
               label: const Text('View completed exams'),
             ),
             const SizedBox(height: 16),
-            const Card(
-              child: ListTile(
-                leading: Icon(Icons.lock_outline),
-                title: Text('Timed exam'),
-                subtitle: Text('Coming with Premium'),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Icon(Icons.timer_outlined, size: 42),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Premium timed exam',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Premium preview: realistic timing, background '
+                      'continuation, expiry submission, and recovery.',
+                    ),
+                    const SizedBox(height: 18),
+                    FilledButton(
+                      onPressed: state.loading ? null : _startTimedExam,
+                      child: const Text('Start timed exam'),
+                    ),
+                  ],
+                ),
               ),
             ),
             if (state.error != null) ...[
