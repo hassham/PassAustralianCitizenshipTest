@@ -296,7 +296,7 @@ Round to nearest integer for display
 **User Profile:**
 - 150 total practice attempts, 120 correct (80% accuracy)
 - 3 mock exams completed: 78%, 81%, 85% (average 81.3%)
-- 6 of 8 categories practiced (75% coverage)
+- At least 20 practice attempts in each of all 8 active categories
 - 3 categories mastered at 80%+ accuracy
 - Performance: Easy 90%, Medium 82%, Hard 75%
 - Last practice: 2 days ago
@@ -307,22 +307,22 @@ Round to nearest integer for display
 ```
 1. Base Accuracy = 80
 2. Mock Exam Score = 81.3
-3. Coverage Score = 75% * 0.8 = 60
+3. Coverage Score = 100% * 0.8 = 80
 4. Mastery Bonus = (3/8) * 20 = 7.5
 5. Difficulty Score = (90 * 0.2 + 82 * 0.4 + 75 * 0.4) = 81.2
 6. Recency Score = 70 (practice within 3 days)
 7. Trend Score = 70 (7% improvement across exams)
 
-Raw Score = (80 * 0.25) + (81.3 * 0.30) + ((60 + 7.5) * 0.20) + (81.2 * 0.15) + (70 * 0.05) + (70 * 0.05)
-          = 20 + 24.39 + 13.5 + 12.18 + 3.5 + 3.5
-          = 77.07
+Raw Score = (80 * 0.25) + (81.3 * 0.30) + ((80 + 7.5) * 0.20) + (81.2 * 0.15) + (70 * 0.05) + (70 * 0.05)
+          = 20 + 24.39 + 17.5 + 12.18 + 3.5 + 3.5
+          = 81.07
 
 No mock exam penalty (3 exams completed)
 Assume recent values practice is 5/5 and the two latest mock exams both meet
 the overall and 5/5 values requirements, so no values cap applies.
-Final Score = 77 (rounded)
+Final Score = 81 (rounded)
 
-User displays as: "Well Prepared" (70-79 band)
+User displays as: "Very Well Prepared" (80-89 band)
 ```
 
 ---
@@ -647,8 +647,8 @@ Avoid:
 Accuracy Percentages: 1 decimal place (85.5%)
 Readiness Score: Integer (0-100)
 Mock Exam Scores: 1 decimal place (81.3%)
-Recency Bonus: Integer points
-Trend Score: Integer points
+Recency Score: Integer (0-100)
+Trend Score: Integer (0-100)
 ```
 
 ---
@@ -660,7 +660,7 @@ Trend Score: Integer points
 ### Scenario 1: Brand New User
 - 0 attempts
 - 0 mock exams
-- Expected readiness: "Not Enough Data"
+- Expected readiness: "Not enough data"
 
 ### Scenario 2: Early Stage User
 - 15 practice attempts, 70% accuracy
@@ -693,8 +693,8 @@ Component Validation:
 - Coverage Score: 0-80
 - Mastery Bonus: 0-20
 - Difficulty Score: 0-100
-- Recency Bonus: 0-10
-- Trend Score: 0-10
+- Recency Score: 0-100
+- Trend Score: 0-100
 
 After weighting sum: should never exceed 100
 ```
