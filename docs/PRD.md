@@ -5,13 +5,13 @@
 ## Product Requirements Document (PRD)
 
 ### Version
-2.0
+2.1
 
 ### Status
 Approved MVP Scope
 
 ### Last Updated
-2026-07-19
+2026-07-25
 
 ---
 
@@ -60,7 +60,7 @@ Many users end up memorizing answers without understanding the concepts behind t
 
 - 1,000+ downloads within six months
 - 4.5+ app store rating
-- 10% premium conversion rate
+- Establish an optional user-support channel
 - Establish trust within migration and citizenship communities
 
 ---
@@ -203,7 +203,7 @@ Limitations:
 
 ---
 
-### Premium Timed Mock Exams
+### Timed Mock Exams
 
 Users can:
 
@@ -213,11 +213,26 @@ Users can:
 - Access exam history
 - Access detailed analytics
 
+Every mock exam contains 20 randomly ordered questions, including exactly five
+Australian values questions. Passing requires both an overall score of at least
+15/20 (75%) and a score of 5/5 on Australian values. A user who misses any
+Australian values question fails the exam even if the overall score is 75% or
+higher.
+
 ---
 
 ### Readiness Score
 
 Provides a confidence indicator showing how prepared the user is for the official test.
+
+The score remains hidden and displays `Not enough data` until the user has
+answered at least 20 practice questions in every active category. The product
+should show category-level progress toward this requirement.
+
+Because Australian values is a mandatory pass condition in the official test,
+readiness is capped by recent values performance. A score of 90 or above
+requires 5/5 in the five most recent values practice answers and two consecutive
+mock exams that pass both the overall and 5/5 values requirements.
 
 ---
 
@@ -235,7 +250,7 @@ Identifies:
 
 Stores historical mock exam performance.
 
-Premium feature.
+Available to every user.
 
 ---
 
@@ -301,17 +316,17 @@ Every question must contain:
 
 ---
 
-# 9. Monetization Strategy
+# 9. Support Strategy
 
-## Premium Model
+## Free Access
 
-One-time purchase.
+Every study, exam, history, readiness, and analytics feature is available without payment.
 
-No subscription in MVP.
+There are no subscriptions, in-app purchases, feature gates, or paid upgrades in the MVP.
 
 ---
 
-## Premium Features
+## Included Features
 
 - Timed exams
 - Readiness score
@@ -321,29 +336,29 @@ No subscription in MVP.
 
 ---
 
-## Pricing
+## Optional Support
 
-Target range:
+Settings may contain a voluntary "Buy Me a Coffee" link that opens in the external browser.
 
-AUD $4.99 – $9.99
+The contribution amount is chosen entirely on the external support page.
 
-Final pricing to be determined before release.
-
----
-
-## Purchase Restoration
-
-Users must be able to restore purchases through Apple and Google mechanisms.
+Supporting the app is optional and does not unlock features or change application behaviour.
 
 ---
 
-## Cross Platform Purchase Limitation
+## No Entitlements
 
-Purchases are controlled by Apple and Google.
+The app does not maintain purchase or entitlement state.
 
-A purchase made on Android is not automatically available on iOS and vice versa.
+---
 
-Cross-platform entitlement synchronization is deferred until user accounts and backend infrastructure are introduced.
+## Platform Behaviour
+
+All features behave identically on Android and iOS.
+
+The optional support link opens outside the application.
+
+No cross-platform payment synchronization is required.
 
 ---
 
@@ -381,7 +396,7 @@ Permitted locations:
 
 ---
 
-# 11. Free vs Premium
+# 11. Feature Access
 
 ## Free Users
 
@@ -395,7 +410,7 @@ Access to:
 
 ---
 
-## Premium Users
+## All Users
 
 Access to:
 
@@ -437,7 +452,7 @@ Remote configuration is out of scope for MVP.
 
 # 13. Timer Behaviour
 
-## Premium Timed Exams
+## Timed Exams
 
 Timer is based on elapsed real-world time.
 
@@ -480,11 +495,11 @@ This maintains realistic exam simulation.
 
 Free users may review exam results immediately after completion.
 
-The application may internally retain free exam results for future premium upgrades.
+The application retains exam results locally for history and analytics.
 
 However:
 
-Exam History screen remains a Premium feature.
+Exam History is available to every user.
 
 ---
 
@@ -615,7 +630,7 @@ Target:
 
 - 1,000+ downloads
 - 4.5+ rating
-- 10% premium conversion
+- Optional user-support engagement
 - 500+ active users
 
 ---

@@ -43,14 +43,14 @@ All documentation in `/docs/` folder:
 **What:** Business requirements and product vision
 - Target audience: Australian Permanent Residents
 - Unique selling points: clean UI, no ads, offline-first, detailed explanations
-- Monetization: one-time premium purchase (AUD $4.99-$9.99)
+- Monetization: all features free; optional external Buy Me a Coffee support link
 - Platform: Android + iOS (web deferred)
 
 ### [FSD.md](docs/FSD.md)
 **What:** Detailed user behavior and feature specifications
 - 5 main screens: Home, Practice, Mock Exams, Progress, Settings
 - Feature breakdown: Practice Mode, Categories, Starred Questions, Mock Exams
-- Free vs Premium features
+- Feature access and support-link behaviour
 - All UI text and workflows specified
 
 ### [SAD.md](docs/SAD.md)
@@ -59,12 +59,12 @@ All documentation in `/docs/` folder:
 - **State Management:** Riverpod
 - **Database:** Drift + SQLite
 - **Content:** JSON assets bundled with app
-- **Purchases:** Native (Google Play Billing, Apple In-App Purchases)
+- **Support:** Optional external Buy Me a Coffee link; no feature gating
 - **Architecture Pattern:** Clean Architecture with 4 layers
 
 ### [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md)
 **What:** Complete SQLite schema specification
-- 14 tables (questions, categories, options, explanations, references, user attempts, starred questions, practice sessions, exams, exam answers, performance metrics, exam history, premium entitlements, app settings)
+- Local tables for questions, categories, options, explanations, references, attempts, stars, sessions, exams, analytics, history, and settings
 - All indexes optimized for queries
 - Data integrity constraints
 - Views for analytics
@@ -80,7 +80,7 @@ All documentation in `/docs/` folder:
 **What:** Technical implementation specifics
 - Session persistence (app restart recovery, timer state)
 - Timer edge cases (device time change, background behavior, auto-submit)
-- Error handling (database corruption, JSON import failures, purchase errors)
+- Error handling (database corruption, JSON import failures, external-link errors)
 - Accessibility (screen reader, text sizing, keyboard navigation)
 - Performance targets (app launch < 3s, question load < 500ms, memory < 150MB)
 - Testing requirements and deployment checklist
@@ -96,7 +96,7 @@ All documentation in `/docs/` folder:
 - Progress Tracking (questions attempted, accuracy %, category performance)
 - Untimed Mock Exams (practice exams without timer)
 
-## Premium Users
+## All Users
 - **Timed Mock Exams** (realistic exam simulation with timer)
 - **Readiness Score** (0-100 confidence indicator)
 - **Weak Area Analysis** (identify knowledge gaps)
@@ -127,7 +127,6 @@ lib/
 │   ├── exams/
 │   ├── progress/
 │   ├── analytics/
-│   ├── premium/
 │   └── settings/
 └── shared/            # Shared widgets, services
 ```
@@ -158,6 +157,8 @@ lib/
 - Question count per exam (typically 20)
 - Duration (typically 45 minutes)
 - Pass mark (typically 75%)
+- Australian values question count (5)
+- Requirement to answer every Australian values question correctly
 
 **Storage:** `exam_config.json` asset bundled with app
 
@@ -173,13 +174,20 @@ lib/
 - Can navigate forward/backward
 - Can review unanswered questions
 
-## Premium Exam (Timed)
+## Timed Exam
 - Timer runs from start
 - No pause button (maintains realism)
 - Timer continues in background
 - Auto-submit when time expires
 - Get readiness score and weak area analysis
 - Full exam history
+
+## Exam Composition and Passing
+- Each mock exam contains 20 randomly ordered questions
+- Exactly 5 questions must be from Part 4: Australian values
+- The remaining 15 questions are selected from Parts 1-3
+- Passing requires both at least 15/20 overall and 5/5 Australian values
+- Failing either condition results in a failed exam
 
 ---
 
@@ -208,7 +216,7 @@ lib/
 
 ---
 
-# Readiness Score (Premium)
+# Readiness Score
 
 **Algorithm Overview:**
 1. Base Accuracy (from practice attempts)
@@ -219,6 +227,15 @@ lib/
 6. Recency Bonus (recent practice within 1-7 days)
 7. Trend Score (improvement across mock exams)
 
+All weighted inputs are normalized to 0-100. Australian values then applies a
+mandatory cap:
+- Recent values practice below 5/5: maximum readiness 69
+- 5/5 recent values practice without a qualifying latest mock: maximum 79
+- One qualifying latest mock: maximum 89
+- Two consecutive qualifying mocks: full 0-100 range
+
+A qualifying mock passes at least 75% overall and 5/5 Australian values.
+
 **Output:** 0-100 with bands:
 - 90-100: Ready For Test
 - 80-89: Very Well Prepared
@@ -228,7 +245,10 @@ lib/
 - 40-49: Early Stage
 - 0-39: Build Foundation
 
-**Note:** Minimum 10 practice attempts and 1 mock exam recommended for accurate score.
+**Eligibility gate:** Hide the readiness score and show `Not enough data` until
+the user has answered at least 20 practice questions in every active category.
+A mock exam is still recommended for a more accurate score after eligibility is
+reached.
 
 ---
 
@@ -239,7 +259,7 @@ lib/
 ✅ **No Ads:** Clean, distraction-free experience differentiates from competitors
 ✅ **Configuration-Driven:** Exam rules changeable without code update (future)
 ✅ **Clean Architecture:** Maintainable, testable codebase for long-term growth
-✅ **Native Purchases:** Use platform-provided in-app purchase mechanisms
+✅ **Free Feature Access:** No subscriptions, purchases, or entitlement gating
 
 ---
 
@@ -275,13 +295,13 @@ lib/
 - Allow settings/about screens
 - Show: "Content not available. Reinstall app."
 
-**Purchase Verification Failed:**
-- Log error, allow retry
-- Show: "Try restoring purchases"
+**Support Link Failed:**
+- Log the URL-launch error and allow retry
+- Keep all study features available
 
 **Out of Disk Space:**
 - Warn user if < 50MB available
-- Block premium if < 10MB available
+- Block content refresh if < 10MB available
 
 ---
 

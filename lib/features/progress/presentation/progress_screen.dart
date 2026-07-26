@@ -6,7 +6,7 @@ import '../../../core/errors/app_failure.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../../shared/presentation/failure_view.dart';
 import '../application/progress_providers.dart';
-import '../domain/premium_analytics_models.dart';
+import '../domain/readiness_insights_models.dart';
 import '../domain/progress_models.dart';
 
 class ProgressScreen extends ConsumerWidget {
@@ -15,7 +15,7 @@ class ProgressScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(progressAnalyticsProvider);
-    final premium = ref.watch(premiumAnalyticsProvider);
+    final insights = ref.watch(readinessInsightsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Progress')),
       body: SafeArea(
@@ -26,8 +26,8 @@ class ProgressScreen extends ConsumerWidget {
             onRetry: () => ref.invalidate(progressAnalyticsProvider),
           ),
           data: (value) => value.attempted == 0
-              ? _EmptyProgressView(premium: premium)
-              : _ProgressView(value: value, premium: premium),
+              ? _EmptyProgressView(insights: insights)
+              : _ProgressView(value: value, insights: insights),
         ),
       ),
     );
@@ -35,8 +35,8 @@ class ProgressScreen extends ConsumerWidget {
 }
 
 class _EmptyProgressView extends StatelessWidget {
-  const _EmptyProgressView({required this.premium});
-  final AsyncValue<PremiumAnalyticsModel> premium;
+  const _EmptyProgressView({required this.insights});
+  final AsyncValue<ReadinessInsightsModel> insights;
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -65,22 +65,22 @@ class _EmptyProgressView extends StatelessWidget {
         ],
       ),
       const SizedBox(height: 24),
-      _PremiumAnalyticsSection(value: premium),
+      _ReadinessInsightsSection(value: insights),
     ],
   );
 }
 
 class _ProgressView extends StatelessWidget {
-  const _ProgressView({required this.value, required this.premium});
+  const _ProgressView({required this.value, required this.insights});
   final ProgressAnalyticsModel value;
-  final AsyncValue<PremiumAnalyticsModel> premium;
+  final AsyncValue<ReadinessInsightsModel> insights;
 
   @override
   Widget build(BuildContext context) => RefreshIndicator(
     onRefresh: () async {
       final container = ProviderScope.containerOf(context);
       container.invalidate(progressAnalyticsProvider);
-      container.invalidate(premiumAnalyticsProvider);
+      container.invalidate(readinessInsightsProvider);
       await container.read(progressAnalyticsProvider.future);
     },
     child: ListView(
@@ -179,15 +179,15 @@ class _ProgressView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        _PremiumAnalyticsSection(value: premium),
+        _ReadinessInsightsSection(value: insights),
       ],
     ),
   );
 }
 
-class _PremiumAnalyticsSection extends StatelessWidget {
-  const _PremiumAnalyticsSection({required this.value});
-  final AsyncValue<PremiumAnalyticsModel> value;
+class _ReadinessInsightsSection extends StatelessWidget {
+  const _ReadinessInsightsSection({required this.value});
+  final AsyncValue<ReadinessInsightsModel> value;
 
   @override
   Widget build(BuildContext context) => Card(
@@ -197,18 +197,18 @@ class _PremiumAnalyticsSection extends StatelessWidget {
       child: value.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => const Text(
-          'Premium analytics could not be calculated. Pull to refresh.',
+          'Readiness insights could not be calculated. Pull to refresh.',
         ),
         data: (analytics) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const Icon(Icons.workspace_premium_outlined),
+                const Icon(Icons.insights_outlined),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Premium analytics preview',
+                    'Readiness insights',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),

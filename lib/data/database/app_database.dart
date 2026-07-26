@@ -77,8 +77,8 @@ class ExamAttempts extends Table {
   DateTimeColumn get startedAt => dateTime()();
   DateTimeColumn get submittedAt => dateTime().nullable()();
   BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
-  BoolColumn get isPremiumTimed =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isTimed =>
+      boolean().named('is_premium_timed').withDefault(const Constant(false))();
   IntColumn get remainingTimeSeconds => integer().nullable()();
   DateTimeColumn get lastObservedAt => dateTime().nullable()();
   DateTimeColumn get backgroundedAt => dateTime().nullable()();

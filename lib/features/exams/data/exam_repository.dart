@@ -77,7 +77,7 @@ class ExamRepository {
             ),
             totalQuestions: questions.length,
             startedAt: startedAt,
-            isPremiumTimed: Value(timed),
+            isTimed: Value(timed),
             remainingTimeSeconds: Value(timed ? durationSeconds : null),
             lastObservedAt: Value(timed ? startedAt : null),
           ),
@@ -141,9 +141,7 @@ class ExamRepository {
     int? remainingSeconds = attempt.remainingTimeSeconds;
     DateTime? lastObservedAt = attempt.lastObservedAt;
     var timerLocked = attempt.timerLocked;
-    if (attempt.isPremiumTimed &&
-        remainingSeconds != null &&
-        lastObservedAt != null) {
+    if (attempt.isTimed && remainingSeconds != null && lastObservedAt != null) {
       final snapshot = ExamTimerEngine.advance(
         remainingSeconds: remainingSeconds,
         lastObservedAt: lastObservedAt,
@@ -170,7 +168,7 @@ class ExamRepository {
             ),
       },
       currentIndex: attempt.currentQuestionIndex.clamp(0, questions.length - 1),
-      isTimed: attempt.isPremiumTimed,
+      isTimed: attempt.isTimed,
       remainingSeconds: remainingSeconds,
       lastObservedAt: lastObservedAt,
       timerLocked: timerLocked,
@@ -287,7 +285,7 @@ class ExamRepository {
             )..where((row) => row.id.equals(attempt.configId))).getSingle())
             .durationMinutes *
         60;
-    final timeTaken = attempt.isPremiumTimed
+    final timeTaken = attempt.isTimed
         ? configuredSeconds - (remainingSeconds ?? 0)
         : null;
     await (database.update(
@@ -298,7 +296,7 @@ class ExamRepository {
         isPassed: Value(passed),
         submittedAt: Value(DateTime.now()),
         isCompleted: const Value(true),
-        remainingTimeSeconds: attempt.isPremiumTimed
+        remainingTimeSeconds: attempt.isTimed
             ? Value(remainingSeconds ?? 0)
             : const Value.absent(),
         timeTakenSeconds: Value(timeTaken),
@@ -348,7 +346,7 @@ class ExamRepository {
           passed: attempt.isPassed ?? false,
           totalQuestions: attempt.totalQuestions,
           correctAnswers: correct,
-          isTimed: attempt.isPremiumTimed,
+          isTimed: attempt.isTimed,
           timeTakenSeconds: attempt.timeTakenSeconds,
         ),
       );

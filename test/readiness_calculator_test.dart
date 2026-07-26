@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pass_citizenship_test/features/progress/domain/premium_analytics_models.dart';
+import 'package:pass_citizenship_test/features/progress/domain/readiness_insights_models.dart';
 import 'package:pass_citizenship_test/features/progress/domain/readiness_calculator.dart';
 
 void main() {

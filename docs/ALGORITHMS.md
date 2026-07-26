@@ -29,7 +29,7 @@ All calculations are performed locally on the user's device. No external service
 
 The Readiness Score provides a single confidence indicator (0-100%) showing how prepared the user is to take the official Australian Citizenship Test.
 
-**Premium Feature**
+Available to every user.
 
 ---
 
@@ -54,10 +54,19 @@ The algorithm uses the following metrics:
 ```
 Base Accuracy = (User Total Correct / User Total Attempts) * 100
 
-Minimum requirement:
-- Minimum 10 practice attempts required to show a readiness score
-- If < 10 attempts, return "Not Enough Data" instead of score
+Eligibility requirement:
+- Determine the number of answered practice questions in every active category
+- Every active category must have at least 20 answered practice questions
+- If any category has fewer than 20, do not calculate or display a score
+- Return "Not enough data" instead
 ```
+
+Repeated attempts count as answered practice questions. Mock-exam answers do
+not count toward this eligibility gate.
+
+The readiness input must include per-category attempt counts. The result should
+also expose the categories and remaining attempt counts needed to become
+eligible so the UI can guide the user.
 
 ---
 
@@ -132,7 +141,7 @@ Rationale:
 
 ---
 
-### Step 6: Calculate Recency Bonus (0-10)
+### Step 6: Calculate Recency Score (0-100)
 
 Encourages continued practice close to test date.
 
@@ -142,27 +151,27 @@ Last Attempt Date = most recent practice question or exam
 Days Since Practice = current_date - last_attempt_date (in days)
 
 If Days Since Practice <= 1:
-  Recency Bonus = 10 points
+  Recency Score = 100
 
 Else If Days Since Practice <= 3:
-  Recency Bonus = 7 points
+  Recency Score = 70
 
 Else If Days Since Practice <= 7:
-  Recency Bonus = 3 points
+  Recency Score = 30
 
 Else (Days Since Practice > 7):
-  Recency Bonus = 0 points
+  Recency Score = 0
 ```
 
 ---
 
-### Step 7: Calculate Mock Exam Trend Score (0-10)
+### Step 7: Calculate Mock Exam Trend Score (0-100)
 
 Measures improvement across mock exams.
 
 ```
 If user has completed < 2 mock exams:
-  Trend Score = 0 points (insufficient data)
+  Trend Score = 0 (insufficient data)
 
 If user has completed >= 2 mock exams:
   Exams Sorted By Date (oldest first)
@@ -173,16 +182,16 @@ If user has completed >= 2 mock exams:
   Score Difference = Latest Exam Score - First Exam Score
   
   If Score Difference >= 10:
-    Trend Score = 10 points (strong improvement)
+    Trend Score = 100 (strong improvement)
   
   Else If Score Difference >= 5:
-    Trend Score = 7 points (moderate improvement)
+    Trend Score = 70 (moderate improvement)
   
   Else If Score Difference >= 0:
-    Trend Score = 3 points (slight improvement)
+    Trend Score = 30 (stable or slight improvement)
   
   Else (Score Difference < 0):
-    Trend Score = 0 points (score declined)
+    Trend Score = 0 (score declined)
 ```
 
 ---
@@ -197,7 +206,7 @@ Readiness Score (Raw) =
     (Mock Exam Score * 0.30) +
     (Coverage Score + Mastery Bonus) * 0.20 +
     (Difficulty Score * 0.15) +
-    (Recency Bonus * 0.05) +
+    (Recency Score * 0.05) +
     (Trend Score * 0.05)
 
 Total Weight: 0.25 + 0.30 + 0.20 + 0.15 + 0.05 + 0.05 = 1.0
@@ -205,7 +214,7 @@ Total Weight: 0.25 + 0.30 + 0.20 + 0.15 + 0.05 + 0.05 = 1.0
 
 ---
 
-### Minimum Mock Exam Requirement
+### No-Mock Confidence Adjustment
 
 ```
 If user has NOT completed at least 1 full mock exam:
@@ -221,7 +230,44 @@ If user has NOT completed at least 1 full mock exam:
 
 ---
 
-### Final Score (Capped)
+### Australian Values Readiness Adjustment
+
+The official test requires all five Australian values questions to be correct.
+This is a mandatory readiness constraint, not merely another weighted category.
+
+Use the five most recently answered Australian values practice questions and
+official-style mock exam results:
+
+```
+Recent Values Practice Perfect =
+  the most recent 5 Australian values practice answers are all correct
+
+Qualifying Mock =
+  overall score >= configured pass mark
+  AND Australian values score == 5/5
+
+If Recent Values Practice Perfect is false:
+  Readiness Score = MIN(Readiness Score, 69)
+
+Else if there is no completed mock exam:
+  Readiness Score = MIN(Readiness Score, 79)
+
+Else if the most recent mock exam is not a Qualifying Mock:
+  Readiness Score = MIN(Readiness Score, 79)
+
+Else if the most recent mock is Qualifying but the previous mock is not:
+  Readiness Score = MIN(Readiness Score, 89)
+
+Else if the two most recent mocks are both Qualifying:
+  No Australian values cap is applied
+```
+
+Older mistakes do not permanently prevent readiness. The rule measures recent,
+repeatable performance.
+
+---
+
+### Final Score
 
 ```
 Readiness Score = MAX(0, MIN(100, Readiness Score))
@@ -250,7 +296,7 @@ Round to nearest integer for display
 **User Profile:**
 - 150 total practice attempts, 120 correct (80% accuracy)
 - 3 mock exams completed: 78%, 81%, 85% (average 81.3%)
-- 6 of 8 categories practiced (75% coverage)
+- At least 20 practice attempts in each of all 8 active categories
 - 3 categories mastered at 80%+ accuracy
 - Performance: Easy 90%, Medium 82%, Hard 75%
 - Last practice: 2 days ago
@@ -261,20 +307,22 @@ Round to nearest integer for display
 ```
 1. Base Accuracy = 80
 2. Mock Exam Score = 81.3
-3. Coverage Score = 75% * 0.8 = 60
+3. Coverage Score = 100% * 0.8 = 80
 4. Mastery Bonus = (3/8) * 20 = 7.5
 5. Difficulty Score = (90 * 0.2 + 82 * 0.4 + 75 * 0.4) = 81.2
-6. Recency Bonus = 7 (practice within 3 days)
-7. Trend Score = 7 (7% improvement across exams)
+6. Recency Score = 70 (practice within 3 days)
+7. Trend Score = 70 (7% improvement across exams)
 
-Raw Score = (80 * 0.25) + (81.3 * 0.30) + ((60 + 7.5) * 0.20) + (81.2 * 0.15) + (7 * 0.05) + (7 * 0.05)
-          = 20 + 24.39 + 13.5 + 12.18 + 0.35 + 0.35
-          = 70.77
+Raw Score = (80 * 0.25) + (81.3 * 0.30) + ((80 + 7.5) * 0.20) + (81.2 * 0.15) + (70 * 0.05) + (70 * 0.05)
+          = 20 + 24.39 + 17.5 + 12.18 + 3.5 + 3.5
+          = 81.07
 
 No mock exam penalty (3 exams completed)
-Final Score = 71 (rounded)
+Assume recent values practice is 5/5 and the two latest mock exams both meet
+the overall and 5/5 values requirements, so no values cap applies.
+Final Score = 81 (rounded)
 
-User displays as: "Well Prepared" (70-79 band)
+User displays as: "Very Well Prepared" (80-89 band)
 ```
 
 ---
@@ -285,7 +333,7 @@ User displays as: "Well Prepared" (70-79 band)
 
 Identifies knowledge gaps and categories where user needs focused practice.
 
-**Premium Feature**
+Available to every user.
 
 ---
 
@@ -499,8 +547,14 @@ Examples:
 
 ```
 Pass Mark is read from exam_configurations table (typically 75%)
+Required Australian Values Correct = 5
 
-If Score >= Pass Mark:
+Overall Requirement Met = Score >= Pass Mark
+Values Requirement Met =
+  Australian Values Correct == Australian Values Total
+  AND Australian Values Total == 5
+
+If Overall Requirement Met AND Values Requirement Met:
   Result = "PASSED"
   Color = Green
   
@@ -508,6 +562,16 @@ Else:
   Result = "FAILED"
   Color = Red
 ```
+
+Examples:
+
+- 15/20 overall and 5/5 Australian values = PASSED
+- 19/20 overall and 4/5 Australian values = FAILED
+- 14/20 overall and 5/5 Australian values = FAILED
+- 14/20 overall and 4/5 Australian values = FAILED
+
+The result model must retain both requirement outcomes so the UI and historical
+review can explain why an attempt passed or failed.
 
 ---
 
@@ -534,7 +598,7 @@ Store in exam_history.categoryBreakdown as JSON
 
 ```
 Readiness Score:
-- < 10 practice attempts: "Not Enough Data"
+- Any active category with < 20 practice attempts: "Not enough data"
 - < 1 mock exam: Apply 0.7 penalty to base calculation
 
 Weak Area Analysis:
@@ -583,8 +647,8 @@ Avoid:
 Accuracy Percentages: 1 decimal place (85.5%)
 Readiness Score: Integer (0-100)
 Mock Exam Scores: 1 decimal place (81.3%)
-Recency Bonus: Integer points
-Trend Score: Integer points
+Recency Score: Integer (0-100)
+Trend Score: Integer (0-100)
 ```
 
 ---
@@ -596,7 +660,7 @@ Trend Score: Integer points
 ### Scenario 1: Brand New User
 - 0 attempts
 - 0 mock exams
-- Expected readiness: "Not Enough Data"
+- Expected readiness: "Not enough data"
 
 ### Scenario 2: Early Stage User
 - 15 practice attempts, 70% accuracy
@@ -629,8 +693,8 @@ Component Validation:
 - Coverage Score: 0-80
 - Mastery Bonus: 0-20
 - Difficulty Score: 0-100
-- Recency Bonus: 0-10
-- Trend Score: 0-10
+- Recency Score: 0-100
+- Trend Score: 0-100
 
 After weighting sum: should never exceed 100
 ```

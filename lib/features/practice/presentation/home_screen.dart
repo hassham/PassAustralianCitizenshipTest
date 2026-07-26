@@ -6,7 +6,7 @@ import '../../../core/errors/app_failure.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../exams/application/exam_controller.dart';
 import '../../progress/application/progress_providers.dart';
-import '../../progress/domain/premium_analytics_models.dart';
+import '../../progress/domain/readiness_insights_models.dart';
 import '../application/practice_controller.dart';
 import '../domain/study_question.dart';
 
@@ -75,7 +75,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.invalidate(starredQuestionsProvider);
       ref.invalidate(homeDashboardProvider);
       ref.invalidate(examConfigProvider);
-      ref.invalidate(premiumAnalyticsProvider);
+      ref.invalidate(readinessInsightsProvider);
     }
   }
 
@@ -149,7 +149,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final dashboard = ref.watch(homeDashboardProvider);
-    final premium = ref.watch(premiumAnalyticsProvider);
+    final insights = ref.watch(readinessInsightsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Citizenship Test Study')),
       body: SafeArea(
@@ -165,7 +165,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             data: (value) => _HomeDashboardView(
               value: value,
-              premium: premium,
+              insights: insights,
               onStartPractice: _startPractice,
               onContinuePractice: _continuePractice,
               onContinueExam: _continueExam,
@@ -183,14 +183,14 @@ class _HomeDashboardView extends StatelessWidget {
     required this.onStartPractice,
     required this.onContinuePractice,
     required this.onContinueExam,
-    required this.premium,
+    required this.insights,
   });
 
   final HomeDashboardModel value;
   final VoidCallback onStartPractice;
   final VoidCallback onContinuePractice;
   final VoidCallback onContinueExam;
-  final AsyncValue<PremiumAnalyticsModel> premium;
+  final AsyncValue<ReadinessInsightsModel> insights;
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -230,7 +230,7 @@ class _HomeDashboardView extends StatelessWidget {
       const SizedBox(height: 24),
       _ProgressCard(value: value.progress),
       const SizedBox(height: 12),
-      _ReadinessCard(value: premium),
+      _ReadinessCard(value: insights),
       const SizedBox(height: 16),
       Row(
         children: [
@@ -281,14 +281,14 @@ class _HomeDashboardView extends StatelessWidget {
 
 class _ReadinessCard extends StatelessWidget {
   const _ReadinessCard({required this.value});
-  final AsyncValue<PremiumAnalyticsModel> value;
+  final AsyncValue<ReadinessInsightsModel> value;
 
   @override
   Widget build(BuildContext context) => Card(
     color: Theme.of(context).colorScheme.secondaryContainer,
     child: ListTile(
-      leading: const Icon(Icons.workspace_premium_outlined),
-      title: const Text('Premium readiness'),
+      leading: const Icon(Icons.insights_outlined),
+      title: const Text('Readiness score'),
       subtitle: value.when(
         loading: () => const Text('Calculating readiness…'),
         error: (_, _) => const Text('Readiness unavailable'),

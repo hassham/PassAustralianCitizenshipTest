@@ -108,7 +108,7 @@ class _ExamScreenState extends ConsumerState<ExamScreen>
     ) {
       if (next == null || previous == next) return;
       ref.invalidate(progressAnalyticsProvider);
-      ref.invalidate(premiumAnalyticsProvider);
+      ref.invalidate(readinessInsightsProvider);
       ref.invalidate(examHistoryProvider);
       ref.invalidate(homeDashboardProvider);
     });
@@ -319,7 +319,7 @@ class _TimerBanner extends StatelessWidget {
             state.timerLocked
                 ? 'The device clock moved backwards. Restart this exam.'
                 : state.timerWarning.isEmpty
-                ? 'Timed premium exam'
+                ? 'Timed mock exam'
                 : state.timerWarning,
           ),
         ),
@@ -335,7 +335,7 @@ class _ExamResultsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(examControllerProvider);
     final result = state.result!;
-    final analytics = ref.watch(premiumAnalyticsProvider);
+    final analytics = ref.watch(readinessInsightsProvider);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -404,7 +404,7 @@ class _ExamResultsView extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Premium insights',
+                          'Readiness insights',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),

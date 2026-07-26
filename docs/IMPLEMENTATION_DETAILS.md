@@ -98,7 +98,7 @@ Exam Session State Stored in exam_attempts table:
 - currentQuestionId
 - questionsAnswered
 - startedAt
-- isPremiumTimed (boolean)
+- isTimed (boolean; existing databases retain the legacy physical column name)
 - remainingTimeSeconds (for timed exams)
 - backgroundedAt (timestamp when backgrounded)
 - isCompleted (boolean)
@@ -120,7 +120,7 @@ On Background:
 3. Save exam state to database
 
 On App Resume:
-1. Query exam_attempts WHERE isCompleted = 0 AND isPremiumTimed = 1
+1. Query exam_attempts WHERE isCompleted = 0 AND isTimed = 1
 2. Calculate elapsed time = current_time - backgroundedAt
 3. Recalculate remaining time = remainingTimeSeconds - elapsed_time
 4. If remaining time <= 0:
@@ -197,7 +197,10 @@ When remainingTime <= 0:
 2. Mark exam_attempts.isCompleted = 1
 3. Mark exam_attempts.submittedAt = current_timestamp
 4. Set any unanswered questions to isCorrect = NULL
-5. Calculate final score
+5. Calculate the overall score and Australian values score
+6. Pass only when the configured overall threshold and the requirement to
+   answer all 5 Australian values questions correctly are both satisfied
+7. Persist both requirement outcomes for results and historical explanations
 6. Display results screen with message:
    "Time's up! Your exam has been automatically submitted."
 ```
@@ -283,8 +286,8 @@ Handling:
 2. If < 50MB available:
    - Warn user: "Low disk space. Performance may be affected."
 3. If < 10MB available:
-   - Block premium features
-   - Display: "Insufficient disk space for features. Free up space."
+   - Block content refresh until space is available
+   - Display: "Insufficient disk space. Free up space and try again."
 
 Current Usage Estimation:
 - Base app: ~50MB
@@ -333,24 +336,22 @@ Files Required:
 
 ---
 
-## 3.3 In-App Purchase Errors
+## 3.3 External Support Link Errors
 
 ```
-Error: Purchase verification fails
+Error: Support page cannot be opened
 
 Handling:
-1. Log full error response
-2. Display to user: "Purchase verification failed. Please try again."
-3. Allow user to retry "Restore Purchases"
-4. If retry fails, display: "Contact support if issue persists."
+1. Log the URL-launch failure without personal data
+2. Display: "The support page could not be opened. Please try again later."
+3. Keep all app features available
 
-Error: Platform API not available
+Error: No browser is available
 
 Handling:
-1. iOS: Apple In-App Purchase API unavailable
-2. Android: Google Play Billing API unavailable
-3. Block premium features
-4. Display: "In-app purchases unavailable. Check platform settings."
+1. Keep the user on Settings
+2. Display the non-blocking failure message
+3. Do not change local data or feature access
 ```
 
 ---
@@ -378,7 +379,7 @@ Error Message Format:
 ```
 Log Levels:
 - DEBUG: Verbose app flow, metrics calculations
-- INFO: Session start/end, feature usage, purchase events
+- INFO: Session start/end, feature usage, support-link opens
 - WARN: Non-critical issues, retries
 - ERROR: Failures, exceptions, data loss risks
 
@@ -388,7 +389,7 @@ Log Storage:
 - Size: Cap at 100MB total (rotate files)
 
 Sensitive Data:
-- DO NOT log: Purchase tokens, device IDs, personal user data
+- DO NOT log: Device IDs, personal user data, or external contribution details
 - OK to log: Features used, app version, timestamp, error types
 ```
 
@@ -506,7 +507,14 @@ Breakdown:
 Optimization:
 - Lazy load features
 - Pre-fetch home screen data during startup
-- Background calculate readiness score after home screen loads
+- Load per-category practice-attempt counts after the home screen loads
+- Return `Not enough data` without calculating readiness when any active
+  category has fewer than 20 practice attempts
+- Calculate readiness in the background only after the eligibility gate passes
+- Normalize recency and trend inputs to 0-100 before applying their 5% weights
+- Apply Australian values caps from the five most recent values practice
+  answers and the two most recent official-style mock results
+- Return the uncapped score, final score, cap reason, and next required action
 ```
 
 ---
@@ -679,7 +687,7 @@ Key Flows:
 1. Complete practice session start to finish
 2. Complete timed exam with timer running down
 3. Session persistence and restoration
-4. Premium purchase and feature unlock
+4. Readiness and weak-area insights after timed and untimed exams
 5. Weak area analysis generation
 ```
 
