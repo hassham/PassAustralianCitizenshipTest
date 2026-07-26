@@ -2298,11 +2298,11 @@ class $ExamAttemptsTable extends ExamAttempts
     ),
     defaultValue: const Constant(false),
   );
-  static const VerificationMeta _isPremiumTimedMeta = const VerificationMeta(
-    'isPremiumTimed',
+  static const VerificationMeta _isTimedMeta = const VerificationMeta(
+    'isTimed',
   );
   @override
-  late final GeneratedColumn<bool> isPremiumTimed = GeneratedColumn<bool>(
+  late final GeneratedColumn<bool> isTimed = GeneratedColumn<bool>(
     'is_premium_timed',
     aliasedName,
     false,
@@ -2396,7 +2396,7 @@ class $ExamAttemptsTable extends ExamAttempts
     startedAt,
     submittedAt,
     isCompleted,
-    isPremiumTimed,
+    isTimed,
     remainingTimeSeconds,
     lastObservedAt,
     backgroundedAt,
@@ -2498,11 +2498,8 @@ class $ExamAttemptsTable extends ExamAttempts
     }
     if (data.containsKey('is_premium_timed')) {
       context.handle(
-        _isPremiumTimedMeta,
-        isPremiumTimed.isAcceptableOrUnknown(
-          data['is_premium_timed']!,
-          _isPremiumTimedMeta,
-        ),
+        _isTimedMeta,
+        isTimed.isAcceptableOrUnknown(data['is_premium_timed']!, _isTimedMeta),
       );
     }
     if (data.containsKey('remaining_time_seconds')) {
@@ -2608,7 +2605,7 @@ class $ExamAttemptsTable extends ExamAttempts
         DriftSqlType.bool,
         data['${effectivePrefix}is_completed'],
       )!,
-      isPremiumTimed: attachedDatabase.typeMapping.read(
+      isTimed: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_premium_timed'],
       )!,
@@ -2656,7 +2653,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
   final DateTime startedAt;
   final DateTime? submittedAt;
   final bool isCompleted;
-  final bool isPremiumTimed;
+  final bool isTimed;
   final int? remainingTimeSeconds;
   final DateTime? lastObservedAt;
   final DateTime? backgroundedAt;
@@ -2674,7 +2671,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
     required this.startedAt,
     this.submittedAt,
     required this.isCompleted,
-    required this.isPremiumTimed,
+    required this.isTimed,
     this.remainingTimeSeconds,
     this.lastObservedAt,
     this.backgroundedAt,
@@ -2701,7 +2698,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
       map['submitted_at'] = Variable<DateTime>(submittedAt);
     }
     map['is_completed'] = Variable<bool>(isCompleted);
-    map['is_premium_timed'] = Variable<bool>(isPremiumTimed);
+    map['is_premium_timed'] = Variable<bool>(isTimed);
     if (!nullToAbsent || remainingTimeSeconds != null) {
       map['remaining_time_seconds'] = Variable<int>(remainingTimeSeconds);
     }
@@ -2739,7 +2736,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
           ? const Value.absent()
           : Value(submittedAt),
       isCompleted: Value(isCompleted),
-      isPremiumTimed: Value(isPremiumTimed),
+      isTimed: Value(isTimed),
       remainingTimeSeconds: remainingTimeSeconds == null && nullToAbsent
           ? const Value.absent()
           : Value(remainingTimeSeconds),
@@ -2779,7 +2776,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       submittedAt: serializer.fromJson<DateTime?>(json['submittedAt']),
       isCompleted: serializer.fromJson<bool>(json['isCompleted']),
-      isPremiumTimed: serializer.fromJson<bool>(json['isPremiumTimed']),
+      isTimed: serializer.fromJson<bool>(json['isTimed']),
       remainingTimeSeconds: serializer.fromJson<int?>(
         json['remainingTimeSeconds'],
       ),
@@ -2804,7 +2801,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'submittedAt': serializer.toJson<DateTime?>(submittedAt),
       'isCompleted': serializer.toJson<bool>(isCompleted),
-      'isPremiumTimed': serializer.toJson<bool>(isPremiumTimed),
+      'isTimed': serializer.toJson<bool>(isTimed),
       'remainingTimeSeconds': serializer.toJson<int?>(remainingTimeSeconds),
       'lastObservedAt': serializer.toJson<DateTime?>(lastObservedAt),
       'backgroundedAt': serializer.toJson<DateTime?>(backgroundedAt),
@@ -2825,7 +2822,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
     DateTime? startedAt,
     Value<DateTime?> submittedAt = const Value.absent(),
     bool? isCompleted,
-    bool? isPremiumTimed,
+    bool? isTimed,
     Value<int?> remainingTimeSeconds = const Value.absent(),
     Value<DateTime?> lastObservedAt = const Value.absent(),
     Value<DateTime?> backgroundedAt = const Value.absent(),
@@ -2843,7 +2840,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
     startedAt: startedAt ?? this.startedAt,
     submittedAt: submittedAt.present ? submittedAt.value : this.submittedAt,
     isCompleted: isCompleted ?? this.isCompleted,
-    isPremiumTimed: isPremiumTimed ?? this.isPremiumTimed,
+    isTimed: isTimed ?? this.isTimed,
     remainingTimeSeconds: remainingTimeSeconds.present
         ? remainingTimeSeconds.value
         : this.remainingTimeSeconds,
@@ -2883,9 +2880,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
       isCompleted: data.isCompleted.present
           ? data.isCompleted.value
           : this.isCompleted,
-      isPremiumTimed: data.isPremiumTimed.present
-          ? data.isPremiumTimed.value
-          : this.isPremiumTimed,
+      isTimed: data.isTimed.present ? data.isTimed.value : this.isTimed,
       remainingTimeSeconds: data.remainingTimeSeconds.present
           ? data.remainingTimeSeconds.value
           : this.remainingTimeSeconds,
@@ -2920,7 +2915,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
           ..write('startedAt: $startedAt, ')
           ..write('submittedAt: $submittedAt, ')
           ..write('isCompleted: $isCompleted, ')
-          ..write('isPremiumTimed: $isPremiumTimed, ')
+          ..write('isTimed: $isTimed, ')
           ..write('remainingTimeSeconds: $remainingTimeSeconds, ')
           ..write('lastObservedAt: $lastObservedAt, ')
           ..write('backgroundedAt: $backgroundedAt, ')
@@ -2943,7 +2938,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
     startedAt,
     submittedAt,
     isCompleted,
-    isPremiumTimed,
+    isTimed,
     remainingTimeSeconds,
     lastObservedAt,
     backgroundedAt,
@@ -2965,7 +2960,7 @@ class ExamAttempt extends DataClass implements Insertable<ExamAttempt> {
           other.startedAt == this.startedAt &&
           other.submittedAt == this.submittedAt &&
           other.isCompleted == this.isCompleted &&
-          other.isPremiumTimed == this.isPremiumTimed &&
+          other.isTimed == this.isTimed &&
           other.remainingTimeSeconds == this.remainingTimeSeconds &&
           other.lastObservedAt == this.lastObservedAt &&
           other.backgroundedAt == this.backgroundedAt &&
@@ -2985,7 +2980,7 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
   final Value<DateTime> startedAt;
   final Value<DateTime?> submittedAt;
   final Value<bool> isCompleted;
-  final Value<bool> isPremiumTimed;
+  final Value<bool> isTimed;
   final Value<int?> remainingTimeSeconds;
   final Value<DateTime?> lastObservedAt;
   final Value<DateTime?> backgroundedAt;
@@ -3003,7 +2998,7 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     this.startedAt = const Value.absent(),
     this.submittedAt = const Value.absent(),
     this.isCompleted = const Value.absent(),
-    this.isPremiumTimed = const Value.absent(),
+    this.isTimed = const Value.absent(),
     this.remainingTimeSeconds = const Value.absent(),
     this.lastObservedAt = const Value.absent(),
     this.backgroundedAt = const Value.absent(),
@@ -3022,7 +3017,7 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     required DateTime startedAt,
     this.submittedAt = const Value.absent(),
     this.isCompleted = const Value.absent(),
-    this.isPremiumTimed = const Value.absent(),
+    this.isTimed = const Value.absent(),
     this.remainingTimeSeconds = const Value.absent(),
     this.lastObservedAt = const Value.absent(),
     this.backgroundedAt = const Value.absent(),
@@ -3044,7 +3039,7 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     Expression<DateTime>? startedAt,
     Expression<DateTime>? submittedAt,
     Expression<bool>? isCompleted,
-    Expression<bool>? isPremiumTimed,
+    Expression<bool>? isTimed,
     Expression<int>? remainingTimeSeconds,
     Expression<DateTime>? lastObservedAt,
     Expression<DateTime>? backgroundedAt,
@@ -3065,7 +3060,7 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
       if (startedAt != null) 'started_at': startedAt,
       if (submittedAt != null) 'submitted_at': submittedAt,
       if (isCompleted != null) 'is_completed': isCompleted,
-      if (isPremiumTimed != null) 'is_premium_timed': isPremiumTimed,
+      if (isTimed != null) 'is_premium_timed': isTimed,
       if (remainingTimeSeconds != null)
         'remaining_time_seconds': remainingTimeSeconds,
       if (lastObservedAt != null) 'last_observed_at': lastObservedAt,
@@ -3087,7 +3082,7 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     Value<DateTime>? startedAt,
     Value<DateTime?>? submittedAt,
     Value<bool>? isCompleted,
-    Value<bool>? isPremiumTimed,
+    Value<bool>? isTimed,
     Value<int?>? remainingTimeSeconds,
     Value<DateTime?>? lastObservedAt,
     Value<DateTime?>? backgroundedAt,
@@ -3107,7 +3102,7 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
       startedAt: startedAt ?? this.startedAt,
       submittedAt: submittedAt ?? this.submittedAt,
       isCompleted: isCompleted ?? this.isCompleted,
-      isPremiumTimed: isPremiumTimed ?? this.isPremiumTimed,
+      isTimed: isTimed ?? this.isTimed,
       remainingTimeSeconds: remainingTimeSeconds ?? this.remainingTimeSeconds,
       lastObservedAt: lastObservedAt ?? this.lastObservedAt,
       backgroundedAt: backgroundedAt ?? this.backgroundedAt,
@@ -3152,8 +3147,8 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
     if (isCompleted.present) {
       map['is_completed'] = Variable<bool>(isCompleted.value);
     }
-    if (isPremiumTimed.present) {
-      map['is_premium_timed'] = Variable<bool>(isPremiumTimed.value);
+    if (isTimed.present) {
+      map['is_premium_timed'] = Variable<bool>(isTimed.value);
     }
     if (remainingTimeSeconds.present) {
       map['remaining_time_seconds'] = Variable<int>(remainingTimeSeconds.value);
@@ -3189,7 +3184,7 @@ class ExamAttemptsCompanion extends UpdateCompanion<ExamAttempt> {
           ..write('startedAt: $startedAt, ')
           ..write('submittedAt: $submittedAt, ')
           ..write('isCompleted: $isCompleted, ')
-          ..write('isPremiumTimed: $isPremiumTimed, ')
+          ..write('isTimed: $isTimed, ')
           ..write('remainingTimeSeconds: $remainingTimeSeconds, ')
           ..write('lastObservedAt: $lastObservedAt, ')
           ..write('backgroundedAt: $backgroundedAt, ')
@@ -5157,7 +5152,7 @@ typedef $$ExamAttemptsTableCreateCompanionBuilder =
       required DateTime startedAt,
       Value<DateTime?> submittedAt,
       Value<bool> isCompleted,
-      Value<bool> isPremiumTimed,
+      Value<bool> isTimed,
       Value<int?> remainingTimeSeconds,
       Value<DateTime?> lastObservedAt,
       Value<DateTime?> backgroundedAt,
@@ -5177,7 +5172,7 @@ typedef $$ExamAttemptsTableUpdateCompanionBuilder =
       Value<DateTime> startedAt,
       Value<DateTime?> submittedAt,
       Value<bool> isCompleted,
-      Value<bool> isPremiumTimed,
+      Value<bool> isTimed,
       Value<int?> remainingTimeSeconds,
       Value<DateTime?> lastObservedAt,
       Value<DateTime?> backgroundedAt,
@@ -5245,8 +5240,8 @@ class $$ExamAttemptsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<bool> get isPremiumTimed => $composableBuilder(
-    column: $table.isPremiumTimed,
+  ColumnFilters<bool> get isTimed => $composableBuilder(
+    column: $table.isTimed,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5340,8 +5335,8 @@ class $$ExamAttemptsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<bool> get isPremiumTimed => $composableBuilder(
-    column: $table.isPremiumTimed,
+  ColumnOrderings<bool> get isTimed => $composableBuilder(
+    column: $table.isTimed,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -5425,10 +5420,8 @@ class $$ExamAttemptsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<bool> get isPremiumTimed => $composableBuilder(
-    column: $table.isPremiumTimed,
-    builder: (column) => column,
-  );
+  GeneratedColumn<bool> get isTimed =>
+      $composableBuilder(column: $table.isTimed, builder: (column) => column);
 
   GeneratedColumn<int> get remainingTimeSeconds => $composableBuilder(
     column: $table.remainingTimeSeconds,
@@ -5502,7 +5495,7 @@ class $$ExamAttemptsTableTableManager
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime?> submittedAt = const Value.absent(),
                 Value<bool> isCompleted = const Value.absent(),
-                Value<bool> isPremiumTimed = const Value.absent(),
+                Value<bool> isTimed = const Value.absent(),
                 Value<int?> remainingTimeSeconds = const Value.absent(),
                 Value<DateTime?> lastObservedAt = const Value.absent(),
                 Value<DateTime?> backgroundedAt = const Value.absent(),
@@ -5520,7 +5513,7 @@ class $$ExamAttemptsTableTableManager
                 startedAt: startedAt,
                 submittedAt: submittedAt,
                 isCompleted: isCompleted,
-                isPremiumTimed: isPremiumTimed,
+                isTimed: isTimed,
                 remainingTimeSeconds: remainingTimeSeconds,
                 lastObservedAt: lastObservedAt,
                 backgroundedAt: backgroundedAt,
@@ -5540,7 +5533,7 @@ class $$ExamAttemptsTableTableManager
                 required DateTime startedAt,
                 Value<DateTime?> submittedAt = const Value.absent(),
                 Value<bool> isCompleted = const Value.absent(),
-                Value<bool> isPremiumTimed = const Value.absent(),
+                Value<bool> isTimed = const Value.absent(),
                 Value<int?> remainingTimeSeconds = const Value.absent(),
                 Value<DateTime?> lastObservedAt = const Value.absent(),
                 Value<DateTime?> backgroundedAt = const Value.absent(),
@@ -5558,7 +5551,7 @@ class $$ExamAttemptsTableTableManager
                 startedAt: startedAt,
                 submittedAt: submittedAt,
                 isCompleted: isCompleted,
-                isPremiumTimed: isPremiumTimed,
+                isTimed: isTimed,
                 remainingTimeSeconds: remainingTimeSeconds,
                 lastObservedAt: lastObservedAt,
                 backgroundedAt: backgroundedAt,

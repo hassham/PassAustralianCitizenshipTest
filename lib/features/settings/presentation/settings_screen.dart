@@ -67,7 +67,7 @@ class _SettingsView extends ConsumerWidget {
   void _invalidateUserData(WidgetRef ref) {
     ref.invalidate(progressProvider);
     ref.invalidate(progressAnalyticsProvider);
-    ref.invalidate(premiumAnalyticsProvider);
+    ref.invalidate(readinessInsightsProvider);
     ref.invalidate(homeDashboardProvider);
     ref.invalidate(starredQuestionsProvider);
     ref.invalidate(removedStarredQuestionsProvider);

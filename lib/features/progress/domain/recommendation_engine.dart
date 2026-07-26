@@ -1,4 +1,4 @@
-import 'premium_analytics_models.dart';
+import 'readiness_insights_models.dart';
 
 class RecommendationInput {
   const RecommendationInput({

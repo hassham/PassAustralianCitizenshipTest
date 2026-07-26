@@ -2,7 +2,7 @@
 
 ## Pass Australian Citizenship Test - Implementation Backlog
 
-**Last Updated:** 2026-07-24
+**Last Updated:** 2026-07-26
 
 **Priority Levels:** P0 (Critical/Blocker) | P1 (High/MVP Required) | P2 (Medium/Nice to Have) | P3 (Low/Future)
 
@@ -12,16 +12,16 @@
 
 ## Tracker Dashboard
 
-**Tracker updated:** 2026-07-24
+**Tracker updated:** 2026-07-26
 
 | Status | Meaning | Tasks | Share |
 |---|---|---:|---:|
-| COMPLETE | Every acceptance item in the task is implemented and verified | 9 | 15% |
-| PARTIAL | Useful scope is implemented, but acceptance items remain | 40 | 68% |
+| COMPLETE | Every acceptance item in the task is implemented and verified | 8 | 14% |
+| PARTIAL | Useful scope is implemented, but acceptance items remain | 41 | 73% |
 | IN PROGRESS | Actively being implemented | 0 | 0% |
 | BLOCKED | Cannot proceed until the recorded blocker is resolved | 0 | 0% |
-| NOT STARTED | No meaningful implementation yet | 10 | 17% |
-| **Total** |  | **59** | **100%** |
+| NOT STARTED | No meaningful implementation yet | 7 | 13% |
+| **Total** |  | **56** | **100%** |
 
 ### Phase roll-up
 
@@ -29,15 +29,15 @@
 |---|---:|---:|---:|---:|---:|
 | 1. Setup | 1 | 2 | 0 | 0 | 1 |
 | 2. Database | 0 | 6 | 0 | 0 | 2 |
-| 3. Domain logic | 5 | 2 | 0 | 0 | 0 |
+| 3. Domain logic | 4 | 3 | 0 | 0 | 0 |
 | 4. State management | 1 | 2 | 0 | 0 | 0 |
-| 5. Feature engines | 0 | 5 | 0 | 0 | 1 |
-| 6. Screens | 2 | 7 | 0 | 0 | 1 |
+| 5. Feature engines | 0 | 5 | 0 | 0 | 0 |
+| 6. Screens | 2 | 7 | 0 | 0 | 0 |
 | 7. Shared UI | 0 | 3 | 0 | 0 | 0 |
 | 8. Testing | 0 | 4 | 0 | 0 | 0 |
 | 9. Content | 0 | 3 | 0 | 0 | 0 |
 | 10. Optimization | 0 | 4 | 0 | 0 | 0 |
-| 11. Platforms | 0 | 2 | 0 | 0 | 1 |
+| 11. Platforms | 0 | 2 | 0 | 0 | 0 |
 | 12. Release | 0 | 0 | 0 | 0 | 4 |
 
 ### Tracker conventions
@@ -54,12 +54,12 @@
 
 | Order | Task | Outcome | Exit check |
 |---:|---|---|---|
-| 1 | 5.5 Premium Manager | Add store-backed entitlement and feature gating | Premium access survives purchase and restore |
-| 2 | 11.3 In-App Purchases | Integrate Google Play and Apple purchase lifecycles | Sandbox purchase, restore, retry, and cancellation pass |
-| 3 | 6.9 Premium Screen | Add pricing, purchase, restore, and confirmation UI | Purchase entry points match the FSD |
-| 4 | 8.4 Manual Testing | Validate timer backgrounding, expiry, clock lock, and analytics on devices | Checklist results and defects are recorded |
-| 5 | 9.1 Question Dataset | Complete owner review when the app is production-ready | Content review gates pass |
-| 6 | 12.4 Beta Testing | Run signed beta builds after purchases and content approval | Release-candidate defects are closed |
+| 1 | 8.4 Manual Testing | Validate timer backgrounding, expiry, clock lock, and analytics on devices | Checklist results and defects are recorded |
+| 2 | Support Link | Add the optional Buy Me a Coffee link in Settings | Link opens externally and unlocks nothing |
+| 3 | 9.1 Question Dataset | Complete owner review when the app is production-ready | Content review gates pass |
+| 4 | Accessibility Audit | Complete TalkBack, VoiceOver, contrast, and keyboard checks | Device audit findings are resolved |
+| 5 | Performance Profiling | Validate release targets with the final question bank | Startup, query, and memory targets pass |
+| 6 | 12.4 Beta Testing | Run signed beta builds after content approval | Release-candidate defects are closed |
 
 ## Implementation Progress
 
@@ -79,7 +79,7 @@ Completed in this milestone:
 
 Deferred to later milestones:
 - Production-reviewed 500+ question bank
-- Mock exams, timer, starred questions, premium purchases, and analytics engines
+- Mock exams, timer, starred questions, and analytics engines
 - Remaining database tables from `docs/DATABASE_SCHEMA.md`
 - Android APK verification (Android SDK is not installed on the current machine)
 
@@ -122,7 +122,7 @@ Completed in this milestone:
 - Submission confirmation with unanswered count
 - Configuration-driven score and pass/fail calculation
 - Results summary plus complete answer and explanation review
-- Exams tab start/resume experience and explicit Premium timed-exam placeholder
+- Exams tab start/resume experience and explicit timed-exam placeholder
 - Repository coverage for configuration, persistence, ordering, scoring, and completion
 - Static analysis clean, all 9 automated tests passing, and Android debug APK built
 
@@ -173,21 +173,22 @@ Still required before release:
 - Formal measured contrast audit and DevTools profiling under the final reviewed question bank
 - Owner editorial approval and final real-device release checklist
 
-**Milestone 8 - Premium Exams & Analytics Foundation: Implemented (2026-07-24)**
+**Milestone 8 - Timed Exams & Readiness Insights: Implemented (2026-07-24)**
 
 Completed in this milestone:
 - Schema-v6 timed-exam persistence for remaining time, lifecycle timestamps, clock lock, time taken, and analytics snapshots
 - Real-world timer with background/restart recalculation, warning bands, automatic expiry submission, and backwards-clock protection
-- Timed premium-preview entry, always-visible timer, saved recovery, timeout results, and timed history duration
+- Timed-exam entry, always-visible timer, saved recovery, timeout results, and timed history duration
 - Seven-step readiness score with documented bands, minimum-data handling, mock confidence penalty, and trends
 - Ranked weak-area analysis using sample thresholds, severity gaps, and repeated medium/hard misses
 - Six-rule prioritized recommendations and exam-score trend summaries
-- Premium analytics on Home, Progress, and timed-exam results, ready for entitlement gating
+- Readiness insights on Home, Progress, and timed-exam results
 - Static analysis clean and all 30 automated tests passing
 
-Explicitly deferred:
-- Store purchases, restore purchases, entitlement persistence, pricing UI, and production feature gating
-- Owner editorial question review until the app reaches production readiness
+Product decision:
+- Every feature is free and visibly available; there are no purchases or feature gates in the MVP
+- An optional Buy Me a Coffee link may be added without changing feature access
+- Owner editorial question review remains deferred until the app reaches production readiness
 
 ---
 
@@ -203,7 +204,7 @@ Create base Flutter project with:
 - Initialize Flutter project: `flutter create pass_citizenship_test`
 - Set up folder structure (Clean Architecture)
 - Create core/ folder for utilities and constants
-- Create features/ subfolder structure (practice, categories, exams, progress, analytics, premium, settings)
+- Create features/ subfolder structure (practice, categories, exams, progress, analytics, settings)
 - Create shared/ folder for widgets and services
 - Create lib/main.dart entry point
 - Create pubspec.yaml with all dependencies (see Task 1.2)
@@ -216,7 +217,7 @@ Create base Flutter project with:
 ## Task 1.2: Configure pubspec.yaml with Dependencies
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
 **Evidence:** Riverpod, Drift, routing, path utilities, code generation, and linting are configured in `pubspec.yaml`.  
-**Remaining:** Add localization, purchase, mocking, and integration-test dependencies only when their features begin; review unused packages.
+**Remaining:** Add localization, mocking, and integration-test dependencies only when their features begin; review unused packages.
 **Priority:** P0 | **Effort:** S
 
 Add all required dependencies to pubspec.yaml:
@@ -224,7 +225,6 @@ Add all required dependencies to pubspec.yaml:
 - **Database:** drift, drift_flutter, sqlite3_flutter_libs
 - **Code Generation:** build_runner, drift_generator
 - **UI:** flutter_localizations, intl
-- **In-App Purchases:** in_app_purchase
 - **Testing:** test, mocktail, integration_test
 - **Linting:** flutter_lints
 
@@ -341,26 +341,25 @@ Create Drift models for exam data:
 
 ---
 
-## Task 2.5: Create Database Models - Analytics & Premium Tables
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
+## Task 2.5: Create Database Models - Analytics & Settings Tables
+**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-25
 **Priority:** P0 | **Effort:** M
 
 Create Drift models for analytics and settings:
 - lib/data/database/tables/user_performance_metrics_table.dart
-- lib/data/database/tables/premium_entitlements_table.dart
 - lib/data/database/tables/app_settings_table.dart
 - lib/data/database/tables/user_preferences_table.dart
 - lib/data/database/tables/content_versions_table.dart
 
 **Dependencies:** Task 2.1
-**Related Docs:** DATABASE_SCHEMA.md (Analytics & Premium sections)
+**Related Docs:** DATABASE_SCHEMA.md (Analytics & Settings sections)
 
 ---
 
 ## Task 2.6: Create Database Queries & DAOs
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next milestone | **Updated:** 2026-07-20  
 **Evidence:** `PracticeRepository` provides category, question, attempt, progress, and session operations.  
-**Remaining:** Split full-schema operations into feature DAOs and add exam, analytics, starred, premium, and settings queries.
+**Remaining:** Split full-schema operations into feature DAOs and add exam, analytics, starred, and settings queries.
 **Priority:** P1 | **Effort:** L
 
 Create data access objects:
@@ -369,7 +368,6 @@ Create data access objects:
 - lib/data/database/daos/exam_dao.dart (CRUD for exams)
 - lib/data/database/daos/progress_dao.dart (CRUD for attempts and metrics)
 - lib/data/database/daos/starred_dao.dart (CRUD for starred questions)
-- lib/data/database/daos/premium_dao.dart (CRUD for premium data)
 
 **Dependencies:** Task 2.2, 2.3, 2.4, 2.5
 **Related Docs:** DATABASE_SCHEMA.md (entire document)
@@ -414,9 +412,9 @@ Implement database views:
 # Phase 3: Core Domain Logic & Engines
 
 ## Task 3.1: Implement Readiness Score Calculator
-**Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-24
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next implementation | **Updated:** 2026-07-26
 **Evidence:** Pure seven-step calculator implements minimum data, mock confidence, coverage/mastery, difficulty, recency, trends, bounds, bands, and the documented example tests.
-**Remaining:** None.
+**Remaining:** Replace the current 10-total-attempt gate with at least 20 practice attempts in every active category; normalize recency/trend to 0-100; apply the recent Australian values and qualifying-mock caps; return eligibility and cap explanations; update providers, UI states, and focused tests.
 **Priority:** P1 | **Effort:** L
 
 Create readiness score calculation engine:
@@ -424,7 +422,14 @@ Create readiness score calculation engine:
 - lib/domain/usecases/calculate_readiness_score_usecase.dart
 - Implement 7-step algorithm from ALGORITHMS.md
 - Implement readiness band classification
-- Handle minimum data requirements
+- Require at least 20 practice attempts in every active category
+- Hide the score and return `Not enough data` until every category is eligible
+- Expose incomplete-category progress and remaining attempt counts
+- Normalize every weighted component to 0-100
+- Cap readiness at 69 unless the five most recent values answers are 5/5
+- Cap at 79 without a qualifying latest mock, and at 89 without two
+  consecutive qualifying mocks
+- Expose the uncapped score, final score, cap reason, and next required action
 - Add unit tests (80% coverage)
 
 **Dependencies:** Task 2.6
@@ -489,15 +494,17 @@ Create recommendation logic:
 ---
 
 ## Task 3.5: Implement Mock Exam Scoring Engine
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Architecture cleanup | **Updated:** 2026-07-22
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Next implementation | **Updated:** 2026-07-26
 **Evidence:** Configuration-driven scoring calculates percentage, pass/fail, correct, incorrect, and unanswered counts and persists the result.
-**Remaining:** Extract the calculation into a pure domain service and add mandatory-rule scoring when those rules are defined.
+**Remaining:** Select exactly 5 Australian values questions, require 5/5 values answers plus at least 15/20 overall, persist both outcomes, explain failures in results/history, and add focused unit tests. Extract the calculation into a pure domain service.
 **Priority:** P1 | **Effort:** S
 
 Create exam scoring:
 - lib/domain/usecases/score_exam_usecase.dart
 - Calculate overall score
-- Calculate pass/fail
+- Calculate Australian values score
+- Pass only when overall score is at least 75% and Australian values is 5/5
+- Persist and display which requirement caused a failure
 - Generate per-category breakdown
 - Add unit tests
 
@@ -566,7 +573,7 @@ Set up state management:
 ## Task 4.2: Create Riverpod Providers - Business Logic
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Analytics milestone | **Updated:** 2026-07-20  
 **Evidence:** Category and progress summary providers are implemented.  
-**Remaining:** Store-backed premium entitlement provider when purchases begin.
+**Remaining:** Extract broader provider boundaries and add test overrides for every analytics boundary.
 **Priority:** P1 | **Effort:** M
 
 Create business logic providers:
@@ -621,9 +628,9 @@ Create practice flow:
 ---
 
 ## Task 5.2: Implement Mock Exam Engine
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-22
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Timed-exam cleanup | **Updated:** 2026-07-25
 **Evidence:** Free untimed exams support configuration-based randomized creation, answer persistence, navigation, resume, submission, scoring, and review.
-**Remaining:** Store entitlement gating, further domain-use-case extraction, and device-level integration coverage.
+**Remaining:** Further domain-use-case extraction and device-level integration coverage.
 **Priority:** P1 | **Effort:** L
 
 Create exam flow:
@@ -679,27 +686,10 @@ Create starred questions functionality:
 
 ---
 
-## Task 5.5: Implement Premium Features Manager
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
-**Priority:** P1 | **Effort:** M
-
-Create premium features:
-- lib/features/premium/domain/usecases/check_premium_status_usecase.dart
-- lib/features/premium/domain/usecases/process_purchase_usecase.dart
-- lib/features/premium/domain/usecases/restore_purchases_usecase.dart
-- lib/features/premium/domain/usecases/grant_timed_exam_access_usecase.dart
-- Feature gating (readiness score, weak areas, exam history)
-- Add unit tests
-
-**Dependencies:** Task 2.5
-**Related Docs:** PRD.md (Premium Model section)
-
----
-
 ## Task 5.6: Implement Error Handling Service
 **Status:** PARTIAL | **Owner:** Unassigned | **Target:** Continuous | **Updated:** 2026-07-23
 **Evidence:** Typed content/storage/unexpected failures, retry UI, safe content refresh, confirmed corrupted-database reset, and focused failure-mapping tests are implemented.
-**Remaining:** Structured logging, low-disk detection, and purchase-specific error handling when purchases begin.
+**Remaining:** Complete structured log retention and external-link failure coverage.
 **Priority:** P1 | **Effort:** M
 
 Create error handling:
@@ -707,7 +697,7 @@ Create error handling:
 - lib/core/errors/error_handler.dart (centralized error handling)
 - lib/data/services/database_recovery_service.dart (DB corruption recovery)
 - lib/data/services/json_import_error_service.dart (JSON import error handling)
-- lib/data/services/purchase_error_service.dart (purchase error handling)
+- lib/data/services/external_link_error_service.dart (support-link error handling)
 - Logging integration
 - Add unit tests
 
@@ -737,9 +727,9 @@ Create app structure:
 ---
 
 ## Task 6.2: Implement Home Screen
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium analytics milestone | **Updated:** 2026-07-23
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Release polish | **Updated:** 2026-07-25
 **Evidence:** Home shows accuracy, attempts, total and starred counts, practice/exam quick actions, active-session resume cards, loading skeletons, pull-to-refresh, and actionable recovery states.
-**Remaining:** Replace the premium preview with store entitlement state and complete final visual/device QA.
+**Remaining:** Complete final visual and device QA.
 **Priority:** P1 | **Effort:** M
 
 Create home screen:
@@ -749,7 +739,7 @@ Create home screen:
 - Display quick statistics (attempts, accuracy, starred count)
 - Display continue learning section (if session active)
 - Display quick action buttons
-- Display premium banner (non-premium users)
+- Display readiness summary and next recommendation
 - Add unit and widget tests
 
 **Dependencies:** Task 4.2, 6.1
@@ -824,9 +814,9 @@ Create starred view:
 ---
 
 ## Task 6.6: Implement Mock Exams Screen
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium exam milestone | **Updated:** 2026-07-22
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Timed-exam validation | **Updated:** 2026-07-25
 **Evidence:** Exams home, free exam question flow, unanswered navigator, confirmation, results, answer review, and resume card are implemented.
-**Remaining:** Store entitlement gating plus final device-level timer and accessibility validation.
+**Remaining:** Final device-level timer and accessibility validation.
 **Priority:** P1 | **Effort:** L
 
 Create exam flows:
@@ -836,21 +826,21 @@ Create exam flows:
 - lib/presentation/screens/exams/exam_review_screen.dart
 - lib/presentation/providers/exam_provider.dart
 - Start free untimed exam
-- Start premium timed exam (with timer display)
+- Start timed exam (with timer display)
 - Answer submission flow
 - Results display (score, pass/fail)
 - Review with correct answers
 - Add widget and integration tests
 
 **Dependencies:** Task 5.2, 5.5, 6.1
-**Related Docs:** FSD.md (Mock Exams & Premium Timed Exams sections)
+**Related Docs:** FSD.md (Mock Exams & Timed Exams sections)
 
 ---
 
 ## Task 6.7: Implement Progress Screen
 **Status:** COMPLETE | **Owner:** Unassigned | **Target:** Delivered | **Updated:** 2026-07-24
 **Evidence:** Progress displays overall/category accuracy, coverage, activity, readiness, weak areas, prioritized recommendations, trends, responsive states, and large-text regression coverage.
-**Remaining:** None for the screen; purchase gating belongs to the premium manager.
+**Remaining:** None.
 **Priority:** P1 | **Effort:** M
 
 Create progress tracking:
@@ -858,8 +848,8 @@ Create progress tracking:
 - lib/presentation/providers/progress_provider.dart
 - Display overall statistics (attempts, accuracy)
 - Display category performance chart/list
-- Display readiness score (premium only)
-- Display weak areas (premium only)
+- Display readiness score
+- Display weak areas
 - Display recommendations
 - Add widget tests
 
@@ -869,12 +859,12 @@ Create progress tracking:
 ---
 
 ## Task 6.8: Implement Exam History Screen
-**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Premium analytics milestone | **Updated:** 2026-07-23
+**Status:** PARTIAL | **Owner:** Unassigned | **Target:** Release polish | **Updated:** 2026-07-25
 **Evidence:** `lib/features/exams/presentation/exam_history_screen.dart`, `exam_history_detail_screen.dart`, and repository providers list submitted exams and review stable historical answers, including removed-question notices.
-**Remaining:** Store entitlement gating and dedicated history widget tests.
+**Remaining:** Dedicated history widget tests.
 **Priority:** P2 | **Effort:** M
 
-Create history view (premium):
+Create history view:
 - lib/presentation/screens/progress/exam_history_screen.dart
 - lib/presentation/providers/exam_history_provider.dart
 - Display all completed exams
@@ -883,28 +873,8 @@ Create history view (premium):
 - Ability to review past exams
 - Add widget tests
 
-**Dependencies:** Task 5.5, 6.7
-**Related Docs:** PRD.md (Premium Features section)
-
----
-
-## Task 6.9: Implement Premium Screen
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
-**Priority:** P1 | **Effort:** M
-
-Create premium upsell:
-- lib/presentation/screens/premium/premium_screen.dart
-- lib/presentation/providers/premium_provider.dart
-- Display premium features list
-- Display pricing
-- Purchase button
-- Restore purchases button
-- Handle purchase flow
-- Show purchase confirmation
-- Add widget tests
-
-**Dependencies:** Task 5.5, 6.1
-**Related Docs:** PRD.md (Monetization section)
+**Dependencies:** Task 6.7
+**Related Docs:** PRD.md (Exam History section)
 
 ---
 
@@ -1023,7 +993,7 @@ Write integration tests:
 - Complete practice session flow (start → answer → finish)
 - Timed exam flow with timer (start → answer → timer expiry → submit)
 - Session persistence (close app → restore session → continue)
-- Premium purchase flow
+- Optional external support-link flow
 - Weak area analysis calculation
 
 **Dependencies:** Task 5.1-5.5, 6.3-6.6
@@ -1043,7 +1013,7 @@ Write widget tests:
 - Option selection flow
 - Results screen display
 - Progress metrics display
-- Premium screen
+- Readiness insights and timed-exam screens
 
 **Dependencies:** Task 6.2-6.10
 **Related Docs:** IMPLEMENTATION_DETAILS.md (Testing Requirements section)
@@ -1232,31 +1202,12 @@ Configure Android:
 
 Configure iOS:
 - ios/Podfile (deployment target iOS 12.0+)
-- Set up Apple In-App Purchases
 - Configure provisioning profiles
 - Configure code signing
 - Test on iOS simulator and real device
 
 **Dependencies:** Task 1.3
 **Related Docs:** SAD.md (Tech Stack section)
-
----
-
-## Task 11.3: In-App Purchase Implementation
-**Status:** NOT STARTED | **Owner:** Unassigned | **Target:** Premium milestone | **Updated:** 2026-07-20
-**Priority:** P1 | **Effort:** M
-
-Implement purchases:
-- lib/data/services/purchase_service.dart
-- Integrate Google Play Billing (Android)
-- Integrate Apple In-App Purchases (iOS)
-- Handle purchase flow
-- Handle restore purchases
-- Verify purchases
-- Add error handling
-
-**Dependencies:** Task 5.5, 11.1, 11.2
-**Related Docs:** PRD.md (Monetization section)
 
 ---
 
@@ -1272,7 +1223,7 @@ Prepare Android release:
 - Create signed APK
 - Write app description and screenshots
 - Set up store listing
-- Configure pricing
+- Configure free distribution
 - Create release build
 
 **Dependencies:** Task 11.1, 8.4
@@ -1343,9 +1294,9 @@ Phase 3: Core Logic (3.1-3.7)
     ↓
 Phase 4: State Management (4.1-4.3)
     ↓
-Phase 5: Features (5.1-5.6)
+Phase 5: Features (5.1-5.4, 5.6)
     ↓
-Phase 6: UI Screens (6.1-6.10)
+Phase 6: UI Screens (6.1-6.8, 6.10)
     ↓
 Phase 7: UI Components (7.1-7.3)
     ↓
@@ -1355,7 +1306,7 @@ Phase 9: Content (9.1-9.3)
     ↓
 Phase 10: Optimization (10.1-10.4)
     ↓
-Phase 11: Platform Setup (11.1-11.3)
+Phase 11: Platform Setup (11.1-11.2)
     ↓
 Phase 12: Deployment (12.1-12.4)
 ```
@@ -1366,12 +1317,12 @@ Phase 12: Deployment (12.1-12.4)
 
 **Must Complete for MVP (P0 & P1):**
 - All Phase 1, 2, 3, 4 tasks
-- Phase 5: 5.1-5.6
-- Phase 6: 6.1-6.10
+- Phase 5: 5.1-5.4, 5.6
+- Phase 6: 6.1-6.8, 6.10
 - Phase 7: 7.1-7.3
 - Phase 8: 8.1-8.3
 - Phase 9: 9.1-9.3
-- Phase 11: 11.1-11.3
+- Phase 11: 11.1-11.2
 - Phase 12: 12.1-12.4
 
 **Nice to Have (P2):**
@@ -1389,13 +1340,13 @@ Phase 12: Deployment (12.1-12.4)
 | 2: Database | 8 | ~7L |
 | 3: Core Logic | 7 | ~6L |
 | 4: State Mgmt | 3 | ~3M |
-| 5: Features | 6 | ~6L |
-| 6: UI Screens | 10 | ~10L |
+| 5: Features | 5 | ~5L |
+| 6: UI Screens | 9 | ~9L |
 | 7: Components | 3 | ~3M |
 | 8: Testing | 4 | ~4L |
 | 9: Content | 3 | ~2M |
 | 10: Optimization | 4 | ~4M |
-| 11: Platform | 3 | ~3M |
+| 11: Platform | 2 | ~2M |
 | 12: Deployment | 4 | ~3M |
 
 **Total MVP Estimate: ~50 weeks (assuming 1 person, ~40 hours/week development)**
@@ -1412,7 +1363,7 @@ Phase 12: Deployment (12.1-12.4)
 5. **Use Partial Honestly** - Do not mark a broad task complete when only a vertical-slice subset exists.
 6. **Record Blockers** - State the external condition, owner, and next unblock action.
 7. **Complete with Verification** - Confirm every task bullet, tests, and relevant manual checks.
-8. **Update the Dashboard** - Recount all 59 tasks whenever a status changes.
+8. **Update the Dashboard** - Recount all 56 tasks whenever a status changes.
 9. **Reference Task IDs** - Include task IDs in commits and pull requests.
 
 ---
@@ -1421,7 +1372,11 @@ Phase 12: Deployment (12.1-12.4)
 
 | Date | Change | Verification |
 |---|---|---|
-| 2026-07-24 | Added persisted timed premium exams, lifecycle-safe recovery, timeout submission, readiness scoring, weak-area analysis, prioritized recommendations, and exam trends. | Analysis clean; all 30 automated tests passed; Android debug APK built. |
+| 2026-07-26 | Revised readiness scoring with normalized recency/trend inputs and mandatory Australian values caps based on recent 5/5 practice and consecutive qualifying mock exams. | Algorithm, product, architecture, implementation, and Task 3.1 plans updated; implementation remains pending. |
+| 2026-07-26 | Raised readiness eligibility to at least 20 answered practice questions in every active category; the score remains hidden as `Not enough data` until the requirement is met. | Planning documents and Task 3.1 acceptance criteria updated; implementation remains pending. |
+| 2026-07-26 | Defined official mock-exam composition and dual pass criteria: exactly 5 Australian values questions, 5/5 values required, and at least 15/20 overall. | Planning documents and Task 3.5 acceptance criteria reconciled; implementation remains pending. |
+| 2026-07-25 | Made every feature freely available, removed gated-feature terminology, and removed purchase and entitlement work from the MVP backlog. | Product documentation, application labels, and the 56-task tracker were reconciled. |
+| 2026-07-24 | Added persisted timed exams, lifecycle-safe recovery, timeout submission, readiness scoring, weak-area analysis, prioritized recommendations, and exam trends. | Analysis clean; all 30 automated tests passed; Android debug APK built. |
 | 2026-07-23 | Added free Progress analytics, release-ready Settings information/controls, difficulty filters, direct unstar, exam history/review, archived-question safeguards, accessibility improvements, and runtime diagnostics. | Analysis clean; all 18 automated tests passed, including 200% activity-chart scaling, history reconstruction, and progress reset preservation. |
 | 2026-07-23 | Added named stateful navigation, saved-session back handling, typed recovery paths, and the completed free Home dashboard. | Analysis clean; all 14 automated tests passed; Android debug APK built. |
 | 2026-07-23 | Added the production question-bank schema, normalized content pipeline, safe update/removal lifecycle, option explanations, source references, and stable answer IDs. | JSON integrity audit passed for 120 questions and 480 options; analysis clean; all 11 tests passed. |

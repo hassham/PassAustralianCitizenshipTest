@@ -67,8 +67,8 @@ class WeakAreaModel {
   final List<String> frequentlyMissedQuestions;
 }
 
-class PremiumAnalyticsModel {
-  const PremiumAnalyticsModel({
+class ReadinessInsightsModel {
+  const ReadinessInsightsModel({
     required this.readiness,
     required this.weakAreas,
     required this.recommendations,

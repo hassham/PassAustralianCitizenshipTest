@@ -5,13 +5,13 @@
 ## Functional Specification Document (FSD)
 
 ### Version
-2.0
+2.1
 
 ### Status
 Approved MVP Functional Specification
 
 ### Last Updated
-2026-07-19
+2026-07-25
 
 ---
 
@@ -32,11 +32,11 @@ This document is intended for:
 
 ---
 
-# 2. User Types
+# 2. User Access
 
-## Free User
+## App User
 
-A user who has not purchased Premium.
+Every user has the same feature access.
 
 Can access:
 
@@ -45,15 +45,6 @@ Can access:
 - Starred Questions
 - Progress Tracking
 - Untimed Mock Exams
-
----
-
-## Premium User
-
-A user who has purchased Premium.
-
-Can access everything available to Free users plus:
-
 - Timed Mock Exams
 - Readiness Score
 - Weak Area Analysis
@@ -79,7 +70,6 @@ Additional Screens:
 ```text
 Categories
 Starred Questions
-Premium
 Exam Results
 Question Review
 ```
@@ -140,15 +130,9 @@ Starred Questions
 
 ---
 
-### Premium Banner
+### Readiness Summary
 
-Shown to non-premium users.
-
-Example:
-
-```text
-Unlock Timed Exams
-```
+Display the current readiness score or the next recommended action.
 
 ---
 
@@ -387,23 +371,48 @@ Configurable:
 - Question Count
 - Duration
 - Pass Mark
-- Mandatory Rules
+- Australian Values Question Count
+- Require All Australian Values Answers Correct
 
 ---
 
 ## Exam Creation
 
-Application randomly selects questions based on configuration rules.
+For the standard 20-question configuration, the application selects:
+
+- Exactly 5 questions from Part 4: Australian values
+- 15 questions from Parts 1-3
+
+The complete question list is randomly ordered. Mock exams do not group
+questions by category or reveal a category sequence during the attempt.
 
 ---
 
-# 9. Free Mock Exams
+## Pass/Fail Rules
+
+An exam passes only when both conditions are true:
+
+- Overall score is at least 15/20 (75%)
+- Australian values score is exactly 5/5 (100%)
+
+Failing either condition produces a failed result. For example, 19/20 is a
+failure when the incorrect answer is an Australian values question.
+
+Results must separately display:
+
+- Overall score and threshold
+- Australian values score and 5/5 requirement
+- The specific condition or conditions that caused a failure
+
+---
+
+# 9. Untimed Mock Exams
 
 ## Behaviour
 
 Exam uses:
 
-- Same layout as Premium
+- Same question and review layout as timed exams
 - Same questions
 - Same scoring
 
@@ -413,11 +422,7 @@ Exam uses:
 
 No timer.
 
-No readiness score.
-
-No weak-area analysis.
-
-No exam-history screen.
+Readiness, weak-area analysis, and exam history remain available.
 
 ---
 
@@ -468,7 +473,7 @@ User may review all questions.
 
 ---
 
-# 10. Premium Timed Exams
+# 10. Timed Mock Exams
 
 ## Behaviour
 
@@ -612,8 +617,6 @@ Display:
 
 # 13. Readiness Score
 
-## Premium Feature
-
 Purpose:
 
 Estimate preparation level.
@@ -655,6 +658,40 @@ Likely Ready
 Highly Ready
 ```
 
+## Minimum Data Requirement
+
+The readiness score is hidden until the user has answered at least 20 practice
+questions in every active category.
+
+Before the requirement is met, display:
+
+```text
+Not enough data
+```
+
+The screen should show progress for each incomplete category, including how
+many more practice questions are needed. Mock-exam answers do not count toward
+the 20-question-per-category requirement.
+
+---
+
+## Australian Values Readiness Rules
+
+After the minimum-data requirement is met:
+
+- Fewer than 5/5 correct in the five most recent Australian values practice
+  answers caps readiness at 69.
+- Perfect recent values practice but no qualifying recent mock exam caps
+  readiness at 79.
+- One most-recent qualifying mock exam caps readiness at 89.
+- Only two consecutive qualifying mock exams allow readiness from 90–100.
+
+A qualifying mock exam passes both official requirements: at least 75% overall
+and exactly 5/5 Australian values.
+
+The readiness UI must explain an applied cap and recommend the specific action
+needed to reach the next readiness band.
+
 ---
 
 ## Formula Ownership
@@ -666,8 +703,6 @@ The UI must consume the calculated score.
 ---
 
 # 14. Weak Area Analysis
-
-## Premium Feature
 
 Purpose:
 
@@ -701,8 +736,6 @@ Example:
 
 # 15. Exam History
 
-## Premium Feature
-
 Display:
 
 - Date
@@ -718,69 +751,16 @@ User may open any previous attempt.
 
 ---
 
-# 16. Premium Purchase Flow
+# 16. Optional Support Link
 
-## Purchase Entry Points
-
-- Premium Screen
-- Mock Exam Screen
-- Readiness Screen
-
----
-
-## Purchase Process
-
-User taps:
+Settings may display:
 
 ```text
-Unlock Premium
+Support this app
+Buy Me a Coffee
 ```
 
-Store purchase flow begins.
-
----
-
-## Successful Purchase
-
-Display:
-
-```text
-Premium Activated
-```
-
----
-
-## Cancelled Purchase
-
-Display:
-
-```text
-Purchase Cancelled
-```
-
----
-
-## Failed Purchase
-
-Display:
-
-```text
-Purchase Failed
-```
-
----
-
-## Restore Purchases
-
-Available through Settings.
-
----
-
-## Refunded Purchase
-
-If store revokes purchase:
-
-Premium access removed.
+The link opens in the external browser. Supporting the app is optional and does not unlock features.
 
 ---
 
@@ -816,9 +796,9 @@ Premium access removed.
 
 ---
 
-## Purchases
+## Optional Support
 
-- Restore Purchases
+- Support this app
 
 ---
 
@@ -843,7 +823,7 @@ Deletes:
 Preserves:
 
 - Stars
-- Premium
+- App settings
 
 ---
 
@@ -857,7 +837,7 @@ Deletes only stars.
 
 Deletes all local user data.
 
-Premium restored using store purchase restoration.
+All study features remain available after reset.
 
 ---
 
@@ -884,12 +864,12 @@ Question content could not be loaded.
 
 ---
 
-## Purchase Service Unavailable
+## Support Page Unavailable
 
 Display:
 
 ```text
-Store services are currently unavailable.
+The support page could not be opened. Please try again later.
 ```
 
 ---

@@ -1,4 +1,4 @@
-import 'premium_analytics_models.dart';
+import 'readiness_insights_models.dart';
 
 abstract final class ReadinessCalculator {
   static ReadinessResult calculate(ReadinessInput input) {

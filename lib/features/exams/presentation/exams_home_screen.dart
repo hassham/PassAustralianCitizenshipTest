@@ -58,7 +58,7 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Start timed premium exam?'),
+        title: const Text('Start timed mock exam?'),
         content: Text(
           'You will have ${config.durationMinutes} minutes. The timer cannot '
           'be paused and continues while the app is in the background.',
@@ -184,13 +184,13 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
                     const Icon(Icons.timer_outlined, size: 42),
                     const SizedBox(height: 12),
                     Text(
-                      'Premium timed exam',
+                      'Timed mock exam',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Premium preview: realistic timing, background '
-                      'continuation, expiry submission, and recovery.',
+                      'Realistic timing with background continuation, '
+                      'expiry submission, and recovery.',
                     ),
                     const SizedBox(height: 18),
                     FilledButton(

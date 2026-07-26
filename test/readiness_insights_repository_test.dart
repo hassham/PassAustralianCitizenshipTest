@@ -2,7 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pass_citizenship_test/data/database/app_database.dart';
 import 'package:pass_citizenship_test/features/practice/data/practice_repository.dart';
-import 'package:pass_citizenship_test/features/progress/data/premium_analytics_repository.dart';
+import 'package:pass_citizenship_test/features/progress/data/readiness_insights_repository.dart';
 import 'package:pass_citizenship_test/features/progress/data/progress_repository.dart';
 
 void main() {
@@ -47,7 +47,7 @@ void main() {
             );
       }
       final progress = ProgressRepository(database, practice);
-      final repository = PremiumAnalyticsRepository(
+      final repository = ReadinessInsightsRepository(
         database,
         practice,
         progress,

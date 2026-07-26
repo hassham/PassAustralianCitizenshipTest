@@ -3,13 +3,13 @@ import 'package:drift/drift.dart';
 import '../../../core/services/performance_monitor.dart';
 import '../../../data/database/app_database.dart';
 import '../../practice/data/practice_repository.dart';
-import '../domain/premium_analytics_models.dart';
+import '../domain/readiness_insights_models.dart';
 import '../domain/readiness_calculator.dart';
 import '../domain/recommendation_engine.dart';
 import 'progress_repository.dart';
 
-class PremiumAnalyticsRepository {
-  const PremiumAnalyticsRepository(
+class ReadinessInsightsRepository {
+  const ReadinessInsightsRepository(
     this.database,
     this.practiceRepository,
     this.progressRepository,
@@ -19,14 +19,14 @@ class PremiumAnalyticsRepository {
   final PracticeRepository practiceRepository;
   final ProgressRepository progressRepository;
 
-  Future<PremiumAnalyticsModel> analytics({DateTime? now}) =>
+  Future<ReadinessInsightsModel> analytics({DateTime? now}) =>
       PerformanceMonitor.measure(
-        'premium_analytics',
+        'readiness_insights',
         () => _calculate(now ?? DateTime.now()),
         warningThreshold: const Duration(milliseconds: 150),
       );
 
-  Future<PremiumAnalyticsModel> _calculate(DateTime now) async {
+  Future<ReadinessInsightsModel> _calculate(DateTime now) async {
     await practiceRepository.initialise();
     final progress = await progressRepository.analytics();
     final attempts = await database.select(database.questionAttempts).get();
@@ -145,7 +145,7 @@ class PremiumAnalyticsRepository {
             : now.difference(lastActivity).inDays,
       ),
     );
-    return PremiumAnalyticsModel(
+    return ReadinessInsightsModel(
       readiness: readiness,
       weakAreas: topWeak,
       recommendations: recommendations,

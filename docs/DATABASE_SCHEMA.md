@@ -283,6 +283,8 @@ CREATE TABLE exam_configurations (
   questionCount INTEGER NOT NULL,
   durationMinutes INTEGER NOT NULL,
   passMark REAL NOT NULL, -- e.g., 75.0
+  australianValuesQuestionCount INTEGER NOT NULL DEFAULT 5,
+  requireAllAustralianValuesCorrect BOOLEAN NOT NULL DEFAULT 1,
   isActive BOOLEAN NOT NULL DEFAULT 1,
   version INTEGER NOT NULL DEFAULT 1,
   createdAt INTEGER NOT NULL,
@@ -296,6 +298,8 @@ examName: "Australian Citizenship Test"
 questionCount: 20
 durationMinutes: 45
 passMark: 75.0
+australianValuesQuestionCount: 5
+requireAllAustralianValuesCorrect: true
 ```
 
 **Indexes:**
@@ -318,11 +322,15 @@ CREATE TABLE exam_attempts (
   currentQuestionIndex INTEGER NOT NULL DEFAULT 0,
   currentQuestionId INTEGER,
   score REAL, -- NULL if not completed
+  australianValuesCorrect INTEGER, -- NULL if not completed
+  australianValuesTotal INTEGER, -- expected to be 5 for the standard test
+  overallRequirementMet BOOLEAN, -- NULL if not completed
+  australianValuesRequirementMet BOOLEAN, -- NULL if not completed
   isPassed BOOLEAN, -- NULL if not completed
   timeTakenSeconds INTEGER, -- NULL if not completed
   startedAt INTEGER NOT NULL,
   submittedAt INTEGER, -- NULL if not completed
-  isPremiumTimed BOOLEAN NOT NULL DEFAULT 0,
+  isTimed BOOLEAN NOT NULL DEFAULT 0,
   remainingTimeSeconds INTEGER, -- For timed exams
   backgroundedAt INTEGER, -- Timestamp when app was backgrounded
   isCompleted BOOLEAN NOT NULL DEFAULT 0,
@@ -341,6 +349,10 @@ CREATE TABLE exam_attempts (
 - `CREATE INDEX idx_exam_attempts_isCompleted ON exam_attempts(isCompleted)`
 - `CREATE INDEX idx_exam_attempts_isPassed ON exam_attempts(isPassed)`
 - `CREATE INDEX idx_exam_attempts_startedAt ON exam_attempts(startedAt DESC)`
+
+`isPassed` is true only when both `overallRequirementMet` and
+`australianValuesRequirementMet` are true. Storing both outcomes allows current
+results and historical attempts to explain the reason for failure.
 
 ---
 
@@ -405,7 +417,7 @@ CREATE TABLE user_performance_metrics (
 
 ## 7.2 `exam_history`
 
-Stores historical exam results for premium users.
+Stores historical exam results for all users.
 
 ```sql
 CREATE TABLE exam_history (
@@ -442,34 +454,9 @@ CREATE TABLE exam_history (
 
 ---
 
-# 8. Premium & Settings Tables
+# 8. Settings Tables
 
-## 8.1 `premium_entitlements`
-
-Tracks premium purchase status.
-
-```sql
-CREATE TABLE premium_entitlements (
-  entitlementId INTEGER PRIMARY KEY AUTOINCREMENT,
-  purchaseToken TEXT NOT NULL UNIQUE, -- From Apple/Google
-  platform TEXT NOT NULL, -- 'ios', 'android'
-  purchaseId TEXT NOT NULL,
-  purchaseDate INTEGER NOT NULL,
-  expiryDate INTEGER, -- NULL for lifetime purchases
-  isActive BOOLEAN NOT NULL DEFAULT 1,
-  verificationData TEXT, -- Raw verification response (optional for MVP)
-  createdAt INTEGER NOT NULL,
-  updatedAt INTEGER NOT NULL
-);
-```
-
-**Indexes:**
-- `CREATE INDEX idx_entitlements_isActive ON premium_entitlements(isActive)`
-- `CREATE INDEX idx_entitlements_platform ON premium_entitlements(platform)`
-
----
-
-## 8.2 `app_settings`
+## 8.1 `app_settings`
 
 Stores application-level settings and configuration.
 

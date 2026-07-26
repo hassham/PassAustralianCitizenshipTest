@@ -139,17 +139,11 @@ JSON files bundled with application.
 
 ---
 
-### Purchases
+### Optional Support
 
-Native Store Purchases
+A standard external URL opens the voluntary Buy Me a Coffee page.
 
-Android:
-
-- Google Play Billing
-
-iOS:
-
-- Apple In-App Purchases
+No store billing, purchase verification, entitlement storage, or feature gating is required.
 
 ---
 
@@ -186,7 +180,6 @@ features/
 ├── exams/
 ├── progress/
 ├── analytics/
-├── premium/
 ├── settings/
 
 shared/
@@ -275,7 +268,7 @@ High-level entities:
 - Exam Attempts
 - Exam Results
 - App Settings
-- Premium Entitlements
+- Readiness Insights
 
 Detailed schema will be defined separately in DATABASE_SCHEMA.md.
 
@@ -323,7 +316,9 @@ Example:
   "examName": "Australian Citizenship Test",
   "questionCount": 20,
   "durationMinutes": 45,
-  "passMark": 75
+  "passMark": 75,
+  "australianValuesQuestionCount": 5,
+  "requireAllAustralianValuesCorrect": true
 }
 ```
 
@@ -335,6 +330,12 @@ Application reads active exam configuration.
 
 Exam generation is performed locally.
 
+The generator must select the configured number of Australian values questions
+separately from the remaining question pool, combine the selections, and
+randomize the final order. The scoring service evaluates the overall pass mark
+and the Australian values requirement independently and passes an attempt only
+when both conditions are satisfied.
+
 ---
 
 ## Future Flexibility
@@ -344,6 +345,7 @@ Supports:
 - Different question counts
 - Different durations
 - Different pass marks
+- Different mandatory-category counts and rules
 
 without application code changes.
 
@@ -375,7 +377,7 @@ All calculations occur locally.
 
 Estimate exam readiness.
 
-Premium Feature.
+Available to every user.
 
 ---
 
@@ -384,6 +386,7 @@ Premium Feature.
 - Accuracy
 - Mock exam scores
 - Category coverage
+- Practice-attempt count for every active category
 - Recent activity
 
 ---
@@ -395,6 +398,16 @@ Ready For Test
 
 82%
 ```
+
+Before calculation, the engine applies an eligibility gate. If any active
+category has fewer than 20 answered practice questions, it returns no numeric
+score and the `Not enough data` state with per-category remaining counts.
+Mock-exam answers are excluded from the eligibility count.
+
+After calculating the normalized weighted score, the engine applies Australian
+values caps using the five most recent values practice answers and the two most
+recent official-style mock results. The readiness result model must expose the
+uncapped score, final score, applied cap, cap reason, and next required action.
 
 Calculation occurs locally.
 
@@ -408,7 +421,7 @@ No cloud services required.
 
 Identify knowledge gaps.
 
-Premium Feature.
+Available to every user.
 
 ---
 
@@ -440,7 +453,7 @@ Calculated locally.
 
 Maintain historical records.
 
-Premium Feature.
+Available to every user.
 
 ---
 
@@ -456,31 +469,11 @@ Stored locally in SQLite.
 
 ---
 
-# 15. Premium Purchase Architecture
+# 15. Optional Support Architecture
 
-## Android
+Settings opens the configured Buy Me a Coffee URL through the platform browser.
 
-Google Play Billing
-
----
-
-## iOS
-
-Apple In-App Purchases
-
----
-
-## Verification
-
-MVP relies on platform purchase verification and restore purchase functionality.
-
-No custom backend verification is required for MVP.
-
----
-
-## Future Enhancement
-
-Server-side purchase validation may be introduced in a future release.
+The support link has no effect on feature access or local application state.
 
 ---
 
@@ -528,13 +521,13 @@ Display recovery message.
 
 ---
 
-## Purchase Failure
+## External Support Link Failure
 
 Display:
 
 ```text
-Purchase could not be completed.
-Please try again.
+The support page could not be opened.
+Please try again later.
 ```
 
 ---
@@ -560,9 +553,9 @@ No sensitive government information is stored.
 
 ---
 
-## Purchase Data
+## Support Link Data
 
-Managed by Apple and Google platforms.
+No contribution or payment data is stored by the application.
 
 ---
 
@@ -572,7 +565,6 @@ Use Flutter secure storage where required.
 
 Examples:
 
-- Purchase metadata
 - App preferences
 
 ---
@@ -660,7 +652,7 @@ The MVP architecture does not prevent future migration to any of these platforms
 | Local Database | Drift + SQLite |
 | Question Storage | JSON Assets |
 | Runtime Storage | SQLite |
-| Purchases | Google Billing + Apple IAP |
+| Optional Support | External Buy Me a Coffee link |
 | Analytics | Local / Optional Firebase |
 | Backend | None |
 | Authentication | None |
