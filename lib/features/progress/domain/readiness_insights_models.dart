@@ -18,6 +18,9 @@ class ReadinessInput {
     required this.hard,
     required this.lastActivityAt,
     required this.now,
+    this.categoryAttempts = const {},
+    this.recentAustralianValuesAnswers = const [],
+    this.qualifyingMockResults = const [],
   });
 
   final int practiceAttempts;
@@ -31,6 +34,9 @@ class ReadinessInput {
   final DifficultyPerformance hard;
   final DateTime? lastActivityAt;
   final DateTime now;
+  final Map<String, int> categoryAttempts;
+  final List<bool> recentAustralianValuesAnswers;
+  final List<bool> qualifyingMockResults;
 }
 
 class ReadinessResult {
@@ -40,6 +46,11 @@ class ReadinessResult {
     required this.hasEnoughData,
     required this.hasMockExam,
     required this.trend,
+    this.uncappedScore,
+    this.appliedCap,
+    this.capReason,
+    this.nextAction,
+    this.incompleteCategories = const {},
   });
 
   final int? score;
@@ -47,6 +58,11 @@ class ReadinessResult {
   final bool hasEnoughData;
   final bool hasMockExam;
   final double trend;
+  final int? uncappedScore;
+  final int? appliedCap;
+  final String? capReason;
+  final String? nextAction;
+  final Map<String, int> incompleteCategories;
 }
 
 class WeakAreaModel {
@@ -73,10 +89,12 @@ class ReadinessInsightsModel {
     required this.weakAreas,
     required this.recommendations,
     required this.examScores,
+    required this.hasEnoughWeakAreaData,
   });
 
   final ReadinessResult readiness;
   final List<WeakAreaModel> weakAreas;
   final List<String> recommendations;
   final List<double> examScores;
+  final bool hasEnoughWeakAreaData;
 }

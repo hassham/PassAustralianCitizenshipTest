@@ -28,15 +28,26 @@ class ExamRepository {
   }
 
   Future<ExamConfigModel> _loadConfig() async {
+    final raw = await rootBundle.loadString('assets/data/exam_config.json');
+    final json = jsonDecode(raw) as Map<String, dynamic>;
     final existing =
         await (database.select(database.examConfigurations)
               ..where((row) => row.isActive.equals(true))
               ..limit(1))
             .getSingleOrNull();
-    if (existing != null) return _configModel(existing);
+    if (existing != null) {
+      return ExamConfigModel(
+        id: existing.id,
+        questionCount: existing.questionCount,
+        durationMinutes: existing.durationMinutes,
+        passPercentage: existing.passPercentage,
+        australianValuesQuestionCount:
+            json['australianValuesQuestionCount'] as int? ?? 5,
+        requireAllAustralianValuesCorrect:
+            json['requireAllAustralianValuesCorrect'] as bool? ?? true,
+      );
+    }
 
-    final raw = await rootBundle.loadString('assets/data/exam_config.json');
-    final json = jsonDecode(raw) as Map<String, dynamic>;
     final id = await database
         .into(database.examConfigurations)
         .insert(
@@ -53,6 +64,10 @@ class ExamRepository {
       questionCount: json['questionCount'] as int,
       durationMinutes: json['durationMinutes'] as int,
       passPercentage: (json['passPercentage'] as num).toDouble(),
+      australianValuesQuestionCount:
+          json['australianValuesQuestionCount'] as int? ?? 5,
+      requireAllAustralianValuesCorrect:
+          json['requireAllAustralianValuesCorrect'] as bool? ?? true,
     );
   }
 
@@ -64,9 +79,29 @@ class ExamRepository {
     final examConfig = await config();
     final startedAt = now ?? DateTime.now();
     final durationSeconds = examConfig.durationMinutes * 60;
-    final questions = await practiceRepository.questionsFor(
-      limit: examConfig.questionCount,
-    );
+    final available = await practiceRepository.questionsFor();
+    final values = available
+        .where((question) => question.isAustralianValuesQuestion)
+        .toList()
+      ..shuffle();
+    final other = available
+        .where((question) => !question.isAustralianValuesQuestion)
+        .toList()
+      ..shuffle();
+    final valuesCount = examConfig.australianValuesQuestionCount;
+    final otherCount = examConfig.questionCount - valuesCount;
+    if (values.length < valuesCount || other.length < otherCount) {
+      throw ContentFailure(
+        message:
+            'The question bank cannot create an official mock exam. It needs '
+            'at least $valuesCount Australian values questions and '
+            '$otherCount questions from the other sections.',
+      );
+    }
+    final questions = [
+      ...values.take(valuesCount),
+      ...other.take(otherCount),
+    ]..shuffle();
     final attemptId = await database
         .into(database.examAttempts)
         .insert(
@@ -252,13 +287,22 @@ class ExamRepository {
     required List<StudyQuestionModel> questions,
     required Map<int, int> answers,
     required double passPercentage,
+    int requiredAustralianValuesQuestions = 5,
     bool timedOut = false,
     int? remainingSeconds,
   }) async {
     var correct = 0;
+    var australianValuesCorrect = 0;
+    var australianValuesTotal = 0;
     for (var index = 0; index < questions.length; index++) {
       final selected = answers[index];
       if (selected == questions[index].correctIndex) correct++;
+      if (questions[index].isAustralianValuesQuestion) {
+        australianValuesTotal++;
+        if (selected == questions[index].correctIndex) {
+          australianValuesCorrect++;
+        }
+      }
       if (selected != null) {
         await (database.update(database.examAttemptAnswers)..where(
               (row) =>
@@ -275,7 +319,12 @@ class ExamRepository {
     final unanswered = questions.length - answers.length;
     final incorrect = answers.length - correct;
     final score = questions.isEmpty ? 0.0 : correct * 100 / questions.length;
-    final passed = score >= passPercentage;
+    final overallRequirementMet = score >= passPercentage;
+    final australianValuesRequirementMet =
+        australianValuesTotal == requiredAustralianValuesQuestions &&
+        australianValuesCorrect == requiredAustralianValuesQuestions;
+    final passed =
+        overallRequirementMet && australianValuesRequirementMet;
     final attempt = await (database.select(
       database.examAttempts,
     )..where((row) => row.id.equals(attemptId))).getSingle();
@@ -308,6 +357,10 @@ class ExamRepository {
       correct: correct,
       incorrect: incorrect,
       unanswered: unanswered,
+      overallRequirementMet: overallRequirementMet,
+      australianValuesRequirementMet: australianValuesRequirementMet,
+      australianValuesCorrect: australianValuesCorrect,
+      australianValuesTotal: australianValuesTotal,
       timedOut: timedOut,
       timeTakenSeconds: timeTaken,
     );
@@ -325,6 +378,12 @@ class ExamRepository {
               ..where((row) => row.submittedAt.isNotNull())
               ..orderBy([(row) => OrderingTerm.desc(row.submittedAt)]))
             .get();
+    final configurations = await database
+        .select(database.examConfigurations)
+        .get();
+    final passMarkByConfig = {
+      for (final config in configurations) config.id: config.passPercentage,
+    };
     final result = <ExamHistorySummary>[];
     for (final attempt in attempts) {
       final correct =
@@ -338,6 +397,23 @@ class ExamRepository {
                 (row) => row.read(database.examAttemptAnswers.id.count()) ?? 0,
               )
               .getSingle();
+      final valuesRows = await database
+          .customSelect(
+            'SELECT a.is_correct FROM exam_attempt_answers a '
+            'INNER JOIN question_metadata m ON m.question_id = a.question_id '
+            'WHERE a.exam_attempt_id = ? AND m.is_australian_values = 1',
+            variables: [Variable.withInt(attempt.id)],
+          )
+          .get();
+      final valuesCorrect = valuesRows
+          .where((row) => row.readNullable<int>('is_correct') == 1)
+          .length;
+      final valuesTotal = valuesRows.length;
+      final overallRequirementMet =
+          (attempt.score ?? 0) >=
+          (passMarkByConfig[attempt.configId] ?? 75);
+      final valuesRequirementMet =
+          valuesTotal == 5 && valuesCorrect == 5;
       result.add(
         ExamHistorySummary(
           attemptId: attempt.id,
@@ -347,6 +423,10 @@ class ExamRepository {
           totalQuestions: attempt.totalQuestions,
           correctAnswers: correct,
           isTimed: attempt.isTimed,
+          overallRequirementMet: overallRequirementMet,
+          australianValuesRequirementMet: valuesRequirementMet,
+          australianValuesCorrect: valuesCorrect,
+          australianValuesTotal: valuesTotal,
           timeTakenSeconds: attempt.timeTakenSeconds,
         ),
       );
@@ -435,6 +515,8 @@ class ExamRepository {
     questionCount: row.questionCount,
     durationMinutes: row.durationMinutes,
     passPercentage: row.passPercentage,
+    australianValuesQuestionCount: 5,
+    requireAllAustralianValuesCorrect: true,
   );
 
   int _restoredOptionIndex(

@@ -532,9 +532,19 @@ class PracticeRepository {
   Future<ProgressSummary> progress() async {
     await initialise();
     final attempts = await database.select(database.questionAttempts).get();
+    final completedExamAnswers = await database
+        .customSelect(
+          'SELECT a.is_correct FROM exam_attempt_answers a '
+          'INNER JOIN exam_attempts e ON e.id = a.exam_attempt_id '
+          'WHERE e.submitted_at IS NOT NULL',
+        )
+        .get();
     return ProgressSummary(
-      attempts.length,
-      attempts.where((attempt) => attempt.isCorrect).length,
+      attempts.length + completedExamAnswers.length,
+      attempts.where((attempt) => attempt.isCorrect).length +
+          completedExamAnswers
+              .where((row) => row.readNullable<int>('is_correct') == 1)
+              .length,
     );
   }
 

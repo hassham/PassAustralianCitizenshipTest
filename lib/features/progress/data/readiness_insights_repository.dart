@@ -32,11 +32,19 @@ class ReadinessInsightsRepository {
     final attempts = await database.select(database.questionAttempts).get();
     final questions = await database.select(database.studyQuestions).get();
     final metadata = await database
-        .customSelect('SELECT question_id, difficulty FROM question_metadata')
+        .customSelect(
+          'SELECT question_id, difficulty, is_australian_values '
+          'FROM question_metadata',
+        )
         .get();
     final difficultyByQuestion = {
       for (final row in metadata)
         row.read<String>('question_id'): row.read<String>('difficulty'),
+    };
+    final isAustralianValues = {
+      for (final row in metadata)
+        row.read<String>('question_id'):
+            row.read<int>('is_australian_values') == 1,
     };
     final exams =
         await (database.select(database.examAttempts)
@@ -44,6 +52,33 @@ class ReadinessInsightsRepository {
               ..orderBy([(row) => OrderingTerm.asc(row.submittedAt)]))
             .get();
     final scores = exams.map((exam) => exam.score ?? 0).toList();
+    final examAnswers = await database.select(database.examAttemptAnswers).get();
+    final configurations = await database
+        .select(database.examConfigurations)
+        .get();
+    final passMarkByConfig = {
+      for (final config in configurations) config.id: config.passPercentage,
+    };
+    final qualifyingMockResults = [
+      for (final exam in exams)
+        _isQualifyingMock(
+          exam,
+          examAnswers
+              .where((answer) => answer.examAttemptId == exam.id)
+              .toList(),
+          isAustralianValues,
+          passMarkByConfig[exam.configId] ?? 75,
+        ),
+    ];
+    final recentValuesAnswers =
+        attempts
+            .where(
+              (attempt) => isAustralianValues[attempt.questionId] ?? false,
+            )
+            .toList()
+          ..sort(
+            (left, right) => right.attemptedAt.compareTo(left.attemptedAt),
+          );
     final difficulty = <String, DifficultyPerformance>{};
     for (final name in ['easy', 'medium', 'hard']) {
       final matching = attempts
@@ -87,6 +122,15 @@ class ReadinessInsightsRepository {
         hard: difficulty['hard']!,
         lastActivityAt: lastActivity,
         now: now,
+        categoryAttempts: {
+          for (final category in progress.categories)
+            category.categoryName: category.attempted,
+        },
+        recentAustralianValuesAnswers: recentValuesAnswers
+            .take(5)
+            .map((attempt) => attempt.isCorrect)
+            .toList(),
+        qualifyingMockResults: qualifyingMockResults,
       ),
     );
     final questionCategory = {
@@ -98,7 +142,7 @@ class ReadinessInsightsRepository {
     final threshold = progress.accuracy - 15;
     final weakAreas = <WeakAreaModel>[];
     for (final category in progress.categories) {
-      if (category.attempted < 5 || category.accuracy >= threshold) continue;
+      if (category.attempted < 10 || category.accuracy >= threshold) continue;
       final missedCounts = <String, int>{};
       for (final attempt in attempts.where(
         (attempt) =>
@@ -150,6 +194,27 @@ class ReadinessInsightsRepository {
       weakAreas: topWeak,
       recommendations: recommendations,
       examScores: scores,
+      hasEnoughWeakAreaData: progress.categories.isNotEmpty &&
+          progress.categories.every((category) => category.attempted >= 10),
     );
+  }
+
+  bool _isQualifyingMock(
+    ExamAttempt exam,
+    List<ExamAttemptAnswer> answers,
+    Map<String, bool> isAustralianValues,
+    double passMark,
+  ) {
+    final valuesAnswers = answers
+        .where(
+          (answer) => isAustralianValues[answer.questionId] ?? false,
+        )
+        .toList();
+    final valuesCorrect = valuesAnswers
+        .where((answer) => answer.isCorrect == true)
+        .length;
+    return (exam.score ?? 0) >= passMark &&
+        valuesAnswers.length == 5 &&
+        valuesCorrect == 5;
   }
 }

@@ -319,7 +319,7 @@ class _TimerBanner extends StatelessWidget {
             state.timerLocked
                 ? 'The device clock moved backwards. Restart this exam.'
                 : state.timerWarning.isEmpty
-                ? 'Timed mock exam'
+                ? 'Mock exam'
                 : state.timerWarning,
           ),
         ),
@@ -389,9 +389,38 @@ class _ExamResultsView extends ConsumerWidget {
                     title: const Text('Unanswered'),
                     trailing: Text('${result.unanswered}'),
                   ),
+                  ListTile(
+                    title: const Text('Overall requirement'),
+                    subtitle: Text(
+                      'At least ${state.config?.passPercentage.toStringAsFixed(0) ?? '75'}%',
+                    ),
+                    trailing: Icon(
+                      result.overallRequirementMet
+                          ? Icons.check_circle
+                          : Icons.cancel,
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text('Australian values'),
+                    subtitle: const Text('All 5 answers must be correct'),
+                    trailing: Text(
+                      '${result.australianValuesCorrect}/'
+                      '${result.australianValuesTotal}',
+                    ),
+                  ),
                 ],
               ),
             ),
+            if (result.failureReason != null) ...[
+              const SizedBox(height: 12),
+              Card(
+                color: Theme.of(context).colorScheme.errorContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(result.failureReason!),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             if (state.isTimed)
               analytics.when(
@@ -410,13 +439,21 @@ class _ExamResultsView extends ConsumerWidget {
                         const SizedBox(height: 8),
                         Text(
                           value.readiness.score == null
-                              ? 'Readiness: Not enough practice data'
+                              ? 'Readiness: Not enough data'
                               : 'Readiness: ${value.readiness.score}/100 · '
                                     '${value.readiness.label}',
                         ),
+                        if (value.readiness.score == null)
+                          const Text(
+                            'Complete 10 questions in every category.',
+                          ),
+                        if (value.readiness.capReason != null)
+                          Text(value.readiness.capReason!),
                         const SizedBox(height: 8),
                         Text(
-                          value.weakAreas.isEmpty
+                          !value.hasEnoughWeakAreaData
+                              ? 'Not enough data to identify weak areas.'
+                              : value.weakAreas.isEmpty
                               ? 'No weak areas detected.'
                               : 'Focus next: ${value.weakAreas.map((area) => area.categoryName).join(', ')}',
                         ),

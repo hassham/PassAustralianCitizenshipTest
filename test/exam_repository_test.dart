@@ -23,6 +23,11 @@ void main() {
     expect(started.config.questionCount, 20);
     expect(started.config.passPercentage, 75);
     expect(started.questions, hasLength(20));
+    expect(
+      started.questions
+          .where((question) => question.isAustralianValuesQuestion),
+      hasLength(5),
+    );
 
     await repository.saveAnswer(
       attemptId: started.attemptId,
@@ -39,6 +44,33 @@ void main() {
       restored?.questions.map((question) => question.id),
       started.questions.map((question) => question.id),
     );
+  });
+
+  test('fails a nineteen out of twenty exam when one values answer is wrong', () async {
+    final started = await repository.startExam();
+    final answers = {
+      for (var index = 0; index < started.questions.length; index++)
+        index: started.questions[index].correctIndex,
+    };
+    final valuesIndex = started.questions.indexWhere(
+      (question) => question.isAustralianValuesQuestion,
+    );
+    final valuesQuestion = started.questions[valuesIndex];
+    answers[valuesIndex] =
+        (valuesQuestion.correctIndex + 1) % valuesQuestion.options.length;
+
+    final result = await repository.submit(
+      attemptId: started.attemptId,
+      questions: started.questions,
+      answers: answers,
+      passPercentage: started.config.passPercentage,
+    );
+
+    expect(result.score, 95);
+    expect(result.overallRequirementMet, isTrue);
+    expect(result.australianValuesCorrect, 4);
+    expect(result.australianValuesRequirementMet, isFalse);
+    expect(result.passed, isFalse);
   });
 
   test('scores answered, incorrect, and unanswered questions', () async {

@@ -3,13 +3,21 @@ import 'package:pass_citizenship_test/features/progress/domain/readiness_insight
 import 'package:pass_citizenship_test/features/progress/domain/readiness_calculator.dart';
 
 void main() {
-  test('requires at least ten practice attempts', () {
+  test('requires twenty practice attempts in every category', () {
     final result = ReadinessCalculator.calculate(
-      _input(practiceAttempts: 9, practiceCorrect: 9),
+      _input(
+        categoryAttempts: const {
+          'People': 20,
+          'Beliefs': 19,
+          'Government': 20,
+          'Values': 20,
+        },
+      ),
     );
 
     expect(result.score, isNull);
     expect(result.hasEnoughData, isFalse);
+    expect(result.incompleteCategories['Beliefs'], 1);
   });
 
   test('matches the documented readiness example', () {
@@ -18,7 +26,7 @@ void main() {
         practiceAttempts: 150,
         practiceCorrect: 120,
         examScores: const [78, 81, 85],
-        activeCategories: 6,
+        activeCategories: 8,
         masteredCategories: 3,
         totalCategories: 8,
         easy: const DifficultyPerformance(100, 90),
@@ -26,12 +34,43 @@ void main() {
         hard: const DifficultyPerformance(100, 75),
         lastActivityAt: DateTime.utc(2026, 7, 22),
         now: DateTime.utc(2026, 7, 24),
+        categoryAttempts: const {
+          'Category 1': 20,
+          'Category 2': 20,
+          'Category 3': 20,
+          'Category 4': 20,
+          'Category 5': 20,
+          'Category 6': 20,
+          'Category 7': 20,
+          'Category 8': 20,
+        },
+        recentAustralianValuesAnswers: const [true, true, true, true, true],
+        qualifyingMockResults: const [true, true, true],
       ),
     );
 
-    expect(result.score, 71);
-    expect(result.label, 'Well Prepared');
+    expect(result.score, 81);
+    expect(result.label, 'Very Well Prepared');
     expect(result.hasMockExam, isTrue);
+  });
+
+  test('caps readiness when recent Australian values is below five out of five', () {
+    final result = ReadinessCalculator.calculate(
+      _input(
+        examScores: const [95, 95],
+        recentAustralianValuesAnswers: const [
+          true,
+          true,
+          true,
+          true,
+          false,
+        ],
+        qualifyingMockResults: const [true, true],
+      ),
+    );
+
+    expect(result.score, lessThanOrEqualTo(69));
+    expect(result.appliedCap, 69);
   });
 
   test('applies the missing mock exam confidence penalty', () {
@@ -49,6 +88,20 @@ ReadinessInput _input({
   int practiceAttempts = 20,
   int practiceCorrect = 16,
   List<double> examScores = const [],
+  Map<String, int> categoryAttempts = const {
+    'People': 20,
+    'Beliefs': 20,
+    'Government': 20,
+    'Values': 20,
+  },
+  List<bool> recentAustralianValuesAnswers = const [
+    true,
+    true,
+    true,
+    true,
+    true,
+  ],
+  List<bool> qualifyingMockResults = const [],
 }) => ReadinessInput(
   practiceAttempts: practiceAttempts,
   practiceCorrect: practiceCorrect,
@@ -61,4 +114,7 @@ ReadinessInput _input({
   hard: const DifficultyPerformance(5, 4),
   lastActivityAt: DateTime.utc(2026, 7, 24),
   now: DateTime.utc(2026, 7, 24),
+  categoryAttempts: categoryAttempts,
+  recentAustralianValuesAnswers: recentAustralianValuesAnswers,
+  qualifyingMockResults: qualifyingMockResults,
 );

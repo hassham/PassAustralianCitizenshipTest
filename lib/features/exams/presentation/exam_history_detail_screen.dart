@@ -44,6 +44,15 @@ class ExamHistoryDetailScreen extends ConsumerWidget {
                           '${value.summary.correctAnswers} of '
                           '${value.summary.totalQuestions} correct',
                         ),
+                        Text(
+                          'Australian values: '
+                          '${value.summary.australianValuesCorrect}/'
+                          '${value.summary.australianValuesTotal}',
+                        ),
+                        if (value.summary.failureReason != null) ...[
+                          const SizedBox(height: 8),
+                          Text(value.summary.failureReason!),
+                        ],
                       ],
                     ),
                   ),
@@ -71,9 +80,15 @@ class _AnswerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final question = answer.question;
+    final backgroundColor = answer.selectedIndex == null
+        ? const Color(0xFFFFF3CD)
+        : answer.wasCorrect == true
+        ? const Color(0xFFE7F5EA)
+        : const Color(0xFFFFECEB);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Card(
+        color: backgroundColor,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -110,6 +125,11 @@ class _AnswerCard extends StatelessWidget {
                           : index == answer.selectedIndex
                           ? Icons.cancel
                           : Icons.radio_button_unchecked,
+                      color: question.options[index].isCorrect
+                          ? const Color(0xFF238636)
+                          : index == answer.selectedIndex
+                          ? const Color(0xFFCF222E)
+                          : null,
                     ),
                     title: Text(question.options[index].text),
                     subtitle: index == answer.selectedIndex

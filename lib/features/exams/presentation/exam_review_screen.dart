@@ -20,6 +20,11 @@ class ExamReviewScreen extends ConsumerWidget {
           final selected = state.answers[index];
           final correct = selected == question.correctIndex;
           return Card(
+            color: selected == null
+                ? const Color(0xFFFFF3CD)
+                : correct
+                ? const Color(0xFFE7F5EA)
+                : const Color(0xFFFFECEB),
             child: Padding(
               padding: const EdgeInsets.all(18),
               child: Column(
@@ -49,12 +54,34 @@ class ExamReviewScreen extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    selected == null
-                        ? 'Your answer: Unanswered'
-                        : 'Your answer: ${question.options[selected].text}',
-                  ),
-                  Text('Correct answer: ${question.correctOption.text}'),
+                  if (selected == null)
+                    const ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.help_outline, color: Colors.orange),
+                      title: Text('Unanswered'),
+                    )
+                  else
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(
+                        correct ? Icons.check_circle : Icons.cancel,
+                        color: correct
+                            ? const Color(0xFF238636)
+                            : const Color(0xFFCF222E),
+                      ),
+                      title: Text('Your answer'),
+                      subtitle: Text(question.options[selected].text),
+                    ),
+                  if (!correct)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(
+                        Icons.check_circle,
+                        color: Color(0xFF238636),
+                      ),
+                      title: const Text('Correct answer'),
+                      subtitle: Text(question.correctOption.text),
+                    ),
                   const SizedBox(height: 8),
                   if (selected != null) ...[
                     const SizedBox(height: 8),

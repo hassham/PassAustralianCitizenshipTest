@@ -15,36 +15,37 @@ void main() {
       addTearDown(database.close);
       final practice = PracticeRepository(database);
       final questions = await practice.questions();
-      final strongQuestion = questions.firstWhere(
-        (question) => question.difficulty != 'easy',
+      final categories = await practice.categories();
+      final weakCategory = categories.firstWhere(
+        (category) => category.id != 'values',
       );
       final weakQuestion = questions.firstWhere(
         (question) =>
-            question.categoryId != strongQuestion.categoryId &&
+            question.categoryId == weakCategory.id &&
             question.difficulty != 'easy',
       );
       final attemptedAt = DateTime.utc(2026, 7, 24);
-      for (var index = 0; index < 5; index++) {
-        await database
-            .into(database.questionAttempts)
-            .insert(
-              QuestionAttemptsCompanion.insert(
-                questionId: strongQuestion.id,
-                selectedIndex: strongQuestion.correctIndex,
-                isCorrect: true,
-                attemptedAt: attemptedAt,
-              ),
-            );
-        await database
-            .into(database.questionAttempts)
-            .insert(
-              QuestionAttemptsCompanion.insert(
-                questionId: weakQuestion.id,
-                selectedIndex: (weakQuestion.correctIndex + 1) % 4,
-                isCorrect: false,
-                attemptedAt: attemptedAt,
-              ),
-            );
+      for (final category in categories) {
+        final question = category.id == weakCategory.id
+            ? weakQuestion
+            : questions.firstWhere(
+                (candidate) => candidate.categoryId == category.id,
+              );
+        for (var index = 0; index < 20; index++) {
+          final correct = category.id != weakCategory.id;
+          await database
+              .into(database.questionAttempts)
+              .insert(
+                QuestionAttemptsCompanion.insert(
+                  questionId: question.id,
+                  selectedIndex: correct
+                      ? question.correctIndex
+                      : (question.correctIndex + 1) % 4,
+                  isCorrect: correct,
+                  attemptedAt: attemptedAt.add(Duration(seconds: index)),
+                ),
+              );
+        }
       }
       final progress = ProgressRepository(database, practice);
       final repository = ReadinessInsightsRepository(
@@ -58,6 +59,7 @@ void main() {
       expect(analytics.readiness.score, isNotNull);
       expect(analytics.weakAreas, hasLength(1));
       expect(analytics.weakAreas.single.categoryId, weakQuestion.categoryId);
+      expect(analytics.hasEnoughWeakAreaData, isTrue);
       expect(
         analytics.weakAreas.single.frequentlyMissedQuestions,
         contains(weakQuestion.text),

@@ -72,8 +72,15 @@ class ExamHistoryScreen extends ConsumerWidget {
                   final attempt =
                       attempts[index - (attempts.length >= 2 ? 1 : 0)];
                   return Card(
+                    color: attempt.passed
+                        ? const Color(0xFFE7F5EA)
+                        : const Color(0xFFFFECEB),
                     child: ListTile(
                       leading: CircleAvatar(
+                        backgroundColor: attempt.passed
+                            ? const Color(0xFF238636)
+                            : const Color(0xFFCF222E),
+                        foregroundColor: Colors.white,
                         child: Icon(
                           attempt.passed ? Icons.check : Icons.close,
                           semanticLabel: attempt.passed

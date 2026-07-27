@@ -25,7 +25,7 @@ class CategoryPerformanceModel {
       : (uniqueQuestions * 100 / totalQuestions).clamp(0, 100).round();
   PerformanceBand get band {
     if (attempted == 0) return PerformanceBand.notStarted;
-    if (attempted < 3) return PerformanceBand.developing;
+    if (attempted < 10) return PerformanceBand.developing;
     if (accuracy >= 80) return PerformanceBand.strong;
     if (accuracy < 60) return PerformanceBand.weak;
     return PerformanceBand.developing;

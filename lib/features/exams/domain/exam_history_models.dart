@@ -9,6 +9,10 @@ class ExamHistorySummary {
     required this.totalQuestions,
     required this.correctAnswers,
     required this.isTimed,
+    required this.overallRequirementMet,
+    required this.australianValuesRequirementMet,
+    required this.australianValuesCorrect,
+    required this.australianValuesTotal,
     this.timeTakenSeconds,
   });
 
@@ -19,6 +23,21 @@ class ExamHistorySummary {
   final int totalQuestions;
   final int correctAnswers;
   final bool isTimed;
+  final bool overallRequirementMet;
+  final bool australianValuesRequirementMet;
+  final int australianValuesCorrect;
+  final int australianValuesTotal;
+  String? get failureReason {
+    if (passed) return null;
+    if (!overallRequirementMet && !australianValuesRequirementMet) {
+      return 'The overall pass mark and the Australian values requirement '
+          'were not met.';
+    }
+    if (!overallRequirementMet) {
+      return 'The overall score was below the required pass mark.';
+    }
+    return 'All 5 Australian values questions were required to be correct.';
+  }
   final int? timeTakenSeconds;
 }
 

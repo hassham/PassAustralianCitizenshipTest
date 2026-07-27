@@ -220,7 +220,13 @@ class _ReadinessInsightsSection extends StatelessWidget {
                 'Readiness: Not enough data',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              const Text('Complete at least 10 practice questions.'),
+              const Text(
+                'Complete at least 10 questions in every category.',
+              ),
+              const SizedBox(height: 8),
+              ...analytics.readiness.incompleteCategories.entries.map(
+                (entry) => Text('${entry.key}: ${entry.value} more needed'),
+              ),
             ] else
               Semantics(
                 label:
@@ -252,9 +258,21 @@ class _ReadinessInsightsSection extends StatelessWidget {
                   ],
                 ),
               ),
+            if (analytics.readiness.score != null &&
+                analytics.readiness.capReason != null) ...[
+              const SizedBox(height: 12),
+              Text(analytics.readiness.capReason!),
+              if (analytics.readiness.nextAction != null)
+                Text(analytics.readiness.nextAction!),
+            ],
             const SizedBox(height: 20),
             Text('Weak areas', style: Theme.of(context).textTheme.titleMedium),
-            if (analytics.weakAreas.isEmpty)
+            if (!analytics.hasEnoughWeakAreaData)
+              const Text(
+                'Not enough data to identify weak areas. Complete at least '
+                '10 questions in every category.',
+              )
+            else if (analytics.weakAreas.isEmpty)
               const Text('No weak areas detected yet.')
             else
               ...analytics.weakAreas.map(
@@ -423,7 +441,9 @@ class _StrengthSummary extends StatelessWidget {
             icon: Icons.verified_outlined,
             title: 'Strong areas',
             message: strong.isEmpty
-                ? 'Keep practising to establish a strong area.'
+                ? value.categories.any((item) => item.attempted < 10)
+                      ? 'More practice data is needed before identifying strong areas.'
+                      : 'Keep practising to establish a strong area.'
                 : strong.map((item) => item.categoryName).join(', '),
             color: const Color(0xFFE7F5EA),
           ),
@@ -431,7 +451,9 @@ class _StrengthSummary extends StatelessWidget {
             icon: Icons.trending_up,
             title: 'Needs attention',
             message: weak.isEmpty
-                ? 'No weak areas detected yet.'
+                ? value.categories.any((item) => item.attempted < 10)
+                      ? 'Not enough data to identify weak areas.'
+                      : 'No weak areas detected yet.'
                 : weak.map((item) => item.categoryName).join(', '),
             color: const Color(0xFFFFF3CD),
           ),
@@ -498,7 +520,9 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = switch (category.band) {
+    final label = category.attempted > 0 && category.attempted < 10
+        ? 'Building data'
+        : switch (category.band) {
       PerformanceBand.strong => 'Strong',
       PerformanceBand.weak => 'Needs attention',
       PerformanceBand.developing => 'Developing',

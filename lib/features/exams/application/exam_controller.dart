@@ -134,14 +134,14 @@ class ExamController extends StateNotifier<ExamState> {
     }
   }
 
-  Future<void> start({bool timed = false}) async {
+  Future<void> start() async {
     _timer?.cancel();
     state = state.copyWith(loading: true);
     try {
       state = _fromRestored(
-        await repository.startExam(timed: timed, now: _clock()),
+        await repository.startExam(timed: true, now: _clock()),
       );
-      if (timed) _startTimer();
+      _startTimer();
     } catch (error) {
       state = ExamState(error: AppFailure.from(error));
     }
@@ -182,6 +182,8 @@ class ExamController extends StateNotifier<ExamState> {
         questions: state.questions,
         answers: state.answers,
         passPercentage: config.passPercentage,
+        requiredAustralianValuesQuestions:
+            config.australianValuesQuestionCount,
         timedOut: timedOut,
         remainingSeconds: state.remainingSeconds,
       );

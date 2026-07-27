@@ -27,13 +27,18 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
   }
 
   Future<void> _startExam() async {
+    final config = await ref.read(examConfigProvider.future);
+    if (!mounted) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Start untimed mock exam?'),
-        content: const Text(
-          'Answers are not marked until you submit. You can move backward, '
-          'forward, and return after closing the app.',
+        title: const Text('Start mock exam?'),
+        content: Text(
+          'You will answer ${config.questionCount} questions in '
+          '${config.durationMinutes} minutes. To pass, score at least '
+          '${config.passPercentage.toStringAsFixed(0)}% overall and answer '
+          'all ${config.australianValuesQuestionCount} Australian values '
+          'questions correctly. The timer cannot be paused.',
         ),
         actions: [
           TextButton(
@@ -49,34 +54,6 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
     );
     if (confirmed != true) return;
     await ref.read(examControllerProvider.notifier).start();
-    if (mounted) _openExam();
-  }
-
-  Future<void> _startTimedExam() async {
-    final config = await ref.read(examConfigProvider.future);
-    if (!mounted) return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Start timed mock exam?'),
-        content: Text(
-          'You will have ${config.durationMinutes} minutes. The timer cannot '
-          'be paused and continues while the app is in the background.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Start timed exam'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
-    await ref.read(examControllerProvider.notifier).start(timed: true);
     if (mounted) _openExam();
   }
 
@@ -100,8 +77,8 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Take a realistic untimed exam. Your answers are scored only '
-              'after submission.',
+              'Take a realistic 20-question exam. Your answers are scored '
+              'only after submission.',
             ),
             const SizedBox(height: 24),
             if (state.loading)
@@ -115,9 +92,7 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        state.isTimed
-                            ? 'Timed exam in progress'
-                            : 'Exam in progress',
+                        'Mock exam in progress',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 6),
@@ -144,10 +119,10 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.fact_check_outlined, size: 42),
+                    const Icon(Icons.timer_outlined, size: 42),
                     const SizedBox(height: 12),
                     Text(
-                      'Free untimed exam',
+                      'Mock exam',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
@@ -155,14 +130,16 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
                       loading: () => const Text('Loading exam rules…'),
                       error: (error, _) => Text(AppFailure.from(error).message),
                       data: (value) => Text(
-                        'Up to ${value.questionCount} questions • '
-                        '${value.passPercentage.toStringAsFixed(0)}% pass mark • No timer',
+                        '${value.questionCount} questions, '
+                        '${value.durationMinutes} minutes. Pass with '
+                        '${value.passPercentage.toStringAsFixed(0)}% overall '
+                        'and 5/5 Australian values.',
                       ),
                     ),
                     const SizedBox(height: 18),
                     FilledButton(
                       onPressed: state.loading ? null : _startExam,
-                      child: const Text('Start new exam'),
+                      child: const Text('Start mock exam'),
                     ),
                   ],
                 ),
@@ -173,33 +150,6 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
               onPressed: () => context.pushNamed(AppRoutes.examHistory),
               icon: const Icon(Icons.history),
               label: const Text('View completed exams'),
-            ),
-            const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Icon(Icons.timer_outlined, size: 42),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Timed mock exam',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Realistic timing with background continuation, '
-                      'expiry submission, and recovery.',
-                    ),
-                    const SizedBox(height: 18),
-                    FilledButton(
-                      onPressed: state.loading ? null : _startTimedExam,
-                      child: const Text('Start timed exam'),
-                    ),
-                  ],
-                ),
-              ),
             ),
             if (state.error != null) ...[
               const SizedBox(height: 16),
