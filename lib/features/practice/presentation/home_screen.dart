@@ -294,9 +294,9 @@ class _ReadinessCard extends StatelessWidget {
         error: (_, _) => const Text('Readiness unavailable'),
         data: (analytics) => Text(
           analytics.readiness.score == null
-              ? analytics.recommendations.first
+              ? 'Not enough data\nComplete 10 questions in every category.'
               : '${analytics.readiness.score}/100 · ${analytics.readiness.label}\n'
-                    '${analytics.recommendations.first}',
+                    '${analytics.readiness.capReason ?? analytics.recommendations.first}',
         ),
       ),
       trailing: const Icon(Icons.chevron_right),

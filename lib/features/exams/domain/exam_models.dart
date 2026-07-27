@@ -6,12 +6,16 @@ class ExamConfigModel {
     required this.questionCount,
     required this.durationMinutes,
     required this.passPercentage,
+    this.australianValuesQuestionCount = 5,
+    this.requireAllAustralianValuesCorrect = true,
   });
 
   final int id;
   final int questionCount;
   final int durationMinutes;
   final double passPercentage;
+  final int australianValuesQuestionCount;
+  final bool requireAllAustralianValuesCorrect;
 }
 
 class RestoredExamModel {
@@ -45,6 +49,10 @@ class ExamResultModel {
     required this.correct,
     required this.incorrect,
     required this.unanswered,
+    required this.overallRequirementMet,
+    required this.australianValuesRequirementMet,
+    required this.australianValuesCorrect,
+    required this.australianValuesTotal,
     this.timedOut = false,
     this.timeTakenSeconds,
   });
@@ -54,6 +62,21 @@ class ExamResultModel {
   final int correct;
   final int incorrect;
   final int unanswered;
+  final bool overallRequirementMet;
+  final bool australianValuesRequirementMet;
+  final int australianValuesCorrect;
+  final int australianValuesTotal;
+  String? get failureReason {
+    if (passed) return null;
+    if (!overallRequirementMet && !australianValuesRequirementMet) {
+      return 'The overall pass mark and the Australian values requirement '
+          'were not met.';
+    }
+    if (!overallRequirementMet) {
+      return 'The overall score was below the required pass mark.';
+    }
+    return 'All 5 Australian values questions must be answered correctly.';
+  }
   final bool timedOut;
   final int? timeTakenSeconds;
 }

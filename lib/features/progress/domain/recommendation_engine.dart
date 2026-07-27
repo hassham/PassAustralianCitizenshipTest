@@ -24,7 +24,7 @@ abstract final class RecommendationEngine {
     }
     if (!input.readiness.hasEnoughData) {
       recommendations.add(
-        'Complete at least 10 practice questions to calculate readiness.',
+        'Complete at least 10 questions in every category to calculate readiness.',
       );
     } else if ((input.readiness.score ?? 0) < 60) {
       recommendations.add(
@@ -43,6 +43,9 @@ abstract final class RecommendationEngine {
       recommendations.add(
         'Practice ${weakest.categoryName}: your accuracy is ${weakest.accuracy}%.',
       );
+    }
+    if (input.readiness.nextAction != null) {
+      recommendations.add(input.readiness.nextAction!);
     }
     if (input.coverage < 70) {
       recommendations.add(

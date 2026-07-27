@@ -17,7 +17,6 @@ class PracticeHubScreen extends ConsumerStatefulWidget {
 
 class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
   final selectedCategoryIds = <String>{};
-  final selectedDifficulties = <String>{'easy', 'medium', 'hard'};
   int selectedQuestionCount = 0;
   bool selectionInitialised = false;
 
@@ -28,7 +27,6 @@ class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
         .read(practiceControllerProvider.notifier)
         .startSelection(
           categoryIds: allSelected ? null : selectedCategoryIds,
-          difficulties: selectedDifficulties,
           questionCount: selectedQuestionCount == 0
               ? null
               : selectedQuestionCount,
@@ -87,6 +85,26 @@ class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
                   'Choose one or more categories and a session length.',
                 ),
                 const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: selectedCategoryIds.isEmpty || actualCount == 0
+                      ? null
+                      : () => _start(items),
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Start practice'),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () => context.pushNamed(AppRoutes.starred),
+                  icon: const Icon(Icons.star_outline),
+                  label: Text(
+                    starred.maybeWhen(
+                      data: (questions) =>
+                          'Starred questions (${questions.length})',
+                      orElse: () => 'Starred questions',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
                 Card(
                   child: SwitchListTile(
                     title: const Text('All categories'),
@@ -124,33 +142,6 @@ class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Difficulty',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: const ['easy', 'medium', 'hard']
-                      .map(
-                        (difficulty) => FilterChip(
-                          label: Text(
-                            '${difficulty[0].toUpperCase()}${difficulty.substring(1)}',
-                          ),
-                          selected: selectedDifficulties.contains(difficulty),
-                          onSelected: (selected) => setState(() {
-                            if (selected) {
-                              selectedDifficulties.add(difficulty);
-                            } else if (selectedDifficulties.length > 1) {
-                              selectedDifficulties.remove(difficulty);
-                            }
-                          }),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(height: 20),
-                Text(
                   'Number of questions',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -178,26 +169,6 @@ class _PracticeHubScreenState extends ConsumerState<PracticeHubScreen> {
                     color: selectedCategoryIds.isEmpty
                         ? Theme.of(context).colorScheme.error
                         : null,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                FilledButton.icon(
-                  onPressed: selectedCategoryIds.isEmpty || actualCount == 0
-                      ? null
-                      : () => _start(items),
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('Start practice'),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () => context.pushNamed(AppRoutes.starred),
-                  icon: const Icon(Icons.star_outline),
-                  label: Text(
-                    starred.maybeWhen(
-                      data: (questions) =>
-                          'Starred questions (${questions.length})',
-                      orElse: () => 'Starred questions',
-                    ),
                   ),
                 ),
               ],

@@ -216,11 +216,23 @@ class _SettingsView extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.support_agent),
-              title: const Text('Support and report an issue'),
+              title: const Text('Report an issue'),
               trailing: const Icon(Icons.open_in_new),
               onTap: () => _open(
                 context,
                 ref.read(settingsRepositoryProvider).openSupport,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.local_cafe_outlined),
+              title: const Text('Buy me a coffee'),
+              subtitle: const Text(
+                'Optional support. Every app feature remains free.',
+              ),
+              trailing: const Icon(Icons.open_in_new),
+              onTap: () => _open(
+                context,
+                ref.read(settingsRepositoryProvider).openBuyMeACoffee,
               ),
             ),
             ListTile(

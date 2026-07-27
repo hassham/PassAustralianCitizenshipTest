@@ -21,6 +21,12 @@ class SettingsRepository {
   static final supportUri = Uri.parse(
     'https://github.com/hassham/PassAustralianCitizenshipTest/issues',
   );
+  static final buyMeACoffeeUri = Uri.parse(
+    const String.fromEnvironment(
+      'BUY_ME_A_COFFEE_URL',
+      defaultValue: 'https://www.buymeacoffee.com/',
+    ),
+  );
 
   final AppDatabase database;
   final PracticeRepository practiceRepository;
@@ -112,6 +118,7 @@ class SettingsRepository {
 
   Future<bool> openPrivacyPolicy() => _open(privacyUri);
   Future<bool> openSupport() => _open(supportUri);
+  Future<bool> openBuyMeACoffee() => _open(buyMeACoffeeUri);
   Future<bool> openLicence(String url) => _open(Uri.parse(url));
 
   Future<bool> _open(Uri uri) async {

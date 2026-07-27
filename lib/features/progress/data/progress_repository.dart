@@ -39,6 +39,17 @@ class ProgressRepository {
     final exams = await (database.select(
       database.examAttempts,
     )..where((row) => row.submittedAt.isNotNull())).get();
+    final completedExamIds = exams.map((exam) => exam.id).toSet();
+    final examSubmittedAt = {
+      for (final exam in exams) exam.id: exam.submittedAt!,
+    };
+    final examAnswers = (await database
+        .select(database.examAttemptAnswers)
+        .get())
+        .where(
+          (answer) => completedExamIds.contains(answer.examAttemptId),
+        )
+        .toList();
     final now = DateTime.now();
     final recentCutoff = now.subtract(const Duration(days: 7));
 
@@ -53,19 +64,41 @@ class ProgressRepository {
           final categoryQuestionCount = activeQuestions
               .where((question) => question.categoryId == category.id)
               .length;
+          final categoryExamAnswers = examAnswers
+              .where(
+                (answer) =>
+                    questionCategory[answer.questionId] == category.id,
+              )
+              .toList();
           categoryAttempts.sort(
             (left, right) => right.attemptedAt.compareTo(left.attemptedAt),
           );
+          final combinedQuestionIds = {
+            ...categoryAttempts.map((attempt) => attempt.questionId),
+            ...categoryExamAnswers.map((answer) => answer.questionId),
+          };
+          final lastPracticeAt = categoryAttempts.isEmpty
+              ? null
+              : categoryAttempts.first.attemptedAt;
+          final lastExamAt = categoryExamAnswers
+              .map((answer) => examSubmittedAt[answer.examAttemptId])
+              .whereType<DateTime>()
+              .fold<DateTime?>(
+                null,
+                (latest, date) =>
+                    latest == null || date.isAfter(latest) ? date : latest,
+              );
           return CategoryPerformanceModel(
             categoryId: category.id,
             categoryName: category.name,
-            attempted: categoryAttempts.length,
+            attempted: categoryAttempts.length + categoryExamAnswers.length,
             correct: categoryAttempts
                 .where((attempt) => attempt.isCorrect)
-                .length,
-            uniqueQuestions: categoryAttempts
-                .map((attempt) => attempt.questionId)
-                .toSet()
+                .length +
+                categoryExamAnswers
+                    .where((answer) => answer.isCorrect == true)
+                    .length,
+            uniqueQuestions: combinedQuestionIds
                 .intersection(
                   activeQuestions
                       .where((question) => question.categoryId == category.id)
@@ -74,9 +107,11 @@ class ProgressRepository {
                 )
                 .length,
             totalQuestions: categoryQuestionCount,
-            lastAttemptedAt: categoryAttempts.isEmpty
-                ? null
-                : categoryAttempts.first.attemptedAt,
+            lastAttemptedAt: lastPracticeAt == null
+                ? lastExamAt
+                : lastExamAt == null || lastPracticeAt.isAfter(lastExamAt)
+                ? lastPracticeAt
+                : lastExamAt,
           );
         }).toList()..sort((left, right) {
           if (left.attempted == 0 && right.attempted != 0) return 1;
