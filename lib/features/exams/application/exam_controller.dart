@@ -182,8 +182,7 @@ class ExamController extends StateNotifier<ExamState> {
         questions: state.questions,
         answers: state.answers,
         passPercentage: config.passPercentage,
-        requiredAustralianValuesQuestions:
-            config.australianValuesQuestionCount,
+        requiredAustralianValuesQuestions: config.australianValuesQuestionCount,
         timedOut: timedOut,
         remainingSeconds: state.remainingSeconds,
       );

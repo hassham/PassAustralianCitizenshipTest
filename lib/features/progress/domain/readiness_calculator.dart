@@ -62,8 +62,7 @@ abstract final class ReadinessCalculator {
       nextAction =
           'Pass a mock exam with at least 75% overall and 5/5 Australian values.';
     } else if (input.qualifyingMockResults.length < 2 ||
-        !input.qualifyingMockResults[
-            input.qualifyingMockResults.length - 2]) {
+        !input.qualifyingMockResults[input.qualifyingMockResults.length - 2]) {
       cap = 89;
       capReason = 'Two consecutive qualifying mock exams are required.';
       nextAction =

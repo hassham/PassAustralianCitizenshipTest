@@ -2,7 +2,7 @@
 
 ## Pass Australian Citizenship Test - Implementation Backlog
 
-**Last Updated:** 2026-07-26
+**Last Updated:** 2026-07-28
 
 **Priority Levels:** P0 (Critical/Blocker) | P1 (High/MVP Required) | P2 (Medium/Nice to Have) | P3 (Low/Future)
 
@@ -12,7 +12,7 @@
 
 ## Tracker Dashboard
 
-**Tracker updated:** 2026-07-26
+**Tracker updated:** 2026-07-28
 
 | Status | Meaning | Tasks | Share |
 |---|---|---:|---:|
@@ -1372,6 +1372,7 @@ Phase 12: Deployment (12.1-12.4)
 
 | Date | Change | Verification |
 |---|---|---|
+| 2026-07-28 | Merged `codex/premium-exams-analytics` into the main line and synchronized backlog tracking with the delivered timed-exam/readiness scope. | Remote branch push and merge completed; backlog metadata refreshed with no new blockers. |
 | 2026-07-26 | Revised readiness scoring with normalized recency/trend inputs and mandatory Australian values caps based on recent 5/5 practice and consecutive qualifying mock exams. | Algorithm, product, architecture, implementation, and Task 3.1 plans updated; implementation remains pending. |
 | 2026-07-26 | Raised readiness eligibility to at least 20 answered practice questions in every active category; the score remains hidden as `Not enough data` until the requirement is met. | Planning documents and Task 3.1 acceptance criteria updated; implementation remains pending. |
 | 2026-07-26 | Defined official mock-exam composition and dual pass criteria: exactly 5 Australian values questions, 5/5 values required, and at least 15/20 overall. | Planning documents and Task 3.5 acceptance criteria reconciled; implementation remains pending. |

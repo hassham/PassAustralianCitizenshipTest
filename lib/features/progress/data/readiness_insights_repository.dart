@@ -52,7 +52,9 @@ class ReadinessInsightsRepository {
               ..orderBy([(row) => OrderingTerm.asc(row.submittedAt)]))
             .get();
     final scores = exams.map((exam) => exam.score ?? 0).toList();
-    final examAnswers = await database.select(database.examAttemptAnswers).get();
+    final examAnswers = await database
+        .select(database.examAttemptAnswers)
+        .get();
     final configurations = await database
         .select(database.examConfigurations)
         .get();
@@ -72,9 +74,7 @@ class ReadinessInsightsRepository {
     ];
     final recentValuesAnswers =
         attempts
-            .where(
-              (attempt) => isAustralianValues[attempt.questionId] ?? false,
-            )
+            .where((attempt) => isAustralianValues[attempt.questionId] ?? false)
             .toList()
           ..sort(
             (left, right) => right.attemptedAt.compareTo(left.attemptedAt),
@@ -194,7 +194,8 @@ class ReadinessInsightsRepository {
       weakAreas: topWeak,
       recommendations: recommendations,
       examScores: scores,
-      hasEnoughWeakAreaData: progress.categories.isNotEmpty &&
+      hasEnoughWeakAreaData:
+          progress.categories.isNotEmpty &&
           progress.categories.every((category) => category.attempted >= 10),
     );
   }
@@ -206,9 +207,7 @@ class ReadinessInsightsRepository {
     double passMark,
   ) {
     final valuesAnswers = answers
-        .where(
-          (answer) => isAustralianValues[answer.questionId] ?? false,
-        )
+        .where((answer) => isAustralianValues[answer.questionId] ?? false)
         .toList();
     final valuesCorrect = valuesAnswers
         .where((answer) => answer.isCorrect == true)

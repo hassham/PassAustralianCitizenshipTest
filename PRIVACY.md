@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Effective date:** 23 July 2026
+**Effective date:** 30 July 2026
 
 Pass Australian Citizenship Test is an offline-first study application.
 
@@ -16,9 +16,17 @@ Practice progress, starred questions, mock-exam attempts, and application prefer
 
 Core study features work offline. The application may open an external browser when the user chooses a privacy, licence, source, or support link. Those external services have their own privacy practices.
 
-## Purchases
+## Free access and optional support
 
-If in-app purchases are introduced, payment processing will be handled by Google Play or Apple. This policy will be updated before purchase features are released.
+All application features are available free of charge. The application does
+not contain subscriptions, in-app purchases, paid upgrades, or feature
+entitlements.
+
+Settings may include an optional Buy Me a Coffee link. Selecting it opens an
+external website in the user's browser. Supporting the project does not unlock
+features or change application behaviour. Any information provided to that
+external service is governed by its own privacy policy and is not stored by
+this application.
 
 ## Contact
 

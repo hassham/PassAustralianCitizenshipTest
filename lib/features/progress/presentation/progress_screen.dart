@@ -220,9 +220,7 @@ class _ReadinessInsightsSection extends StatelessWidget {
                 'Readiness: Not enough data',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              const Text(
-                'Complete at least 10 questions in every category.',
-              ),
+              const Text('Complete at least 10 questions in every category.'),
               const SizedBox(height: 8),
               ...analytics.readiness.incompleteCategories.entries.map(
                 (entry) => Text('${entry.key}: ${entry.value} more needed'),
@@ -523,11 +521,11 @@ class _CategoryCard extends StatelessWidget {
     final label = category.attempted > 0 && category.attempted < 10
         ? 'Building data'
         : switch (category.band) {
-      PerformanceBand.strong => 'Strong',
-      PerformanceBand.weak => 'Needs attention',
-      PerformanceBand.developing => 'Developing',
-      PerformanceBand.notStarted => 'Not started',
-    };
+            PerformanceBand.strong => 'Strong',
+            PerformanceBand.weak => 'Needs attention',
+            PerformanceBand.developing => 'Developing',
+            PerformanceBand.notStarted => 'Not started',
+          };
     return Semantics(
       label:
           '${category.categoryName}. $label. '

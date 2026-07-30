@@ -80,14 +80,16 @@ class ExamRepository {
     final startedAt = now ?? DateTime.now();
     final durationSeconds = examConfig.durationMinutes * 60;
     final available = await practiceRepository.questionsFor();
-    final values = available
-        .where((question) => question.isAustralianValuesQuestion)
-        .toList()
-      ..shuffle();
-    final other = available
-        .where((question) => !question.isAustralianValuesQuestion)
-        .toList()
-      ..shuffle();
+    final values =
+        available
+            .where((question) => question.isAustralianValuesQuestion)
+            .toList()
+          ..shuffle();
+    final other =
+        available
+            .where((question) => !question.isAustralianValuesQuestion)
+            .toList()
+          ..shuffle();
     final valuesCount = examConfig.australianValuesQuestionCount;
     final otherCount = examConfig.questionCount - valuesCount;
     if (values.length < valuesCount || other.length < otherCount) {
@@ -98,10 +100,8 @@ class ExamRepository {
             '$otherCount questions from the other sections.',
       );
     }
-    final questions = [
-      ...values.take(valuesCount),
-      ...other.take(otherCount),
-    ]..shuffle();
+    final questions = [...values.take(valuesCount), ...other.take(otherCount)]
+      ..shuffle();
     final attemptId = await database
         .into(database.examAttempts)
         .insert(
@@ -323,8 +323,7 @@ class ExamRepository {
     final australianValuesRequirementMet =
         australianValuesTotal == requiredAustralianValuesQuestions &&
         australianValuesCorrect == requiredAustralianValuesQuestions;
-    final passed =
-        overallRequirementMet && australianValuesRequirementMet;
+    final passed = overallRequirementMet && australianValuesRequirementMet;
     final attempt = await (database.select(
       database.examAttempts,
     )..where((row) => row.id.equals(attemptId))).getSingle();
@@ -410,10 +409,8 @@ class ExamRepository {
           .length;
       final valuesTotal = valuesRows.length;
       final overallRequirementMet =
-          (attempt.score ?? 0) >=
-          (passMarkByConfig[attempt.configId] ?? 75);
-      final valuesRequirementMet =
-          valuesTotal == 5 && valuesCorrect == 5;
+          (attempt.score ?? 0) >= (passMarkByConfig[attempt.configId] ?? 75);
+      final valuesRequirementMet = valuesTotal == 5 && valuesCorrect == 5;
       result.add(
         ExamHistorySummary(
           attemptId: attempt.id,
