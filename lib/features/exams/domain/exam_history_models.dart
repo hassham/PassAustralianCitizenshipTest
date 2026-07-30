@@ -38,6 +38,7 @@ class ExamHistorySummary {
     }
     return 'All 5 Australian values questions were required to be correct.';
   }
+
   final int? timeTakenSeconds;
 }
 

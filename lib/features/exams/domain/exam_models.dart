@@ -77,6 +77,7 @@ class ExamResultModel {
     }
     return 'All 5 Australian values questions must be answered correctly.';
   }
+
   final bool timedOut;
   final int? timeTakenSeconds;
 }

@@ -43,13 +43,10 @@ class ProgressRepository {
     final examSubmittedAt = {
       for (final exam in exams) exam.id: exam.submittedAt!,
     };
-    final examAnswers = (await database
-        .select(database.examAttemptAnswers)
-        .get())
-        .where(
-          (answer) => completedExamIds.contains(answer.examAttemptId),
-        )
-        .toList();
+    final examAnswers =
+        (await database.select(database.examAttemptAnswers).get())
+            .where((answer) => completedExamIds.contains(answer.examAttemptId))
+            .toList();
     final now = DateTime.now();
     final recentCutoff = now.subtract(const Duration(days: 7));
 
@@ -66,8 +63,7 @@ class ProgressRepository {
               .length;
           final categoryExamAnswers = examAnswers
               .where(
-                (answer) =>
-                    questionCategory[answer.questionId] == category.id,
+                (answer) => questionCategory[answer.questionId] == category.id,
               )
               .toList();
           categoryAttempts.sort(
@@ -92,9 +88,8 @@ class ProgressRepository {
             categoryId: category.id,
             categoryName: category.name,
             attempted: categoryAttempts.length + categoryExamAnswers.length,
-            correct: categoryAttempts
-                .where((attempt) => attempt.isCorrect)
-                .length +
+            correct:
+                categoryAttempts.where((attempt) => attempt.isCorrect).length +
                 categoryExamAnswers
                     .where((answer) => answer.isCorrect == true)
                     .length,

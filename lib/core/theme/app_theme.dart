@@ -21,46 +21,43 @@ abstract final class AppTheme {
 
   static ThemeData _build(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: brightness,
-    ).copyWith(
-      primary: isDark ? const Color(0xFF7EB6FF) : AppColors.primary,
-      onPrimary: isDark ? const Color(0xFF002D68) : Colors.white,
-      primaryContainer: isDark
-          ? const Color(0xFF123A68)
-          : const Color(0xFFDCEAFF),
-      onPrimaryContainer: isDark
-          ? const Color(0xFFD6E7FF)
-          : AppColors.ink,
-      secondary: isDark ? const Color(0xFF62C3FF) : AppColors.secondary,
-      secondaryContainer: isDark
-          ? const Color(0xFF073F61)
-          : const Color(0xFFDDF3FF),
-      onSecondaryContainer: isDark
-          ? const Color(0xFFD2EEFF)
-          : const Color(0xFF00344F),
-      tertiary: isDark ? const Color(0xFFFFB74D) : AppColors.accent,
-      tertiaryContainer: isDark
-          ? const Color(0xFF553100)
-          : const Color(0xFFFFE9C4),
-      error: isDark ? const Color(0xFFFF8A86) : AppColors.error,
-      errorContainer: isDark
-          ? const Color(0xFF5D1A1A)
-          : const Color(0xFFFFE1DF),
-      surface: isDark ? AppColors.darkSurface : AppColors.surface,
-      onSurface: isDark ? const Color(0xFFF0F5FC) : AppColors.ink,
-      surfaceContainerLow: isDark
-          ? AppColors.darkCard
-          : Colors.white,
-      surfaceContainer: isDark
-          ? const Color(0xFF112537)
-          : const Color(0xFFEEF3F9),
-      outline: isDark ? const Color(0xFF40546D) : AppColors.outline,
-      outlineVariant: isDark
-          ? const Color(0xFF293C51)
-          : const Color(0xFFE6EDF6),
-    );
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          brightness: brightness,
+        ).copyWith(
+          primary: isDark ? const Color(0xFF7EB6FF) : AppColors.primary,
+          onPrimary: isDark ? const Color(0xFF002D68) : Colors.white,
+          primaryContainer: isDark
+              ? const Color(0xFF123A68)
+              : const Color(0xFFDCEAFF),
+          onPrimaryContainer: isDark ? const Color(0xFFD6E7FF) : AppColors.ink,
+          secondary: isDark ? const Color(0xFF62C3FF) : AppColors.secondary,
+          secondaryContainer: isDark
+              ? const Color(0xFF073F61)
+              : const Color(0xFFDDF3FF),
+          onSecondaryContainer: isDark
+              ? const Color(0xFFD2EEFF)
+              : const Color(0xFF00344F),
+          tertiary: isDark ? const Color(0xFFFFB74D) : AppColors.accent,
+          tertiaryContainer: isDark
+              ? const Color(0xFF553100)
+              : const Color(0xFFFFE9C4),
+          error: isDark ? const Color(0xFFFF8A86) : AppColors.error,
+          errorContainer: isDark
+              ? const Color(0xFF5D1A1A)
+              : const Color(0xFFFFE1DF),
+          surface: isDark ? AppColors.darkSurface : AppColors.surface,
+          onSurface: isDark ? const Color(0xFFF0F5FC) : AppColors.ink,
+          surfaceContainerLow: isDark ? AppColors.darkCard : Colors.white,
+          surfaceContainer: isDark
+              ? const Color(0xFF112537)
+              : const Color(0xFFEEF3F9),
+          outline: isDark ? const Color(0xFF40546D) : AppColors.outline,
+          outlineVariant: isDark
+              ? const Color(0xFF293C51)
+              : const Color(0xFFE6EDF6),
+        );
 
     final baseTextTheme = ThemeData(
       brightness: brightness,
@@ -138,9 +135,7 @@ abstract final class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size.fromHeight(52),
-          foregroundColor: isDark
-              ? const Color(0xFF9BC7FF)
-              : AppColors.primary,
+          foregroundColor: isDark ? const Color(0xFF9BC7FF) : AppColors.primary,
           side: BorderSide(color: scheme.primary),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
           shape: RoundedRectangleBorder(
@@ -150,9 +145,7 @@ abstract final class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: isDark
-              ? const Color(0xFF9BC7FF)
-              : AppColors.primary,
+          foregroundColor: isDark ? const Color(0xFF9BC7FF) : AppColors.primary,
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -193,9 +186,7 @@ abstract final class AppTheme {
         backgroundColor: scheme.surfaceContainerLow,
         selectedColor: scheme.primaryContainer,
         side: BorderSide(color: scheme.outline),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         labelStyle: textTheme.labelLarge,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       ),
@@ -208,9 +199,8 @@ abstract final class AppTheme {
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected)
-              ? Colors.white
-              : null,
+          (states) =>
+              states.contains(WidgetState.selected) ? Colors.white : null,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (states) =>
@@ -228,20 +218,14 @@ abstract final class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: isDark
-            ? const Color(0xFF17314A)
-            : AppColors.ink,
+        backgroundColor: isDark ? const Color(0xFF17314A) : AppColors.ink,
         contentTextStyle: const TextStyle(color: Colors.white),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: scheme.surfaceContainerLow,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -263,9 +247,7 @@ abstract final class AppTheme {
     );
   }
 
-  static ThemeData get highContrast => _build(
-    Brightness.light,
-  ).copyWith(
+  static ThemeData get highContrast => _build(Brightness.light).copyWith(
     colorScheme: ColorScheme.fromSeed(
       seedColor: const Color(0xFF003478),
       contrastLevel: 1,

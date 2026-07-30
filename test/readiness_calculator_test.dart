@@ -3,14 +3,14 @@ import 'package:pass_citizenship_test/features/progress/domain/readiness_insight
 import 'package:pass_citizenship_test/features/progress/domain/readiness_calculator.dart';
 
 void main() {
-  test('requires twenty practice attempts in every category', () {
+  test('requires ten attempts in every category', () {
     final result = ReadinessCalculator.calculate(
       _input(
         categoryAttempts: const {
-          'People': 20,
-          'Beliefs': 19,
-          'Government': 20,
-          'Values': 20,
+          'People': 10,
+          'Beliefs': 9,
+          'Government': 10,
+          'Values': 10,
         },
       ),
     );
@@ -54,24 +54,21 @@ void main() {
     expect(result.hasMockExam, isTrue);
   });
 
-  test('caps readiness when recent Australian values is below five out of five', () {
-    final result = ReadinessCalculator.calculate(
-      _input(
-        examScores: const [95, 95],
-        recentAustralianValuesAnswers: const [
-          true,
-          true,
-          true,
-          true,
-          false,
-        ],
-        qualifyingMockResults: const [true, true],
-      ),
-    );
+  test(
+    'caps readiness when recent Australian values is below five out of five',
+    () {
+      final result = ReadinessCalculator.calculate(
+        _input(
+          examScores: const [95, 95],
+          recentAustralianValuesAnswers: const [true, true, true, true, false],
+          qualifyingMockResults: const [true, true],
+        ),
+      );
 
-    expect(result.score, lessThanOrEqualTo(69));
-    expect(result.appliedCap, 69);
-  });
+      expect(result.score, lessThanOrEqualTo(69));
+      expect(result.appliedCap, 69);
+    },
+  );
 
   test('applies the missing mock exam confidence penalty', () {
     final withExam = ReadinessCalculator.calculate(

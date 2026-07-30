@@ -24,7 +24,7 @@ class SettingsRepository {
   static final buyMeACoffeeUri = Uri.parse(
     const String.fromEnvironment(
       'BUY_ME_A_COFFEE_URL',
-      defaultValue: 'https://www.buymeacoffee.com/',
+      defaultValue: 'https://www.buymeacoffee.com/hashamahmad',
     ),
   );
 
