@@ -71,16 +71,25 @@ class ExamHistoryScreen extends ConsumerWidget {
                   }
                   final attempt =
                       attempts[index - (attempts.length >= 2 ? 1 : 0)];
+                  final scheme = Theme.of(context).colorScheme;
                   return Card(
                     color: attempt.passed
-                        ? const Color(0xFFE7F5EA)
-                        : const Color(0xFFFFECEB),
+                        ? scheme.secondaryContainer
+                        : scheme.errorContainer,
                     child: ListTile(
+                      textColor: attempt.passed
+                          ? scheme.onSecondaryContainer
+                          : scheme.onErrorContainer,
+                      iconColor: attempt.passed
+                          ? scheme.onSecondaryContainer
+                          : scheme.onErrorContainer,
                       leading: CircleAvatar(
                         backgroundColor: attempt.passed
-                            ? const Color(0xFF238636)
-                            : const Color(0xFFCF222E),
-                        foregroundColor: Colors.white,
+                            ? scheme.secondary
+                            : scheme.error,
+                        foregroundColor: attempt.passed
+                            ? scheme.onSecondary
+                            : scheme.onError,
                         child: Icon(
                           attempt.passed ? Icons.check : Icons.close,
                           semanticLabel: attempt.passed

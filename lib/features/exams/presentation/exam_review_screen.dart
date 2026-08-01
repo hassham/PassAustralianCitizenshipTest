@@ -19,12 +19,13 @@ class ExamReviewScreen extends ConsumerWidget {
           final question = state.questions[index];
           final selected = state.answers[index];
           final correct = selected == question.correctIndex;
+          final scheme = Theme.of(context).colorScheme;
           return Card(
             color: selected == null
-                ? const Color(0xFFFFF3CD)
+                ? scheme.tertiaryContainer
                 : correct
-                ? const Color(0xFFE7F5EA)
-                : const Color(0xFFFFECEB),
+                ? scheme.secondaryContainer
+                : scheme.errorContainer,
             child: Padding(
               padding: const EdgeInsets.all(18),
               child: Column(
@@ -39,10 +40,10 @@ class ExamReviewScreen extends ConsumerWidget {
                             ? Icons.check_circle
                             : Icons.cancel,
                         color: selected == null
-                            ? Colors.orange
+                            ? scheme.onTertiaryContainer
                             : correct
-                            ? const Color(0xFF238636)
-                            : const Color(0xFFCF222E),
+                            ? scheme.onSecondaryContainer
+                            : scheme.onErrorContainer,
                       ),
                       const SizedBox(width: 8),
                       Text('Question ${index + 1}'),
@@ -55,10 +56,13 @@ class ExamReviewScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 10),
                   if (selected == null)
-                    const ListTile(
+                    ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: Icon(Icons.help_outline, color: Colors.orange),
-                      title: Text('Unanswered'),
+                      leading: Icon(
+                        Icons.help_outline,
+                        color: scheme.onTertiaryContainer,
+                      ),
+                      title: const Text('Unanswered'),
                     )
                   else
                     ListTile(
@@ -66,8 +70,8 @@ class ExamReviewScreen extends ConsumerWidget {
                       leading: Icon(
                         correct ? Icons.check_circle : Icons.cancel,
                         color: correct
-                            ? const Color(0xFF238636)
-                            : const Color(0xFFCF222E),
+                            ? scheme.onSecondaryContainer
+                            : scheme.onErrorContainer,
                       ),
                       title: Text('Your answer'),
                       subtitle: Text(question.options[selected].text),
@@ -75,9 +79,9 @@ class ExamReviewScreen extends ConsumerWidget {
                   if (!correct)
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: const Icon(
+                      leading: Icon(
                         Icons.check_circle,
-                        color: Color(0xFF238636),
+                        color: scheme.onErrorContainer,
                       ),
                       title: const Text('Correct answer'),
                       subtitle: Text(question.correctOption.text),

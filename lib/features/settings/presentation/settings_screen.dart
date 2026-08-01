@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/errors/app_failure.dart';
+import '../../../shared/presentation/dialog_action_buttons.dart';
 import '../../../shared/presentation/failure_view.dart';
 import '../../exams/application/exam_controller.dart';
 import '../../progress/application/progress_providers.dart';
@@ -50,13 +51,11 @@ class _SettingsView extends ConsumerWidget {
             title: Text(title),
             content: Text(message),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(action),
+              DialogActionButtons(
+                secondaryLabel: 'Cancel',
+                onSecondaryPressed: () => Navigator.pop(context, false),
+                primaryLabel: action,
+                onPrimaryPressed: () => Navigator.pop(context, true),
               ),
             ],
           ),
@@ -252,20 +251,45 @@ class _SettingsView extends ConsumerWidget {
       ),
       const _SectionHeader('Source and disclaimer'),
       Card(
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                info.sourceTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 4),
-              Text(info.sourcePublisher),
-              const SizedBox(height: 12),
-              Text(info.disclaimer),
-            ],
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => _open(
+            context,
+            ref.read(settingsRepositoryProvider).openCommonBond,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.menu_book_outlined),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        info.sourceTitle,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(info.sourcePublisher),
+                      const SizedBox(height: 12),
+                      Text(info.disclaimer),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Open the official course content',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.open_in_new),
+              ],
+            ),
           ),
         ),
       ),

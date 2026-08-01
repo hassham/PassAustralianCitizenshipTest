@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/routing/app_routes.dart';
+import '../../../shared/presentation/dialog_action_buttons.dart';
 import '../../../shared/presentation/failure_view.dart';
 import '../application/practice_controller.dart';
 
@@ -24,13 +25,11 @@ class PracticeScreen extends ConsumerWidget {
           'Home.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep learning'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Leave'),
+          DialogActionButtons(
+            secondaryLabel: 'Keep learning',
+            onSecondaryPressed: () => Navigator.pop(context, false),
+            primaryLabel: 'Leave',
+            onPrimaryPressed: () => Navigator.pop(context, true),
           ),
         ],
       ),
@@ -93,7 +92,9 @@ class PracticeScreen extends ConsumerWidget {
                 Semantics(
                   label: '${state.index + 1} of ${state.questions.length}',
                   child: LinearProgressIndicator(
-                    value: (state.index + 1) / state.questions.length,
+                    value:
+                        (state.index + (answered ? 1 : 0)) /
+                        state.questions.length,
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -104,6 +105,7 @@ class PracticeScreen extends ConsumerWidget {
                 const SizedBox(height: 20),
                 Expanded(
                   child: ListView.separated(
+                    padding: const EdgeInsets.only(bottom: 16),
                     itemCount: question.options.length + (answered ? 1 : 0),
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
@@ -116,8 +118,10 @@ class PracticeScreen extends ConsumerWidget {
                           liveRegion: true,
                           child: Card(
                             color: correct
-                                ? const Color(0xFFE7F5EA)
-                                : const Color(0xFFFFECEB),
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.secondaryContainer
+                                : Theme.of(context).colorScheme.errorContainer,
                             child: Padding(
                               padding: const EdgeInsets.all(18),
                               child: Column(
@@ -125,35 +129,77 @@ class PracticeScreen extends ConsumerWidget {
                                 children: [
                                   Text(
                                     correct ? 'Correct' : 'Not quite',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: correct
+                                              ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onSecondaryContainer
+                                              : Theme.of(
+                                                  context,
+                                                ).colorScheme.onErrorContainer,
+                                        ),
                                   ),
                                   const SizedBox(height: 6),
-                                  Text(selectedOption.explanation),
+                                  Text(
+                                    selectedOption.explanation,
+                                    style: TextStyle(
+                                      color: correct
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.onSecondaryContainer
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.onErrorContainer,
+                                    ),
+                                  ),
                                   if (!correct) ...[
                                     const SizedBox(height: 8),
                                     Text(
                                       'Correct answer: ${question.correctOption.text}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                      style:
+                                          const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                          ).copyWith(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onErrorContainer,
+                                          ),
                                     ),
                                     const SizedBox(height: 4),
-                                    Text(question.correctOption.explanation),
+                                    Text(
+                                      question.correctOption.explanation,
+                                      style: TextStyle(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onErrorContainer,
+                                      ),
+                                    ),
                                   ],
                                   if (question
                                       .overallExplanation
                                       .isNotEmpty) ...[
                                     const SizedBox(height: 8),
-                                    Text(question.overallExplanation),
+                                    Text(
+                                      question.overallExplanation,
+                                      style: TextStyle(
+                                        color: correct
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.onSecondaryContainer
+                                            : Theme.of(
+                                                context,
+                                              ).colorScheme.onErrorContainer,
+                                      ),
+                                    ),
                                   ],
                                   if (question.references.isNotEmpty) ...[
                                     const SizedBox(height: 12),
                                     Text(
                                       '${question.references.first.sourceTitle}, '
-                                      '${question.references.first.section}, '
-                                      '${question.references.first.pageLabel}',
+                                      '${question.references.first.section}',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodySmall,
@@ -190,10 +236,30 @@ class PracticeScreen extends ConsumerWidget {
                               vertical: 14,
                             ),
                             backgroundColor: isCorrect
-                                ? const Color(0xFFE7F5EA)
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.secondaryContainer
                                 : isWrongSelection
-                                ? const Color(0xFFFFECEB)
-                                : Colors.white,
+                                ? Theme.of(context).colorScheme.errorContainer
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerLow,
+                            foregroundColor: isCorrect
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.onSecondaryContainer
+                                : isWrongSelection
+                                ? Theme.of(context).colorScheme.onErrorContainer
+                                : Theme.of(context).colorScheme.onSurface,
+                            disabledForegroundColor: isCorrect
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.onSecondaryContainer
+                                : isWrongSelection
+                                ? Theme.of(context).colorScheme.onErrorContainer
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                             side: BorderSide(
                               color: isCorrect
                                   ? const Color(0xFF238636)
@@ -212,13 +278,16 @@ class PracticeScreen extends ConsumerWidget {
                   ),
                 ),
                 if (answered)
-                  FilledButton(
-                    onPressed: () =>
-                        ref.read(practiceControllerProvider.notifier).next(),
-                    child: Text(
-                      state.index + 1 == state.questions.length
-                          ? 'See results'
-                          : 'Next question',
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: FilledButton(
+                      onPressed: () =>
+                          ref.read(practiceControllerProvider.notifier).next(),
+                      child: Text(
+                        state.index + 1 == state.questions.length
+                            ? 'See results'
+                            : 'Next question',
+                      ),
                     ),
                   ),
               ],

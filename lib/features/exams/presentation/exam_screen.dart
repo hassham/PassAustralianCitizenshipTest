@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/routing/app_routes.dart';
+import '../../../shared/presentation/dialog_action_buttons.dart';
 import '../../progress/application/progress_providers.dart';
 import '../../practice/application/practice_controller.dart';
 import '../application/exam_controller.dart';
@@ -55,13 +56,11 @@ class _ExamScreenState extends ConsumerState<ExamScreen>
           'exam later.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep reviewing'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Leave'),
+          DialogActionButtons(
+            secondaryLabel: 'Keep reviewing',
+            onSecondaryPressed: () => Navigator.pop(context, false),
+            primaryLabel: 'Leave',
+            onPrimaryPressed: () => Navigator.pop(context, true),
           ),
         ],
       ),
@@ -84,13 +83,11 @@ class _ExamScreenState extends ConsumerState<ExamScreen>
               : '$unanswered question${unanswered == 1 ? '' : 's'} remain unanswered.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep reviewing'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Submit exam'),
+          DialogActionButtons(
+            secondaryLabel: 'Keep reviewing',
+            onSecondaryPressed: () => Navigator.pop(context, false),
+            primaryLabel: 'Submit exam',
+            onPrimaryPressed: () => Navigator.pop(context, true),
           ),
         ],
       ),
@@ -146,7 +143,7 @@ class _ExamScreenState extends ConsumerState<ExamScreen>
                   const SizedBox(height: 12),
                 ],
                 LinearProgressIndicator(
-                  value: (state.currentIndex + 1) / state.questions.length,
+                  value: state.answers.length / state.questions.length,
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -158,38 +155,45 @@ class _ExamScreenState extends ConsumerState<ExamScreen>
                   child: ListView.separated(
                     itemCount: question.options.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (context, index) => OutlinedButton(
-                      onPressed: state.timerLocked
-                          ? null
-                          : () => ref
-                                .read(examControllerProvider.notifier)
-                                .selectAnswer(index),
-                      style: OutlinedButton.styleFrom(
-                        alignment: Alignment.centerLeft,
-                        minimumSize: const Size.fromHeight(58),
-                        padding: const EdgeInsets.all(16),
-                        backgroundColor: selected == index
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : Colors.white,
-                        side: BorderSide(
-                          color: selected == index
-                              ? Theme.of(context).colorScheme.primary
-                              : const Color(0xFFB7BDC5),
-                          width: selected == index ? 2 : 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            selected == index
-                                ? Icons.radio_button_checked
-                                : Icons.radio_button_off,
+                    itemBuilder: (context, index) {
+                      final scheme = Theme.of(context).colorScheme;
+                      final isSelected = selected == index;
+                      return OutlinedButton(
+                        onPressed: state.timerLocked
+                            ? null
+                            : () => ref
+                                  .read(examControllerProvider.notifier)
+                                  .selectAnswer(index),
+                        style: OutlinedButton.styleFrom(
+                          alignment: Alignment.centerLeft,
+                          minimumSize: const Size.fromHeight(58),
+                          padding: const EdgeInsets.all(16),
+                          backgroundColor: isSelected
+                              ? scheme.primaryContainer
+                              : scheme.surfaceContainerLow,
+                          foregroundColor: isSelected
+                              ? scheme.onPrimaryContainer
+                              : scheme.onSurface,
+                          disabledBackgroundColor: scheme.surfaceContainer,
+                          disabledForegroundColor: scheme.onSurfaceVariant,
+                          side: BorderSide(
+                            color: isSelected ? scheme.primary : scheme.outline,
+                            width: isSelected ? 2 : 1,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(child: Text(question.options[index].text)),
-                        ],
-                      ),
-                    ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isSelected
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(child: Text(question.options[index].text)),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
                 OutlinedButton(

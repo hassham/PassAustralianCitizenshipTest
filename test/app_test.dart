@@ -40,13 +40,16 @@ void main() {
 
     expect(find.text('Learn with confidence'), findsOneWidget);
     expect(find.text('Practice all categories'), findsOneWidget);
-    expect(find.text('120'), findsOneWidget);
+    expect(find.byKey(const Key('home-brand-mark')), findsNothing);
+    expect(find.text('Questions'), findsNothing);
+    expect(find.text('Starred'), findsNothing);
     await tester.scrollUntilVisible(
       find.text('Take a mock exam'),
       200,
       scrollable: find.byType(Scrollable).first,
     );
     expect(find.text('Take a mock exam'), findsOneWidget);
+    expect(find.text('Read Our Common Bond'), findsNothing);
   });
 
   testWidgets('provides five-section navigation', (tester) async {
@@ -84,6 +87,12 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(find.text('Question bank'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Open the official course content'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Open the official course content'), findsOneWidget);
 
     await tester.tap(find.text('Home'));
     await tester.pump();
