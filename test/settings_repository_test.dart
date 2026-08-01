@@ -7,6 +7,12 @@ import 'package:pass_citizenship_test/features/settings/data/settings_repository
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('official booklet link uses the Australian Government site', () {
+    expect(SettingsRepository.commonBondUri.scheme, 'https');
+    expect(SettingsRepository.commonBondUri.host, 'immi.homeaffairs.gov.au');
+    expect(SettingsRepository.commonBondUri.path, contains('our-common-bond'));
+  });
+
   test('reset progress preserves starred questions', () async {
     final database = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(database.close);

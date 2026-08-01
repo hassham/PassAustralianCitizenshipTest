@@ -443,7 +443,8 @@ class _StrengthSummary extends StatelessWidget {
                       ? 'More practice data is needed before identifying strong areas.'
                       : 'Keep practising to establish a strong area.'
                 : strong.map((item) => item.categoryName).join(', '),
-            color: const Color(0xFFE7F5EA),
+            color: Theme.of(context).colorScheme.secondaryContainer,
+            foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
           ),
           _InsightCard(
             icon: Icons.trending_up,
@@ -453,7 +454,8 @@ class _StrengthSummary extends StatelessWidget {
                       ? 'Not enough data to identify weak areas.'
                       : 'No weak areas detected yet.'
                 : weak.map((item) => item.categoryName).join(', '),
-            color: const Color(0xFFFFF3CD),
+            color: Theme.of(context).colorScheme.tertiaryContainer,
+            foregroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
           ),
         ];
         if (constraints.maxWidth < 600) {
@@ -480,33 +482,46 @@ class _InsightCard extends StatelessWidget {
     required this.title,
     required this.message,
     required this.color,
+    required this.foregroundColor,
   });
   final IconData icon;
   final String title;
   final String message;
   final Color color;
+  final Color foregroundColor;
 
   @override
   Widget build(BuildContext context) => Card(
     color: color,
-    child: Padding(
-      padding: const EdgeInsets.all(18),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 4),
-                Text(message),
-              ],
-            ),
+    child: IconTheme(
+      data: IconThemeData(color: foregroundColor),
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: foregroundColor),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleMedium?.copyWith(color: foregroundColor),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(message),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     ),
   );

@@ -80,11 +80,17 @@ class _AnswerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final question = answer.question;
+    final scheme = Theme.of(context).colorScheme;
     final backgroundColor = answer.selectedIndex == null
-        ? const Color(0xFFFFF3CD)
+        ? scheme.tertiaryContainer
         : answer.wasCorrect == true
-        ? const Color(0xFFE7F5EA)
-        : const Color(0xFFFFECEB);
+        ? scheme.secondaryContainer
+        : scheme.errorContainer;
+    final foregroundColor = answer.selectedIndex == null
+        ? scheme.onTertiaryContainer
+        : answer.wasCorrect == true
+        ? scheme.onSecondaryContainer
+        : scheme.onErrorContainer;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Card(
@@ -126,9 +132,9 @@ class _AnswerCard extends StatelessWidget {
                           ? Icons.cancel
                           : Icons.radio_button_unchecked,
                       color: question.options[index].isCorrect
-                          ? const Color(0xFF238636)
+                          ? foregroundColor
                           : index == answer.selectedIndex
-                          ? const Color(0xFFCF222E)
+                          ? foregroundColor
                           : null,
                     ),
                     title: Text(question.options[index].text),

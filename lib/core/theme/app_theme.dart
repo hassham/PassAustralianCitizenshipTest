@@ -103,7 +103,7 @@ abstract final class AppTheme {
         centerTitle: false,
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,
-        titleTextStyle: textTheme.titleLarge?.copyWith(
+        titleTextStyle: textTheme.headlineMedium?.copyWith(
           color: scheme.onSurface,
           fontWeight: FontWeight.w700,
         ),

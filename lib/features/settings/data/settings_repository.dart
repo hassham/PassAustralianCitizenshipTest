@@ -27,6 +27,10 @@ class SettingsRepository {
       defaultValue: 'https://www.buymeacoffee.com/hashamahmad',
     ),
   );
+  static final commonBondUri = Uri.parse(
+    'https://immi.homeaffairs.gov.au/citizenship/test-and-interview/'
+    'our-common-bond',
+  );
 
   final AppDatabase database;
   final PracticeRepository practiceRepository;
@@ -119,6 +123,7 @@ class SettingsRepository {
   Future<bool> openPrivacyPolicy() => _open(privacyUri);
   Future<bool> openSupport() => _open(supportUri);
   Future<bool> openBuyMeACoffee() => _open(buyMeACoffeeUri);
+  Future<bool> openCommonBond() => _open(commonBondUri);
   Future<bool> openLicence(String url) => _open(Uri.parse(url));
 
   Future<bool> _open(Uri uri) async {

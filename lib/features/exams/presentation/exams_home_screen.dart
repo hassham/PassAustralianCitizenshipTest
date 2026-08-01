@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/errors/app_failure.dart';
 import '../../../core/routing/app_routes.dart';
+import '../../../shared/presentation/dialog_action_buttons.dart';
 import '../application/exam_controller.dart';
 
 class ExamsHomeScreen extends ConsumerStatefulWidget {
@@ -41,13 +42,11 @@ class _ExamsHomeScreenState extends ConsumerState<ExamsHomeScreen> {
           'questions correctly. The timer cannot be paused.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Start exam'),
+          DialogActionButtons(
+            secondaryLabel: 'Cancel',
+            onSecondaryPressed: () => Navigator.pop(context, false),
+            primaryLabel: 'Start exam',
+            onPrimaryPressed: () => Navigator.pop(context, true),
           ),
         ],
       ),

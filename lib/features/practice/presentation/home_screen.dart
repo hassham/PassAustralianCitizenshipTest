@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/errors/app_failure.dart';
 import '../../../core/routing/app_routes.dart';
+import '../../../shared/presentation/dialog_action_buttons.dart';
 import '../../exams/application/exam_controller.dart';
 import '../../progress/application/progress_providers.dart';
 import '../../progress/domain/readiness_insights_models.dart';
@@ -89,13 +90,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           'starred questions, and exam history will be kept.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Refresh'),
+          DialogActionButtons(
+            secondaryLabel: 'Cancel',
+            onSecondaryPressed: () => Navigator.pop(context, false),
+            primaryLabel: 'Refresh',
+            onPrimaryPressed: () => Navigator.pop(context, true),
           ),
         ],
       ),
@@ -123,13 +122,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           'starred questions, and exam history will be permanently removed.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Reset local data'),
+          DialogActionButtons(
+            secondaryLabel: 'Cancel',
+            onSecondaryPressed: () => Navigator.pop(context, false),
+            primaryLabel: 'Reset local data',
+            onPrimaryPressed: () => Navigator.pop(context, true),
           ),
         ],
       ),
@@ -199,10 +196,14 @@ class _HomeDashboardView extends StatelessWidget {
     children: [
       Text(
         'Learn with confidence',
-        style: Theme.of(context).textTheme.headlineMedium,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
       const SizedBox(height: 8),
-      const Text('Focused practice that works completely offline.'),
+      const Text(
+        'Focused practice that works completely offline.',
+        textAlign: TextAlign.center,
+      ),
       if (value.hasActivePractice || value.hasActiveExam) ...[
         const SizedBox(height: 24),
         Text(
@@ -231,26 +232,6 @@ class _HomeDashboardView extends StatelessWidget {
       _ProgressCard(value: value.progress),
       const SizedBox(height: 12),
       _ReadinessCard(value: insights),
-      const SizedBox(height: 16),
-      Row(
-        children: [
-          Expanded(
-            child: _MetricCard(
-              icon: Icons.quiz_outlined,
-              value: '${value.totalQuestions}',
-              label: 'Questions',
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _MetricCard(
-              icon: Icons.star_outline,
-              value: '${value.starredQuestions}',
-              label: 'Starred',
-            ),
-          ),
-        ],
-      ),
       const SizedBox(height: 24),
       FilledButton.icon(
         onPressed: onStartPractice,
@@ -366,33 +347,6 @@ class _ProgressCard extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
-    ),
-  );
-}
-
-class _MetricCard extends StatelessWidget {
-  const _MetricCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-      child: Column(
-        children: [
-          Icon(icon),
-          const SizedBox(height: 8),
-          Text(value, style: Theme.of(context).textTheme.headlineSmall),
-          Text(label),
         ],
       ),
     ),
