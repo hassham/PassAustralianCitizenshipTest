@@ -271,11 +271,11 @@ Every question includes:
 
 Minimum:
 
-500 Questions
+400 Questions
 
 Target:
 
-500–1000 Questions
+400–1000 Questions
 
 ---
 
@@ -631,7 +631,7 @@ Target:
 - 1,000+ downloads
 - 4.5+ rating
 - Optional user-support engagement
-- 500+ active users
+- 400+ active users
 
 ---
 
