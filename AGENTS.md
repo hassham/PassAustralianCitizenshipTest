@@ -137,7 +137,7 @@ lib/
 
 **Source:** "Our Common Bond" (official Australian citizenship book)
 
-**Target:** 500-1000 questions (MVP minimum: 500)
+**Target:** 400-1000 questions (MVP minimum: 400)
 
 **Question Structure:**
 - Question text
@@ -346,7 +346,7 @@ reached.
 4. **Feature Implementation** - Practice, exams, progress tracking
 5. **UI/Screens** - Implement FSD screens and workflows
 6. **Testing** - Unit, integration, manual tests
-7. **Content** - Create questions.json with 500+ questions
+7. **Content** - Create questions.json with 400+ questions
 8. **Store Submission** - Prepare for Google Play and App Store release
 
 ---
