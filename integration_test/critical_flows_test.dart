@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:path/path.dart' as p;
 import 'package:pass_citizenship_test/core/errors/app_failure.dart';
 import 'package:pass_citizenship_test/data/database/app_database.dart';
 import 'package:pass_citizenship_test/features/exams/application/exam_controller.dart';
@@ -10,6 +14,11 @@ import 'package:pass_citizenship_test/features/practice/data/practice_repository
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  // This suite intentionally reopens a file-backed database sequentially
+  // (always closing the previous instance first) to simulate corruption and
+  // recovery; that's expected here, not the concurrent-access bug this warns
+  // about.
+  driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
 
   late AppDatabase database;
   late PracticeRepository practiceRepository;
@@ -168,6 +177,57 @@ void main() {
     );
     expect(await database.activeExamAttempt(), isNull);
   });
+
+  testWidgets(
+    'recovers safely when the local database file is corrupted',
+    (tester) async {
+      final tempDir = await Directory.systemTemp.createTemp(
+        'citizenship_corrupt_db_test',
+      );
+      addTearDown(() async {
+        if (await tempDir.exists()) await tempDir.delete(recursive: true);
+      });
+      final dbFile = File(p.join(tempDir.path, 'corrupt_test.sqlite'));
+
+      // Seed a real, file-backed database with the imported bundled content.
+      var fileDatabase = AppDatabase.forTesting(NativeDatabase(dbFile));
+      await PracticeRepository(fileDatabase).initialise();
+      expect(
+        (await PracticeRepository(fileDatabase).questions()),
+        isNotEmpty,
+      );
+      await fileDatabase.close();
+
+      // Simulate real-world storage corruption by overwriting the file's bytes.
+      final originalLength = await dbFile.length();
+      await dbFile.writeAsBytes(List<int>.filled(originalLength, 0xFF));
+
+      // Opening the corrupted file must surface a recoverable StorageFailure,
+      // not crash the app or silently return empty content.
+      fileDatabase = AppDatabase.forTesting(NativeDatabase(dbFile));
+      await expectLater(
+        PracticeRepository(fileDatabase).initialise(),
+        throwsA(
+          isA<StorageFailure>().having(
+            (failure) => failure.canRetry,
+            'canRetry',
+            isTrue,
+          ),
+        ),
+      );
+      await fileDatabase.close();
+
+      // Recovery mirrors PracticeRepository.resetLocalDataForRecovery(): the
+      // corrupted file is deleted and the bundled content is re-imported into
+      // a fresh database at the same location.
+      if (await dbFile.exists()) await dbFile.delete();
+      fileDatabase = AppDatabase.forTesting(NativeDatabase(dbFile));
+      final recoveredRepository = PracticeRepository(fileDatabase);
+      await recoveredRepository.initialise();
+      expect(await recoveredRepository.questions(), isNotEmpty);
+      await fileDatabase.close();
+    },
+  );
 }
 
 Future<void> _markRemoved(

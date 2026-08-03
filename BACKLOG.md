@@ -13,17 +13,16 @@ Status legend: `TODO` | `IN PROGRESS` | `BLOCKED` | `PARTIAL` | `DONE`
 Priority legend: `P0` release blocker | `P1` required before release |
 `P2` polish or maintainability
 
-Last updated: 2026-08-02.
+Last updated: 2026-08-03.
 
 ## Current delivery cycle: MVP release readiness
 
 **Theme:** Complete and validate the content, resolve physical-device feedback,
 prove quality on Android and iOS, and prepare signed store releases.
 
-**Overall status:** `IN PROGRESS` — RR-01 implementation is complete and
-awaiting automated and physical-device verification. The production question
-bank has been expanded to 421 questions and is awaiting editorial and
-factual review. Integration coverage, device/accessibility verification,
+**Overall status:** `IN PROGRESS` — RR-01 and RR-02 are `DONE`. RR-03's
+automated coverage work is complete; it awaits physical Android/iOS
+execution of the integration suite. Device/accessibility verification,
 signing, and store preparation remain.
 
 ### Release-readiness outcome
@@ -93,15 +92,18 @@ Out of scope:
 
 ## Current focus
 
-RR-01 code changes and automated verification are complete. Physical Android
-re-testing remains before the package can be marked `DONE`. RR-02 may proceed
-in parallel only when content work does not interfere with RR-01 verification.
+RR-01 and RR-02 are `DONE`. RR-03's automated work (corrupted-database
+recovery coverage, and a large coverage push to 72.51% hand-written /
+54.08% raw) is complete; it now only needs physical Android/iOS execution
+of the integration suite. RR-04's animation/colour-independence check, and
+RR-06's final responsive QA, are the next smallest open items after that;
+RR-07 and RR-08 have not been started.
 
 ## Ordered release-readiness work packages
 
 ### RR-01 — Resolve Android physical-device feedback
 
-**Status:** `PARTIAL — AWAITING PHYSICAL-DEVICE VERIFICATION`
+**Status:** `DONE`
 
 **Priority:** `P0`
 
@@ -109,8 +111,9 @@ in parallel only when content work does not interfere with RR-01 verification.
 
 **Started:** 2026-07-30.
 
-**Completion:** Implementation and automated verification completed
-2026-07-31; physical-device verification pending.
+**Completion:** 2026-08-03. Implementation and automated verification
+completed 2026-07-31; the owner completed physical-device re-testing of all
+fourteen findings on 2026-08-03.
 
 - [x] **AND-01 — Block device rotation.** Lock the mobile app to portrait and
       confirm rotation cannot interrupt or visually corrupt an active practice
@@ -217,6 +220,8 @@ Evidence:
 - The complete Flutter test suite passed 34/34 tests on 2026-07-31.
 - `flutter build apk --debug --no-pub` produced
   `build/app/outputs/flutter-apk/app-debug.apk` on 2026-07-31.
+- The owner confirmed physical-device re-testing of all fourteen findings, in
+  both light and dark modes, on 2026-08-03.
 
 Notes:
 
@@ -224,12 +229,10 @@ Notes:
   owner on 2026-07-30.
 - No finding is considered resolved solely from emulator or widget-test
   evidence.
-- RR-01 remains `PARTIAL` until all fourteen findings pass physical-device
-  re-testing.
 
 ### RR-02 — Complete and approve the production question bank
 
-**Status:** `PARTIAL — AWAITING EDITORIAL AND FACTUAL REVIEW`
+**Status:** `DONE`
 
 **Priority:** `P0`
 
@@ -237,10 +240,12 @@ Notes:
 
 **Started:** 2026-08-02.
 
-**Completion:** Bank expanded from 120 to 421 questions and passes all automated
-validation. Facts and taxonomy were validated against the current official
-booklet and confirmed complete by the owner on 2026-08-02. Final editorial
-wording and attribution/licensing sign-off remain.
+**Completion:** 2026-08-03. Bank expanded from 120 to 421 questions and passes
+all automated validation. Facts and taxonomy were validated against the
+current official booklet and confirmed complete by the owner on 2026-08-02.
+The owner reviewed and approved all 421 questions via the
+[`question-review.html`](question-review.html) tool and confirmed the
+attribution/licensing notice on 2026-08-03.
 
 - [x] Expand the current 120-question bank to at least 400 questions.
 - [x] Preserve stable question and option IDs.
@@ -249,7 +254,7 @@ wording and attribution/licensing sign-off remain.
 - [x] Assign and validate category and difficulty metadata.
 - [x] Validate facts and taxonomy against the current official booklet.
 - [x] Verify source edition, section, page, and lifecycle metadata.
-- [ ] Complete editorial, attribution, and licensing review.
+- [x] Complete editorial, attribution, and licensing review.
 - [x] Run schema, duplicate, option, reference, and import validation.
 - [x] Measure import and query performance at final production volume.
 
@@ -290,38 +295,51 @@ Evidence:
   120-question bundle count to the new 421.
 - The owner confirmed on 2026-08-02 that factual and taxonomy validation
   against the current official booklet is complete.
+- The owner reviewed and approved all 421 questions individually via
+  `question-review.html` on 2026-08-03; every question now carries
+  `status: approved`, `review.status: approved`, and true source, wording,
+  answer, and explanation verification flags in
+  `assets/data/questions.json`.
+- The owner confirmed on 2026-08-03 that the CC BY 4.0 attribution notice
+  (`attribution.licenceName`/`copyrightNotice`/`licenceUrl` in
+  `assets/data/questions.json`, rendered live in Settings → Source via
+  `lib/features/settings/data/settings_repository.dart` and
+  `lib/features/settings/presentation/settings_screen.dart`) correctly credits
+  the source, links the licence, and discloses that the question wording is
+  an adaptation, and that this bank-level notice covers the expanded
+  421-question bank.
 
 Notes:
 
-- All 421 questions currently carry `status: approved`,
-  `review.status: approved`, and true source, wording, answer, and explanation
-  verification flags. The final editorial sign-off must confirm that these
-  approval fields accurately represent a completed human review.
 - The `questions-backup.json` asset is an older, unrelated 12-question dev
   artifact and was not touched.
-- Remaining before this package can be marked `DONE`: confirm the editorial
-  approval record, complete the wording/readability sign-off, and confirm that
-  the attribution and licensing notice applies to the expanded bank and is
-  presented correctly in the application.
+- `sourceEditions[0].checksum` in `assets/data/questions.json` still reflects
+  an earlier hashing of the source PDF and was not re-verified against
+  `our-common-bond-testable.pdf` as part of this sign-off; flagged for
+  awareness only, not blocking, per owner decision on 2026-08-03.
 
 ### RR-03 — Add critical-flow integration and coverage evidence
 
-**Status:** `IN_PROGRESS`
+**Status:** `PARTIAL — AWAITING ANDROID/IOS DEVICE EXECUTION`
 
 **Priority:** `P0`
 
 **Depends on:** RR-01 for final UI expectations; RR-02 for production-volume
-coverage.
+coverage — both satisfied (421 approved questions).
 
-**Completion:** 9 of 10 checklist items complete; Android/iOS execution,
-corrupted-database recovery coverage, and the 80% coverage gap remain.
+**Completion:** 10 of 10 checklist items complete. All automated coverage
+work is done at production question-bank volume; the remaining gap is
+running the existing device-level `integration_test` suite on physical
+Android and iOS hardware (it has so far only been run on Windows desktop and
+in this environment, matching the same device dependency already tracked for
+RR-01 and RR-04).
 
 - [x] Add device-level integration coverage for a complete practice session.
 - [x] Cover timed and untimed mock exams.
 - [x] Cover timer backgrounding, resume, expiry, and auto-submit.
 - [x] Cover cold-start practice and exam restoration.
 - [x] Cover backwards device-clock detection and lock behavior.
-- [ ] Cover invalid content and database recovery behavior.
+- [x] Cover invalid content and database recovery behavior.
 - [x] Add focused Practice interaction and recovery-state tests.
 - [x] Add dedicated Settings, history, and starred-screen widget tests.
 - [x] Add remaining controller, edge-case, and failure-path tests.
@@ -339,23 +357,49 @@ Evidence:
 
 - `integration_test/critical_flows_test.dart` covers complete Practice, timed
   and untimed exams, controller recreation, timer background/resume/expiry,
-  backwards-clock locking, and removed-content recovery.
+  backwards-clock locking, removed-content recovery, and — newly added —
+  corrupted local database recovery: a real file-backed database is seeded
+  with the imported bundled bank, its bytes are overwritten to simulate
+  on-disk corruption, opening it is confirmed to surface a recoverable
+  `StorageFailure` (`canRetry: true`), and the standard
+  close-delete-reopen-reimport recovery path is confirmed to restore a fully
+  working, fully-imported question bank.
+- `test/exam_flow_widget_test.dart` (new) drives a complete mock-exam journey
+  through the real app (real router, real screens, real in-memory database):
+  starting an exam, answering a mix of correct/incorrect/unanswered
+  questions, using the question navigator, submitting, reviewing results,
+  reviewing individual answers, and inspecting exam history and history
+  detail. This alone took `exam_screen.dart` from 0.8% to 83.8% line
+  coverage, `exams_home_screen.dart` from 1.1% to 82.2%, and
+  `exam_history_detail_screen.dart` from 0% to 85.2%.
 - `test/rr03_widget_test.dart` covers Practice feedback and recovery states,
   Settings data and failure states, starred-question states, and exam history.
 - `test/controller_edge_cases_test.dart` covers ignored Practice and Exam
   actions, empty starred sessions, inactive restore, and locked-exam input.
-- The device-level integration suite passed 6/6 flows on Windows on 2026-08-01.
-- The complete unit/widget suite passed 44/44 tests on 2026-08-01.
-- `flutter analyze --no-pub` passed with no issues on 2026-08-01.
-- `coverage/lcov.info` records 2,673 of 5,834 lines hit (45.82%).
+- The device-level integration suite passed 7/7 flows on Windows on
+  2026-08-03 (including the new corrupted-database recovery test).
+- The complete unit/widget suite passed 45/45 tests on 2026-08-03.
+- `flutter analyze --no-pub` passed with no issues on 2026-08-03.
+- `coverage/lcov.info`, regenerated at the full 421-question production
+  volume, records 3,155 of 5,834 lines hit (54.08% raw). Excluding
+  `lib/data/database/app_database.g.dart` (drift-generated boilerplate —
+  2,553 lines, 30.4% covered, standard practice to exclude generated code
+  from hand-written-coverage targets), hand-written source coverage is
+  2,379 of 3,281 lines (72.51%), up from the prior 45.82% baseline.
 
 Notes:
 
-- RR-02 remains deferred, so production-volume coverage is not yet available.
+- Coverage is recorded and has improved substantially at production volume,
+  satisfying the acceptance criterion as written ("has recorded progress
+  against its 80% ... target"), but 72.51% (hand-written) / 54.08% (raw) is
+  short of the literal 80% figure. Closing the remainder would mean adding
+  comparable flow coverage for `progress_screen.dart` (40.4%),
+  `home_screen.dart` (40.8%), `settings_screen.dart` (54.9%), and
+  `app_database.dart` (24.6%, hand-written DB helper code) — a further
+  session of similar scope to this one.
 - The integration suite must still be executed on supported Android and iOS
-  device targets.
-- Removed-content recovery is covered; deterministic corrupted-database
-  recovery coverage is still missing.
+  physical devices; this is the only remaining item before RR-03 can be
+  marked `DONE`.
 - Coverage is recorded but remains below the 80% project target.
 
 ### RR-04 — Complete physical-device and accessibility validation
@@ -450,20 +494,34 @@ Evidence:
 
 ### RR-07 — Prepare signed Android and iOS releases
 
-**Status:** `TODO`
+**Status:** `IN PROGRESS`
 
 **Priority:** `P0`
 
 **Depends on:** RR-04 and all release-blocking RR-06 decisions.
 
-**Completion:** Not started.
+**Started:** 2026-08-03.
+
+**Completion:** The application/bundle ID is finalized and applied across
+Android, iOS, and macOS. Android release signing (keystore generation) is
+in progress with the owner. Everything else in this package remains.
 
 - [ ] Configure Android release signing.
-- [ ] Validate Android application ID, SDK settings, permissions, icons, and
-      production build configuration.
+- [x] Validate Android application ID, SDK settings, permissions, icons, and
+      production build configuration. `applicationId`/`namespace` changed
+      from the placeholder-adjacent `au.com.passcitizenship.*` (a domain the
+      owner does not control) to `com.hashamahmad.pass_citizenship_test`,
+      per owner decision on 2026-08-03. Manifest permissions, SDK versions,
+      and launcher icons were reviewed and are already production-ready
+      (custom branded icon, no unnecessary permissions, Flutter-managed SDK
+      versions).
 - [ ] Build, install, and smoke-test a signed Android release candidate.
 - [ ] Configure the iOS bundle ID, certificates, provisioning, deployment
-      target, permissions, icons, and production build on macOS.
+      target, permissions, icons, and production build on macOS. Bundle ID
+      renamed to match Android (`com.hashamahmad.passCitizenshipTest`);
+      certificates, provisioning, and the macOS build itself still need a
+      Mac-equivalent build environment (no Mac available — owner is
+      evaluating Codemagic vs. a GitHub Actions `macos-latest` runner).
 - [ ] Build, install, and smoke-test a signed iOS release candidate.
 - [ ] Prepare Google Play and App Store descriptions, screenshots, categories,
       pricing, declarations, and privacy metadata.
@@ -479,7 +537,25 @@ Acceptance criteria:
 - No development-only branding, configuration, or diagnostics leak into the
   release experience.
 
-Evidence: Pending.
+Evidence:
+
+- `android/app/build.gradle.kts`, `android/app/src/main/kotlin/com/hashamahmad/pass_citizenship_test/MainActivity.kt`,
+  `ios/Runner.xcodeproj/project.pbxproj`, `macos/Runner.xcodeproj/project.pbxproj`,
+  and `macos/Runner/Configs/AppInfo.xcconfig` all updated to the new
+  `com.hashamahmad.*` identifier on 2026-08-03.
+- `flutter build apk --debug --no-pub` succeeded with the renamed package;
+  the packaged manifest was confirmed to carry
+  `com.hashamahmad.pass_citizenship_test`.
+- `flutter analyze --no-pub` passed with no issues and the complete test
+  suite passed 45/45 after the rename, on 2026-08-03.
+
+Notes:
+
+- The Android release keystore has not been generated yet; the owner does
+  not have a Mac available for the iOS side, so certificates/provisioning
+  and the macOS build are blocked on choosing and setting up a cloud build
+  path (Codemagic or GitHub Actions `macos-latest`) before iOS work can
+  proceed.
 
 ### RR-08 — Complete release documentation, beta testing, and submission
 

@@ -8,7 +8,7 @@
 PRODUCT_NAME = pass_citizenship_test
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = au.com.passcitizenship.passCitizenshipTest
+PRODUCT_BUNDLE_IDENTIFIER = com.hashamahmad.passCitizenshipTest
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 au.com.passcitizenship. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.hashamahmad. All rights reserved.
