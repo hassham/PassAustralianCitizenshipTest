@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Question Bank Review — Pass Australian Citizenship Test</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --surface-alt: #f0f1f4;
+    --border: #e0e2e7;
+    --text: #1c1f26;
+    --text-muted: #5b616e;
+    --text-faint: #8a8f99;
+    --accent: #2f6fed;
+    --accent-contrast: #ffffff;
+    --correct-bg: #e6f6ec;
+    --correct-border: #34a95344;
+    --correct-text: #1f7a3d;
+    --incorrect-text: #8a8f99;
+    --approved-bg: #e6f6ec;
+    --approved-text: #1f7a3d;
+    --pending-bg: #fdf1e2;
+    --pending-text: #a2670a;
+    --danger: #c94141;
+    --shadow: 0 1px 2px rgba(20, 22, 30, 0.06), 0 1px 6px rgba(20, 22, 30, 0.05);
+    --radius: 10px;
+    --badge-people: #2f6fed;
+    --badge-beliefs: #7c4fe0;
+    --badge-government: #0f9aa0;
+    --badge-values: #d97a1f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161b;
+      --surface: #1c1f26;
+      --surface-alt: #23262e;
+      --border: #30343d;
+      --text: #eef0f4;
+      --text-muted: #a7acb8;
+      --text-faint: #767c88;
+      --accent: #5b8dff;
+      --accent-contrast: #0c0f14;
+      --correct-bg: #163722;
+      --correct-border: #2f9c5c55;
+      --correct-text: #6fd695;
+      --incorrect-text: #767c88;
+      --approved-bg: #163722;
+      --approved-text: #6fd695;
+      --pending-bg: #3a2c11;
+      --pending-text: #e4ab53;
+      --danger: #e5726f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 8px rgba(0, 0, 0, 0.25);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161b; --surface: #1c1f26; --surface-alt: #23262e; --border: #30343d;
+    --text: #eef0f4; --text-muted: #a7acb8; --text-faint: #767c88; --accent: #5b8dff;
+    --accent-contrast: #0c0f14; --correct-bg: #163722; --correct-border: #2f9c5c55;
+    --correct-text: #6fd695; --incorrect-text: #767c88; --approved-bg: #163722;
+    --approved-text: #6fd695; --pending-bg: #3a2c11; --pending-text: #e4ab53;
+    --danger: #e5726f; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 1px 8px rgba(0,0,0,.25);
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f5f7; --surface: #ffffff; --surface-alt: #f0f1f4; --border: #e0e2e7;
+    --text: #1c1f26; --text-muted: #5b616e; --text-faint: #8a8f99; --accent: #2f6fed;
+    --accent-contrast: #ffffff; --correct-bg: #e6f6ec; --correct-border: #34a95344;
+    --correct-text: #1f7a3d; --incorrect-text: #8a8f99; --approved-bg: #e6f6ec;
+    --approved-text: #1f7a3d; --pending-bg: #fdf1e2; --pending-text: #a2670a;
+    --danger: #c94141; --shadow: 0 1px 2px rgba(20,22,30,.06), 0 1px 6px rgba(20,22,30,.05);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-width: 320px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 80px; }
+
+  header.top {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--bg);
+    padding: 16px 0 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 18px;
+  }
+  h1 { font-size: 1.25rem; margin: 0 0 2px; }
+  .subtitle { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 14px; }
+
+  .loader-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px; box-shadow: var(--shadow); text-align: center; max-width: 560px; margin: 60px auto;
+  }
+  .loader-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+  .loader-card code {
+    background: var(--surface-alt); padding: 2px 6px; border-radius: 4px; font-size: 0.85em;
+  }
+  .drop-zone {
+    border: 2px dashed var(--border); border-radius: var(--radius); padding: 18px; margin-top: 16px;
+    font-size: 0.82rem; color: var(--text-faint);
+  }
+  .drop-zone.drag { border-color: var(--accent); color: var(--accent); }
+
+  .protocol-warning {
+    text-align: left; background: var(--pending-bg); color: var(--pending-text);
+    border: 1px solid var(--correct-border); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 18px; font-size: 0.85rem; line-height: 1.5;
+  }
+  .protocol-warning p { margin: 8px 0; color: var(--pending-text); }
+  .protocol-warning code {
+    background: rgba(0,0,0,0.12); color: inherit; padding: 2px 6px; border-radius: 4px; font-size: 0.85em;
+  }
+  .cmd-row { display: flex; gap: 8px; align-items: center; margin: 10px 0; }
+  .cmd-row code {
+    flex: 1; text-align: left; padding: 8px 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  .live-banner {
+    display: flex; align-items: center; gap: 10px; font-size: 0.8rem; border-radius: 8px;
+    padding: 8px 12px; margin-top: 12px;
+  }
+  .live-banner.live { background: var(--approved-bg); color: var(--approved-text); }
+  .live-banner.readonly { background: var(--pending-bg); color: var(--pending-text); }
+
+  button {
+    font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); padding: 8px 14px; font-size: 0.85rem;
+    transition: background 0.12s, border-color 0.12s, opacity .12s;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+  button.primary:hover { opacity: 0.9; }
+  button.approve { background: var(--approved-bg); color: var(--approved-text); border-color: var(--correct-border); }
+  button.approved-state { background: var(--approved-text); color: var(--surface); border-color: var(--approved-text); }
+  button:disabled { opacity: 0.45; cursor: default; }
+  button.small { padding: 5px 10px; font-size: 0.78rem; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .toolbar select, .toolbar input[type=search] {
+    font: inherit; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); font-size: 0.83rem;
+  }
+  .toolbar input[type=search] { flex: 1; min-width: 160px; }
+  .spacer { flex: 1; }
+
+  .stats-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .stat-pill {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+    padding: 5px 12px; font-size: 0.76rem; color: var(--text-muted); display: flex; gap: 6px; align-items: center;
+  }
+  .stat-pill b { color: var(--text); }
+  .progress-bar {
+    height: 6px; background: var(--surface-alt); border-radius: 4px; overflow: hidden; margin-top: 10px;
+  }
+  .progress-bar > div { height: 100%; background: var(--approved-text); transition: width .2s; }
+
+  .save-indicator { font-size: 0.78rem; color: var(--text-faint); }
+  .save-indicator.dirty { color: var(--pending-text); }
+  .save-indicator.saved { color: var(--approved-text); }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 18px; margin-bottom: 12px; box-shadow: var(--shadow);
+  }
+  .card.is-approved { border-left: 3px solid var(--approved-text); }
+  .card-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+  .badge {
+    font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 12px; letter-spacing: 0.02em;
+    text-transform: uppercase; color: #fff; white-space: nowrap;
+  }
+  .badge.id { background: var(--surface-alt); color: var(--text-faint); text-transform: none; font-weight: 500; letter-spacing: 0; }
+  .badge.diff { background: var(--surface-alt); color: var(--text-muted); text-transform: capitalize; font-weight: 500; }
+  .badge.values { background: var(--badge-values); }
+  .badge.status-approved { background: var(--approved-bg); color: var(--approved-text); }
+  .badge.status-pending { background: var(--pending-bg); color: var(--pending-text); }
+
+  .q-text { font-size: 1rem; font-weight: 600; margin: 4px 0 12px; line-height: 1.4; }
+
+  .options { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .option {
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.86rem;
+  }
+  .option.correct { background: var(--correct-bg); border-color: var(--correct-border); }
+  .option-row { display: flex; gap: 8px; align-items: baseline; }
+  .option-mark { font-size: 0.85em; flex-shrink: 0; }
+  .option.correct .option-mark { color: var(--correct-text); }
+  .option.correct .option-label { color: var(--correct-text); font-weight: 600; }
+  .option-explain { color: var(--text-muted); font-size: 0.8rem; margin-top: 3px; margin-left: 22px; }
+
+  .overall-explain {
+    font-size: 0.85rem; color: var(--text-muted); background: var(--surface-alt);
+    border-radius: 8px; padding: 8px 10px; margin-bottom: 10px;
+  }
+  .source-ref { font-size: 0.76rem; color: var(--text-faint); margin-bottom: 12px; }
+
+  .notes-row textarea {
+    width: 100%; font: inherit; font-size: 0.8rem; color: var(--text); background: var(--surface-alt);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; resize: vertical; min-height: 40px;
+  }
+  .notes-label { font-size: 0.72rem; color: var(--text-faint); margin-bottom: 4px; display: block; }
+
+  .card-actions { display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+
+  .pagination { display: flex; gap: 6px; align-items: center; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+  .pagination span { font-size: 0.8rem; color: var(--text-muted); padding: 0 6px; }
+
+  .empty-state { text-align: center; color: var(--text-faint); padding: 60px 20px; font-size: 0.9rem; }
+  .hidden { display: none !important; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Question Bank Review</h1>
+    <p class="subtitle">Pass Australian Citizenship Test — RR-02 editorial review of <code>assets/data/questions.json</code></p>
+
+    <div id="liveBanner" class="live-banner hidden"></div>
+
+    <div id="toolbar" class="toolbar hidden">
+      <select id="filterCategory"></select>
+      <select id="filterStatus">
+        <option value="all">All review statuses</option>
+        <option value="pending">Not reviewed</option>
+        <option value="approved">Approved</option>
+      </select>
+      <select id="filterValues">
+        <option value="all">All questions</option>
+        <option value="values">Australian values only</option>
+      </select>
+      <input type="search" id="searchBox" placeholder="Search question text…">
+      <select id="pageSize">
+        <option value="25">25 / page</option>
+        <option value="50">50 / page</option>
+        <option value="100">100 / page</option>
+      </select>
+      <div class="spacer"></div>
+      <span id="saveIndicator" class="save-indicator"></span>
+      <button id="saveBtn" class="primary small hidden">Save changes</button>
+      <button id="downloadBtn" class="small hidden">Download updated JSON</button>
+    </div>
+
+    <div id="statsRow" class="stats-row hidden"></div>
+    <div id="progressBar" class="progress-bar hidden"><div style="width:0%"></div></div>
+  </header>
+
+  <div id="loaderView" class="loader-card">
+    <div id="fileProtocolWarning" class="protocol-warning hidden">
+      <strong>Live saving needs this page served over http://, not opened as a file.</strong>
+      <p>
+        Chrome and Edge block write access to local files for pages opened directly from disk
+        (<code id="currentProtocol">file://</code>). Run this from the repo root, then open the page
+        at the printed address instead of double-clicking the file:
+      </p>
+      <div class="cmd-row">
+        <code id="serveCmd">python -m http.server 8000</code>
+        <button id="copyCmdBtn" class="small">Copy</button>
+      </div>
+      <p style="margin-bottom:0;">Then open <code>http://localhost:8000/question-review.html</code>.</p>
+    </div>
+    <h2 style="margin-top:0;">Open the question bank</h2>
+    <p>
+      Select <code>assets/data/questions.json</code> from this repository.
+      In Chrome or Edge, over <code>http://</code>, every question you approve is written straight
+      back to that file — no download step. Over <code>file://</code>, or in other browsers, you'll
+      need to download the updated file yourself when you're done.
+    </p>
+    <button id="openFsBtn" class="primary">Open questions.json…</button>
+    <input type="file" id="fileInput" accept="application/json,.json" class="hidden">
+    <button id="openFallbackBtn" class="small">Choose file (fallback mode)</button>
+    <div id="dropZone" class="drop-zone">or drag &amp; drop <code>questions.json</code> here</div>
+    <p id="modeNote" style="font-size:0.78rem;"></p>
+  </div>
+
+  <div id="listView" class="hidden"></div>
+  <div id="pagination" class="pagination hidden"></div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const state = {
+    bank: null,
+    fileHandle: null,      // File System Access API handle, if available
+    writable: false,
+    questions: [],         // live reference to bank.questions
+    categories: {},        // id -> name
+    filtered: [],
+    page: 1,
+    pageSize: 25,
+    dirty: false,
+    filters: { category: 'all', status: 'all', values: 'all', search: '' },
+  };
+
+  const el = (id) => document.getElementById(id);
+  const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+
+  function categoryColor(catId) {
+    return `var(--badge-${catId}, var(--accent))`;
+  }
+
+  // ---------- Loading ----------
+
+  async function openViaFsAccess() {
+    if (!('showOpenFilePicker' in window)) {
+      openFallback();
+      return;
+    }
+    let handle;
+    try {
+      [handle] = await window.showOpenFilePicker({
+        types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }],
+        excludeAcceptAllOption: false,
+        multiple: false,
+      });
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+      if (location.protocol === 'file:') {
+        // Chrome/Edge block the picker itself for file:// origins in some versions.
+        el('fileProtocolWarning').classList.remove('hidden');
+        el('fileProtocolWarning').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      console.error(err);
+      alert('Could not open the file picker: ' + err.message);
+      return;
+    }
+    const file = await handle.getFile();
+    const text = await file.text();
+    let writable = false;
+    let permissionState = 'unknown';
+    try {
+      permissionState = await handle.requestPermission({ mode: 'readwrite' });
+      writable = permissionState === 'granted';
+    } catch (e) {
+      permissionState = 'error: ' + e.message;
+      writable = false;
+    }
+    loadBank(text, { fileHandle: handle, writable, permissionState });
+  }
+
+  function openFallback() {
+    el('fileInput').click();
+  }
+
+  function wireFileInput() {
+    el('fileInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      loadBank(text, { fileHandle: null, writable: false });
+    });
+  }
+
+  function wireDropZone() {
+    const zone = el('dropZone');
+    ['dragover', 'dragenter'].forEach((evt) =>
+      zone.addEventListener(evt, (e) => { e.preventDefault(); zone.classList.add('drag'); }));
+    ['dragleave', 'drop'].forEach((evt) =>
+      zone.addEventListener(evt, (e) => { e.preventDefault(); zone.classList.remove('drag'); }));
+    zone.addEventListener('drop', async (e) => {
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+      const text = await file.text();
+      loadBank(text, { fileHandle: null, writable: false });
+    });
+  }
+
+  function loadBank(text, { fileHandle, writable, permissionState }) {
+    let bank;
+    try {
+      bank = JSON.parse(text);
+    } catch (err) {
+      alert('That file is not valid JSON: ' + err.message);
+      return;
+    }
+    if (!Array.isArray(bank.questions)) {
+      alert('This file does not look like the question bank (no "questions" array found).');
+      return;
+    }
+    state.bank = bank;
+    state.fileHandle = fileHandle;
+    state.writable = writable;
+    state.questions = bank.questions;
+    state.categories = {};
+    (bank.categories || []).forEach((c) => { state.categories[c.id] = c.name; });
+    state.dirty = false;
+
+    el('loaderView').classList.add('hidden');
+    el('toolbar').classList.remove('hidden');
+    el('statsRow').classList.remove('hidden');
+    el('progressBar').classList.remove('hidden');
+    el('listView').classList.remove('hidden');
+    el('pagination').classList.remove('hidden');
+
+    const banner = el('liveBanner');
+    banner.classList.remove('hidden');
+    if (fileHandle && writable) {
+      el('saveBtn').classList.add('hidden');
+      el('downloadBtn').classList.add('hidden');
+      banner.className = 'live-banner live';
+      banner.textContent = '● Live: approving a question saves questions.json immediately — no download needed.';
+      setSaveIndicator('saved', '');
+    } else if (fileHandle && !writable) {
+      el('downloadBtn').classList.remove('hidden');
+      banner.className = 'live-banner readonly';
+      banner.textContent = `● Read-only (permission: ${permissionState || 'denied'}) — changes stay in this tab until you click "Download updated JSON".`;
+      setSaveIndicator('dirty', '');
+    } else {
+      el('downloadBtn').classList.remove('hidden');
+      banner.className = 'live-banner readonly';
+      banner.textContent = '● Fallback mode — changes stay in this tab until you click "Download updated JSON". Use "Open questions.json…" over http:// for live saving.';
+      setSaveIndicator('dirty', '');
+    }
+
+    populateCategoryFilter();
+    applyFilters();
+  }
+
+  function populateCategoryFilter() {
+    const sel = el('filterCategory');
+    sel.innerHTML = '<option value="all">All categories</option>';
+    (state.bank.categories || []).forEach((c) => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  // ---------- Filtering / stats ----------
+
+  function isApproved(q) {
+    return q.status === 'approved' && q.review && q.review.status === 'approved';
+  }
+
+  function applyFilters() {
+    const { category, status, values, search } = state.filters;
+    const term = search.trim().toLowerCase();
+    state.filtered = state.questions.filter((q) => {
+      if (category !== 'all' && q.categoryId !== category) return false;
+      if (status === 'approved' && !isApproved(q)) return false;
+      if (status === 'pending' && isApproved(q)) return false;
+      if (values === 'values' && !q.isAustralianValuesQuestion) return false;
+      if (term && !q.text.toLowerCase().includes(term)) return false;
+      return true;
+    });
+    state.page = 1;
+    renderStats();
+    renderPage();
+  }
+
+  function renderStats() {
+    const total = state.questions.length;
+    const approved = state.questions.filter(isApproved).length;
+    const pct = total ? Math.round((approved / total) * 100) : 0;
+
+    const byCat = {};
+    state.questions.forEach((q) => {
+      byCat[q.categoryId] = byCat[q.categoryId] || { total: 0, approved: 0 };
+      byCat[q.categoryId].total++;
+      if (isApproved(q)) byCat[q.categoryId].approved++;
+    });
+
+    const pills = [`<div class="stat-pill">Total <b>${total}</b></div>`,
+      `<div class="stat-pill">Approved <b>${approved}</b> (${pct}%)</div>`,
+      `<div class="stat-pill">Showing <b>${state.filtered.length}</b></div>`];
+    Object.keys(byCat).sort().forEach((catId) => {
+      const c = byCat[catId];
+      const name = state.categories[catId] || catId;
+      pills.push(`<div class="stat-pill">${escapeHtml(name)} <b>${c.approved}/${c.total}</b></div>`);
+    });
+    el('statsRow').innerHTML = pills.join('');
+    el('progressBar').querySelector('div').style.width = pct + '%';
+  }
+
+  // ---------- Rendering ----------
+
+  function renderPage() {
+    const listView = el('listView');
+    const total = state.filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    const startIdx = (state.page - 1) * state.pageSize;
+    const pageItems = state.filtered.slice(startIdx, startIdx + state.pageSize);
+
+    if (total === 0) {
+      listView.innerHTML = '<div class="empty-state">No questions match the current filters.</div>';
+    } else {
+      listView.innerHTML = pageItems.map(renderCard).join('');
+    }
+    renderPagination(totalPages);
+    wireCardEvents();
+  }
+
+  function renderCard(q) {
+    const approved = isApproved(q);
+    const catName = state.categories[q.categoryId] || q.categoryId;
+    const options = [...q.options].sort((a, b) => a.displayOrder - b.displayOrder);
+    const ref = (q.sourceReferences && q.sourceReferences[0]) || {};
+    const pages = ref.pageStart === ref.pageEnd ? `p.${ref.pageStart}` : `pp.${ref.pageStart}–${ref.pageEnd}`;
+    const notes = (q.review && q.review.notes) || '';
+
+    return `
+      <div class="card ${approved ? 'is-approved' : ''}" data-id="${escapeHtml(q.id)}">
+        <div class="card-head">
+          <span class="badge id">${escapeHtml(q.id)}</span>
+          <span class="badge" style="background:${categoryColor(q.categoryId)}">${escapeHtml(catName)}</span>
+          <span class="badge diff">${escapeHtml(q.difficulty)}</span>
+          ${q.isAustralianValuesQuestion ? '<span class="badge values">Values</span>' : ''}
+          <span class="badge ${approved ? 'status-approved' : 'status-pending'}">${approved ? 'Approved' : 'Not reviewed'}</span>
+        </div>
+        <div class="q-text">${escapeHtml(q.text)}</div>
+        <div class="options">
+          ${options.map((o) => `
+            <div class="option ${o.isCorrect ? 'correct' : ''}">
+              <div class="option-row">
+                <span class="option-mark">${o.isCorrect ? '✓' : '○'}</span>
+                <span class="option-label">${escapeHtml(o.text)}</span>
+              </div>
+              <div class="option-explain">${escapeHtml(o.explanation)}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="overall-explain">${escapeHtml(q.overallExplanation)}</div>
+        <div class="source-ref">${escapeHtml(ref.part || '')}${ref.section ? ' — ' + escapeHtml(ref.section) : ''} (${pages})</div>
+        <div class="notes-row">
+          <label class="notes-label">Reviewer notes</label>
+          <textarea class="notes-input" rows="2">${escapeHtml(notes)}</textarea>
+        </div>
+        <div class="card-actions">
+          <button class="approve-btn ${approved ? 'approved-state' : 'approve'} small">
+            ${approved ? 'Approved ✓ — click to unapprove' : 'Approve this question'}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPagination(totalPages) {
+    const pag = el('pagination');
+    if (totalPages <= 1) { pag.innerHTML = ''; return; }
+    const p = state.page;
+    let html = `<button class="small" id="pgFirst" ${p === 1 ? 'disabled' : ''}>« First</button>`;
+    html += `<button class="small" id="pgPrev" ${p === 1 ? 'disabled' : ''}>‹ Prev</button>`;
+    html += `<span>Page ${p} of ${totalPages}</span>`;
+    html += `<button class="small" id="pgNext" ${p === totalPages ? 'disabled' : ''}>Next ›</button>`;
+    html += `<button class="small" id="pgLast" ${p === totalPages ? 'disabled' : ''}>Last »</button>`;
+    pag.innerHTML = html;
+    el('pgFirst')?.addEventListener('click', () => { state.page = 1; renderPage(); scrollTop(); });
+    el('pgPrev')?.addEventListener('click', () => { state.page--; renderPage(); scrollTop(); });
+    el('pgNext')?.addEventListener('click', () => { state.page++; renderPage(); scrollTop(); });
+    el('pgLast')?.addEventListener('click', () => { state.page = totalPages; renderPage(); scrollTop(); });
+  }
+
+  function scrollTop() { window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' }); }
+
+  function wireCardEvents() {
+    document.querySelectorAll('.card').forEach((card) => {
+      const id = card.dataset.id;
+      const q = state.questions.find((x) => x.id === id);
+      card.querySelector('.approve-btn').addEventListener('click', () => toggleApprove(q));
+      card.querySelector('.notes-input').addEventListener('change', (e) => {
+        q.review = q.review || {};
+        q.review.notes = e.target.value;
+        markDirty();
+      });
+    });
+  }
+
+  function toggleApprove(q) {
+    const nowApproved = !isApproved(q);
+    q.review = q.review || {};
+    if (nowApproved) {
+      q.status = 'approved';
+      q.review.status = 'approved';
+      q.review.sourceVerified = true;
+      q.review.wordingVerified = true;
+      q.review.correctAnswerVerified = true;
+      q.review.optionExplanationsVerified = true;
+    } else {
+      q.status = 'ready_for_review';
+      q.review.status = 'not_reviewed';
+      q.review.sourceVerified = false;
+      q.review.wordingVerified = false;
+      q.review.correctAnswerVerified = false;
+      q.review.optionExplanationsVerified = false;
+    }
+    q.revision = (q.revision || 1) + (nowApproved ? 0 : 0);
+    q.updatedAt = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+    markDirty();
+    renderStats();
+    renderPage();
+    persistIfPossible();
+  }
+
+  // ---------- Saving ----------
+
+  function markDirty() {
+    state.dirty = true;
+    if (!(state.fileHandle && state.writable)) {
+      setSaveIndicator('dirty', 'Unsaved changes — remember to download');
+    }
+  }
+
+  function setSaveIndicator(kind, text) {
+    const indicator = el('saveIndicator');
+    indicator.className = 'save-indicator ' + (kind || '');
+    indicator.textContent = text;
+  }
+
+  async function persistIfPossible() {
+    if (state.fileHandle && state.writable) {
+      await writeToHandle();
+    }
+  }
+
+  async function writeToHandle() {
+    try {
+      const writable = await state.fileHandle.createWritable();
+      await writable.write(JSON.stringify(state.bank, null, 2) + '\n');
+      await writable.close();
+      state.dirty = false;
+      setSaveIndicator('saved', 'Saved to questions.json ✓');
+    } catch (err) {
+      console.error(err);
+      setSaveIndicator('dirty', 'Save failed — see console');
+    }
+  }
+
+  function downloadJson() {
+    const blob = new Blob([JSON.stringify(state.bank, null, 2) + '\n'], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'questions.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    state.dirty = false;
+    setSaveIndicator('saved', 'Downloaded — replace assets/data/questions.json with this file');
+  }
+
+  // ---------- Wiring ----------
+
+  function wireToolbar() {
+    el('filterCategory').addEventListener('change', (e) => { state.filters.category = e.target.value; applyFilters(); });
+    el('filterStatus').addEventListener('change', (e) => { state.filters.status = e.target.value; applyFilters(); });
+    el('filterValues').addEventListener('change', (e) => { state.filters.values = e.target.value; applyFilters(); });
+    el('pageSize').addEventListener('change', (e) => { state.pageSize = parseInt(e.target.value, 10); state.page = 1; renderPage(); });
+    let searchTimer;
+    el('searchBox').addEventListener('input', (e) => {
+      clearTimeout(searchTimer);
+      const val = e.target.value;
+      searchTimer = setTimeout(() => { state.filters.search = val; applyFilters(); }, 180);
+    });
+    el('saveBtn').addEventListener('click', writeToHandle);
+    el('downloadBtn').addEventListener('click', downloadJson);
+  }
+
+  function init() {
+    const hasFsAccess = 'showOpenFilePicker' in window;
+    const isFileProtocol = location.protocol === 'file:';
+
+    if (isFileProtocol && hasFsAccess) {
+      el('fileProtocolWarning').classList.remove('hidden');
+      el('currentProtocol').textContent = location.href.split('/').slice(0, 3).join('/') + '/…';
+    }
+
+    el('modeNote').textContent = !hasFsAccess
+      ? 'This browser will use fallback mode: load the file, review it, then download the updated JSON and replace assets/data/questions.json manually.'
+      : isFileProtocol
+        ? 'This browser supports direct file saving, but only when served over http:// (see above) — not when opened as a local file.'
+        : 'This browser supports direct file saving. Click "Open questions.json…" and allow write access when prompted.';
+
+    el('openFsBtn').addEventListener('click', openViaFsAccess);
+    el('openFallbackBtn').addEventListener('click', openFallback);
+    el('copyCmdBtn').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(el('serveCmd').textContent);
+        el('copyCmdBtn').textContent = 'Copied ✓';
+        setTimeout(() => { el('copyCmdBtn').textContent = 'Copy'; }, 1500);
+      } catch (e) { /* clipboard access denied; user can select the text manually */ }
+    });
+    wireFileInput();
+    wireDropZone();
+    wireToolbar();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
