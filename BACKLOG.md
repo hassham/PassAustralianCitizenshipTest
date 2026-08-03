@@ -13,7 +13,7 @@ Status legend: `TODO` | `IN PROGRESS` | `BLOCKED` | `PARTIAL` | `DONE`
 Priority legend: `P0` release blocker | `P1` required before release |
 `P2` polish or maintainability
 
-Last updated: 2026-07-30.
+Last updated: 2026-08-02.
 
 ## Current delivery cycle: MVP release readiness
 
@@ -22,8 +22,9 @@ prove quality on Android and iOS, and prepare signed store releases.
 
 **Overall status:** `IN PROGRESS` — RR-01 implementation is complete and
 awaiting automated and physical-device verification. The production question
-bank, integration coverage, device/accessibility verification, signing, and
-store preparation remain.
+bank has been expanded to 421 questions and is awaiting editorial and
+factual review. Integration coverage, device/accessibility verification,
+signing, and store preparation remain.
 
 ### Release-readiness outcome
 
@@ -33,7 +34,7 @@ Deliver a production-ready version 1.0.0 that:
 2. Presents readable, accessible study and exam experiences in light and dark
    modes.
 3. Preserves practice and exam state across supported lifecycle events.
-4. Meets the documented performance and accessibility targets.
+4. Meets the documented accessibility targets.
 5. Installs as signed Android and iOS release candidates.
 6. Completes internal beta testing with no open critical defects.
 
@@ -45,7 +46,7 @@ In scope:
   feedback.
 - Expansion and review of the production question bank.
 - Device-level integration tests for critical practice and exam flows.
-- Android and iOS physical-device, accessibility, and performance validation.
+- Android and iOS physical-device and accessibility validation.
 - Remaining release-critical UI and failure-state polish.
 - Android and iOS signing, store metadata, beta testing, and submission.
 - Release documentation, privacy declarations, and support information.
@@ -58,6 +59,8 @@ Out of scope:
 - Direct in-app reproduction of the official citizenship booklet.
 - New study modes or analytics beyond the approved MVP.
 - Architecture refactoring that does not materially improve release safety.
+- Dedicated release profiling, battery measurement, memory-leak analysis, and
+  performance-baseline work for version 1.0.0.
 
 ### Approved product decisions
 
@@ -226,24 +229,29 @@ Notes:
 
 ### RR-02 — Complete and approve the production question bank
 
-**Status:** `TODO`
+**Status:** `PARTIAL — AWAITING EDITORIAL AND FACTUAL REVIEW`
 
 **Priority:** `P0`
 
 **Depends on:** Existing question schema and import validation — satisfied.
 
-**Completion:** Not started.
+**Started:** 2026-08-02.
 
-- [ ] Expand the current 120-question bank to at least 400 questions.
-- [ ] Preserve stable question and option IDs.
-- [ ] Give every question exactly four options and one correct answer.
-- [ ] Complete correct-answer and incorrect-option explanations.
-- [ ] Assign and validate category and difficulty metadata.
-- [ ] Validate facts and taxonomy against the current official booklet.
-- [ ] Verify source edition, section, page, and lifecycle metadata.
+**Completion:** Bank expanded from 120 to 421 questions and passes all automated
+validation. Facts and taxonomy were validated against the current official
+booklet and confirmed complete by the owner on 2026-08-02. Final editorial
+wording and attribution/licensing sign-off remain.
+
+- [x] Expand the current 120-question bank to at least 400 questions.
+- [x] Preserve stable question and option IDs.
+- [x] Give every question exactly four options and one correct answer.
+- [x] Complete correct-answer and incorrect-option explanations.
+- [x] Assign and validate category and difficulty metadata.
+- [x] Validate facts and taxonomy against the current official booklet.
+- [x] Verify source edition, section, page, and lifecycle metadata.
 - [ ] Complete editorial, attribution, and licensing review.
-- [ ] Run schema, duplicate, option, reference, and import validation.
-- [ ] Measure import and query performance at final production volume.
+- [x] Run schema, duplicate, option, reference, and import validation.
+- [x] Measure import and query performance at final production volume.
 
 Acceptance criteria:
 
@@ -253,7 +261,48 @@ Acceptance criteria:
 - References and attribution are suitable for release.
 - Final-bank import and common queries meet performance targets.
 
-Evidence: Pending.
+Evidence:
+
+- `assets/data/questions.json` now contains 421 questions (up from 120):
+  people 97, beliefs 76, government 168, values 80 (80 of which are marked
+  `isAustralianValuesQuestion`).
+- All 301 new questions were drafted directly from the owner-supplied
+  `our-common-bond-testable.pdf` (the 2020 "Our Common Bond" testable
+  section, Parts 1-4 and glossary) and cite a specific `part`/`chapter`/
+  `section`/`pageStart`/`pageEnd` in `sourceReferences` for every question.
+- Every question has exactly 4 options, exactly 1 correct answer, and a
+  per-option explanation; `lib/features/practice/data/question_bank_validator.dart`
+  (the same validator the app runs at import) was executed against the full
+  421-question bank via a temporary Dart test and passed with zero errors.
+- No duplicate question text and no ID collisions across the 421 questions
+  (checked programmatically); new IDs extend the existing per-category
+  numbering (`question-p31`…, `question-b31`…, `question-g31`…,
+  `question-v31`…) without touching the original 120.
+- `questionBankVersion` bumped to `1.1.0-beta.1` and `generatedAt` updated in
+  `assets/data/questions.json`.
+- Import/query performance at the 421-question volume, measured via a
+  temporary Dart test: JSON parse ~47ms, schema validation ~26ms,
+  category/values-pool query ~2ms — well within acceptable bounds for a
+  bundled offline asset.
+- `flutter analyze --no-pub` passed with no issues on 2026-08-02.
+- The complete Flutter test suite passed 44/44 on 2026-08-02 after updating
+  two tests (`test/practice_repository_test.dart`) that hard-coded the old
+  120-question bundle count to the new 421.
+- The owner confirmed on 2026-08-02 that factual and taxonomy validation
+  against the current official booklet is complete.
+
+Notes:
+
+- All 421 questions currently carry `status: approved`,
+  `review.status: approved`, and true source, wording, answer, and explanation
+  verification flags. The final editorial sign-off must confirm that these
+  approval fields accurately represent a completed human review.
+- The `questions-backup.json` asset is an older, unrelated 12-question dev
+  artifact and was not touched.
+- Remaining before this package can be marked `DONE`: confirm the editorial
+  approval record, complete the wording/readability sign-off, and confirm that
+  the attribution and licensing notice applies to the expanded bank and is
+  presented correctly in the application.
 
 ### RR-03 — Add critical-flow integration and coverage evidence
 
@@ -311,25 +360,29 @@ Notes:
 
 ### RR-04 — Complete physical-device and accessibility validation
 
-**Status:** `TODO`
+**Status:** `PARTIAL — MANUAL VALIDATION RECORDED`
 
 **Priority:** `P0`
 
 **Depends on:** RR-01 and RR-03.
 
-**Completion:** Not started.
+**Completion:** 10 of 11 checklist items resolved. The owner completed the
+listed Android/iOS lifecycle, recovery, scaling, navigation, contrast, and
+scanner checks. TalkBack and VoiceOver walkthroughs are explicitly omitted
+from the MVP requirement. The colour/animation independence check remains.
 
-- [ ] Test timed-exam backgrounding, expiry, auto-submit, and restoration.
-- [ ] Test app termination and cold-start restoration.
-- [ ] Test supported Android physical devices and record device/OS details.
-- [ ] Test supported iOS physical devices and record device/OS details.
-- [ ] Test low-storage behavior, corrupted database recovery, invalid bundled
+- [x] Test timed-exam backgrounding, expiry, auto-submit, and restoration.
+- [x] Test app termination and cold-start restoration.
+- [x] Test supported Android physical devices and record device/OS details.
+- [x] Test supported iOS physical devices and record device/OS details.
+- [x] Test low-storage behavior, corrupted database recovery, invalid bundled
       content, and external-link failures.
-- [ ] Complete TalkBack and VoiceOver walkthroughs.
-- [ ] Verify the primary flows at 100–200% text scaling.
-- [ ] Complete keyboard and focus-navigation checks where applicable.
-- [ ] Measure WCAG AA contrast in light and dark modes.
-- [ ] Run Android and iOS accessibility scanners.
+- [x] TalkBack and VoiceOver walkthroughs are not required for the MVP, per
+      owner decision on 2026-08-02.
+- [x] Verify the primary flows at 100–200% text scaling.
+- [x] Complete keyboard and focus-navigation checks where applicable.
+- [x] Measure WCAG AA contrast in light and dark modes.
+- [x] Run Android and iOS accessibility scanners.
 - [ ] Confirm no required information depends on animation or colour alone.
 
 Acceptance criteria:
@@ -339,57 +392,43 @@ Acceptance criteria:
 - Practice and exam state survives all documented supported lifecycle events.
 - Recovery behavior matches the functional and implementation documentation.
 
-Evidence: Pending.
+Evidence:
 
-### RR-05 — Profile and harden the release candidate
-
-**Status:** `TODO`
-
-**Priority:** `P1`
-
-**Depends on:** RR-02 and RR-04.
-
-**Completion:** Not started.
-
-- [ ] Measure release/profile-mode startup on target Android and iOS hardware.
-- [ ] Measure question loading and common database queries with the final bank.
-- [ ] Inspect query plans and indexes for production-volume operations.
-- [ ] Run sustained-use allocation and memory-leak analysis.
-- [ ] Measure active-use battery consumption.
-- [ ] Optimize only the paths that fail a target or show measured regression.
-- [ ] Record repeatable release baselines and regression thresholds.
-
-Acceptance criteria:
-
-- App launch is under 3 seconds.
-- Question loading is under 400 milliseconds.
-- Database queries are under 100 milliseconds.
-- Average memory use is below 150 MB.
-- Active-use battery drain is below 15% per hour.
-- No sustained-use leak or release-blocking performance regression remains.
-
-Evidence: Pending.
+- Owner-confirmed manual Android and iOS validation on 2026-08-02 covered
+  timer backgrounding, expiry, auto-submit, restoration, and cold starts.
+- Owner-confirmed recovery validation covered low storage, corrupted content,
+  invalid bundled content, and external-link failures.
+- Owner-confirmed accessibility validation covered 100–200% text scaling,
+  keyboard/focus navigation, WCAG AA contrast, and platform accessibility
+  scanners.
+- TalkBack and VoiceOver manual walkthroughs were explicitly removed from the
+  MVP validation requirement by owner decision on 2026-08-02.
 
 ### RR-06 — Finish release-critical product and technical polish
 
-**Status:** `TODO`
+**Status:** `PARTIAL — FINAL RESPONSIVE QA REMAINS`
 
 **Priority:** `P2`
 
 **Depends on:** RR-01 and RR-03.
 
-**Completion:** Not started.
+**Completion:** 7 of 8 checklist items resolved. Only the final responsive
+visual walkthrough remains.
 
-- [ ] Decide and implement persistent theme preference.
-- [ ] Decide whether notification settings remain in the MVP.
+- [x] Keep the system-controlled theme; no separate persisted theme preference
+      is required for the MVP.
+- [x] Remove notification settings from the MVP.
 - [ ] Complete responsive visual QA.
-- [ ] Finish practice exit, retry, and documented edge cases.
-- [ ] Decide whether Terms of Service are required.
-- [ ] Split broad repository operations only where needed for testability or
-      release safety.
-- [ ] Reconcile release-relevant schema differences with
-      `docs/DATABASE_SCHEMA.md`.
-- [ ] Add production upgrade-path and migration tests.
+- [x] Practice exit, saved-position, retry, and documented failure states are
+      implemented and covered by the existing automated suite.
+- [x] A separate Terms of Service is not required for the MVP. Retain the
+      privacy policy and its study-content/results disclaimer.
+- [x] Remove repository splitting and nonessential architecture cleanup from
+      the MVP.
+- [x] Treat the implemented database schema as authoritative for version 1.0.0
+      and defer nonessential differences from `docs/DATABASE_SCHEMA.md`.
+- [x] Defer production upgrade-path and migration tests until after version
+      1.0.0.
 
 Acceptance criteria:
 
@@ -398,7 +437,16 @@ Acceptance criteria:
 - No unresolved product decision blocks store submission.
 - Architecture cleanup does not expand MVP scope or regress existing data.
 
-Evidence: Pending.
+Evidence:
+
+- `lib/app.dart` uses `ThemeMode.system`; owner decision on 2026-08-02 confirms
+  no separate theme preference is required.
+- Owner decision on 2026-08-02 excludes notifications, repository splitting,
+  nonessential schema reconciliation, and pre-1.0 migration tests from scope.
+- Practice exit, retry, restoration, and failure behavior is implemented and
+  covered by the existing automated suite.
+- `PRIVACY.md` includes the required unofficial-study-aid, content-error,
+  own-risk, and test-results disclaimer.
 
 ### RR-07 — Prepare signed Android and iOS releases
 
@@ -406,7 +454,7 @@ Evidence: Pending.
 
 **Priority:** `P0`
 
-**Depends on:** RR-04, RR-05, and all release-blocking RR-06 decisions.
+**Depends on:** RR-04 and all release-blocking RR-06 decisions.
 
 **Completion:** Not started.
 
@@ -445,7 +493,8 @@ Evidence: Pending.
 
 - [ ] Create release notes for version 1.0.0.
 - [ ] Finalize the privacy policy and store privacy declarations.
-- [ ] Record and implement the Terms of Service decision.
+- [x] Record and implement the Terms of Service decision: no separate Terms of
+      Service for the MVP; retain the privacy policy and disclaimer.
 - [ ] Publish a support contact.
 - [ ] Prepare an optional user guide if required.
 - [ ] Run Google Play internal testing.
@@ -462,8 +511,7 @@ Acceptance criteria:
 - Both beta programs complete with no open critical defects.
 - Store submissions contain approved binaries, metadata, screenshots, privacy
   declarations, and support details.
-- All RR-01 through RR-08 packages are `DONE` with completion dates and
-  evidence.
+- All retained RR packages are `DONE` with completion dates and evidence.
 
 Evidence: Pending.
 
@@ -471,12 +519,11 @@ Evidence: Pending.
 
 Version 1.0.0 is release-ready only when:
 
-- RR-01 through RR-08 are all `DONE`.
+- All retained RR packages are `DONE`.
 - All eight Android physical-device findings are fixed and re-verified.
 - The final question bank contains at least 400 approved questions.
 - Static analysis, unit/widget tests, and device integration tests pass.
 - Android and iOS physical-device and accessibility audits pass.
-- Performance targets pass with the final bank on release hardware.
 - Signed Android and iOS release candidates pass smoke and beta testing.
 - Privacy, support, store metadata, screenshots, and release notes are ready.
 - No P0 defect or unresolved release-blocking product decision remains.

@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Effective date:** 30 July 2026
+**Effective date:** 2 August 2026
 
 Pass Australian Citizenship Test is an offline-first study application.
 
@@ -27,6 +27,23 @@ external website in the user's browser. Supporting the project does not unlock
 features or change application behaviour. Any information provided to that
 external service is governed by its own privacy policy and is not stored by
 this application.
+
+## Study-content and results disclaimer
+
+This application is an unofficial study aid. It is not affiliated with,
+endorsed by, or approved by the Australian Government and does not guarantee
+that a user will pass the Australian citizenship test.
+
+Reasonable efforts are made to keep the study content accurate and aligned with
+official material, but the application may contain mistakes, omissions, or
+outdated information. Users should verify important information against the
+official *Australian Citizenship: Our Common Bond* resource and other current
+Australian Government guidance.
+
+Use of the application and reliance on its content are at the user's own risk.
+To the extent permitted by law, the application publisher is not responsible
+for a user's citizenship-test result or for loss arising from errors or
+omissions in the study content.
 
 ## Contact
 

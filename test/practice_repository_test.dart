@@ -24,7 +24,7 @@ void main() {
     final questions = await repository.questions();
 
     expect(categories, hasLength(4));
-    expect(questions, hasLength(120));
+    expect(questions, hasLength(421));
     expect(questions.first.options, hasLength(4));
     expect(
       questions.first.options.every((option) => option.explanation.isNotEmpty),
@@ -94,7 +94,7 @@ void main() {
 
   test('builds Home dashboard counts and active-session state', () async {
     final initial = await repository.homeDashboard();
-    expect(initial.totalQuestions, 120);
+    expect(initial.totalQuestions, 421);
     expect(initial.starredQuestions, 0);
     expect(initial.hasActivePractice, isFalse);
     expect(initial.hasActiveExam, isFalse);
