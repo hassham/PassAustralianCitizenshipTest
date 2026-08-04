@@ -494,7 +494,7 @@ Evidence:
 
 ### RR-07 — Prepare signed Android and iOS releases
 
-**Status:** `IN PROGRESS`
+**Status:** `PARTIAL — ANDROID DONE, AWAITING IOS BUILD PATH`
 
 **Priority:** `P0`
 
@@ -502,11 +502,19 @@ Evidence:
 
 **Started:** 2026-08-03.
 
-**Completion:** The application/bundle ID is finalized and applied across
-Android, iOS, and macOS. Android release signing (keystore generation) is
-in progress with the owner. Everything else in this package remains.
+**Completion:** The Android side of this package is done: signing is
+configured and verified, and a signed release build has been installed and
+smoke-tested on a physical device with no crashes and correct behaviour.
+Everything on the iOS side, and store metadata, remain.
 
-- [ ] Configure Android release signing.
+- [x] Configure Android release signing. Owner generated
+      `upload-keystore.jks` via `keytool` on 2026-08-04.
+      `android/key.properties` (gitignored) holds the store/key passwords
+      and alias; `android/app/build.gradle.kts` was updated with a
+      `signingConfigs.release` block read from that file, falling back to
+      debug signing if the file is absent (e.g. a fresh checkout without the
+      release key) so `flutter run --release` keeps working for anyone
+      without it.
 - [x] Validate Android application ID, SDK settings, permissions, icons, and
       production build configuration. `applicationId`/`namespace` changed
       from the placeholder-adjacent `au.com.passcitizenship.*` (a domain the
@@ -515,7 +523,14 @@ in progress with the owner. Everything else in this package remains.
       and launcher icons were reviewed and are already production-ready
       (custom branded icon, no unnecessary permissions, Flutter-managed SDK
       versions).
-- [ ] Build, install, and smoke-test a signed Android release candidate.
+- [x] Build, install, and smoke-test a signed Android release candidate.
+      `app-release.apk` installed cleanly via `adb install` on a physical
+      Redmi Note 9 Pro (Android 10, API 29) on 2026-08-04. App launched
+      without crashing, Home dashboard rendered correctly with real bundled
+      data, Practice showed "Question 1 of 421" confirming the full
+      production question bank imported correctly, and answering a question
+      showed the correct theme-aware feedback panel with explanation and
+      source citation. No FATAL/AndroidRuntime exceptions in logcat.
 - [ ] Configure the iOS bundle ID, certificates, provisioning, deployment
       target, permissions, icons, and production build on macOS. Bundle ID
       renamed to match Android (`com.hashamahmad.passCitizenshipTest`);
@@ -548,14 +563,35 @@ Evidence:
   `com.hashamahmad.pass_citizenship_test`.
 - `flutter analyze --no-pub` passed with no issues and the complete test
   suite passed 45/45 after the rename, on 2026-08-03.
+- `android/key.properties` (gitignored, not committed) and a
+  `signingConfigs.release` block in `android/app/build.gradle.kts`, added
+  2026-08-04.
+- `flutter build apk --release` produced
+  `build/app/outputs/flutter-apk/app-release.apk` (54.1MB) and
+  `flutter build appbundle --release` produced
+  `build/app/outputs/bundle/release/app-release.aab` (43.8MB) on 2026-08-04.
+- `apksigner verify --print-certs app-release.apk` confirmed the APK is
+  signed with the owner's release certificate (`CN=Hasham Ahmad, OU=ASD,
+  O=Appitome Technologies, L=Sydney, ST=NSW, C=AU`), not the Flutter debug
+  certificate.
 
 Notes:
 
-- The Android release keystore has not been generated yet; the owner does
-  not have a Mac available for the iOS side, so certificates/provisioning
-  and the macOS build are blocked on choosing and setting up a cloud build
-  path (Codemagic or GitHub Actions `macos-latest`) before iOS work can
-  proceed.
+- Passwords in `android/key.properties` were entered by the owner directly
+  into that gitignored file and were never shared in chat.
+- Building a release variant requires a real `flutter pub get` pass, not
+  `--no-pub`: `--no-pub` skips the release-mode plugin-registrant
+  regeneration that excludes dev-only packages (e.g. `integration_test`)
+  from the generated Android registrant, which otherwise leaves a stale,
+  debug-mode registrant that references classes excluded from the release
+  dependency graph and fails `compileReleaseJavaWithJavac`. This is a
+  genuine Flutter tooling interaction (release-mode dev-dependency
+  filtering only runs during `pub get`), not a project misconfiguration;
+  worth remembering for any future release build, including in CI.
+- The owner does not have a Mac available for the iOS side, so
+  certificates/provisioning and the macOS build are blocked on choosing and
+  setting up a cloud build path (Codemagic or GitHub Actions
+  `macos-latest`) before iOS work can proceed.
 
 ### RR-08 — Complete release documentation, beta testing, and submission
 
