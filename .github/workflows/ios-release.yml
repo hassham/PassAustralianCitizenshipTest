@@ -47,10 +47,29 @@ jobs:
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "$IOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
+          # Apple's intermediate CA certificates must be present so the
+          # imported distribution certificate resolves to a trusted chain;
+          # without these, `security find-identity` reports zero valid
+          # identities even though the certificate itself is fine. Import
+          # every current WWDR generation to cover whichever one issued it.
+          for cert_url in \
+            "https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer" \
+            "https://www.apple.com/certificateauthority/AppleWWDRCAG4.cer" \
+            "https://www.apple.com/certificateauthority/AppleWWDRCAG5.cer" \
+            "https://www.apple.com/certificateauthority/AppleWWDRCAG6.cer" \
+            "https://www.apple.com/certificateauthority/AppleRootCA-G2.cer"; do
+            name=$(basename "$cert_url")
+            curl -fsSL "$cert_url" -o "$RUNNER_TEMP/$name"
+            security import "$RUNNER_TEMP/$name" -k "$KEYCHAIN_PATH" -A || true
+          done
+
           security import "$CERT_PATH" -P "$IOS_P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$IOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
           security list-keychain -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | sed 's/"//g')
+
+          echo "--- Identities visible after import ---"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
 
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp "$PROFILE_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/
