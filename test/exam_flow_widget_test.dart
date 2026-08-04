@@ -72,7 +72,9 @@ void main() {
       );
 
       // Exercise the question navigator bottom sheet.
-      await tester.tap(find.text('Review questions (1/$questionCount answered)'));
+      await tester.tap(
+        find.text('Review questions (1/$questionCount answered)'),
+      );
       await _settle(tester);
       expect(find.text('Review questions'), findsWidgets);
       await tester.tap(find.text('1'), warnIfMissed: false);
@@ -110,7 +112,10 @@ void main() {
         }
       }
 
-      expect(container.read(examControllerProvider).currentIndex, questionCount - 1);
+      expect(
+        container.read(examControllerProvider).currentIndex,
+        questionCount - 1,
+      );
       expect(find.text('Review & submit'), findsOneWidget);
 
       await tester.tap(find.text('Review & submit'));
