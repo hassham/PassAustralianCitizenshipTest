@@ -494,7 +494,7 @@ Evidence:
 
 ### RR-07 — Prepare signed Android and iOS releases
 
-**Status:** `PARTIAL — ANDROID DONE, AWAITING IOS BUILD PATH`
+**Status:** `PARTIAL — BOTH PLATFORMS BUILD AND SIGN; DEVICE SMOKE-TEST AND STORE METADATA REMAIN`
 
 **Priority:** `P0`
 
@@ -502,10 +502,11 @@ Evidence:
 
 **Started:** 2026-08-03.
 
-**Completion:** The Android side of this package is done: signing is
-configured and verified, and a signed release build has been installed and
-smoke-tested on a physical device with no crashes and correct behaviour.
-Everything on the iOS side, and store metadata, remain.
+**Completion:** Both platforms now produce signed release builds. Android's
+build has been installed and smoke-tested on a physical device. iOS builds
+successfully via a new GitHub Actions workflow (no Mac required) but has
+not yet been installed/smoke-tested on a physical iPhone via TestFlight.
+Store metadata for both platforms remains.
 
 - [x] Configure Android release signing. Owner generated
       `upload-keystore.jks` via `keytool` on 2026-08-04.
@@ -531,13 +532,18 @@ Everything on the iOS side, and store metadata, remain.
       production question bank imported correctly, and answering a question
       showed the correct theme-aware feedback panel with explanation and
       source citation. No FATAL/AndroidRuntime exceptions in logcat.
-- [ ] Configure the iOS bundle ID, certificates, provisioning, deployment
+- [x] Configure the iOS bundle ID, certificates, provisioning, deployment
       target, permissions, icons, and production build on macOS. Bundle ID
-      renamed to match Android (`com.hashamahmad.passCitizenshipTest`);
-      certificates, provisioning, and the macOS build itself still need a
-      Mac-equivalent build environment (no Mac available — owner is
-      evaluating Codemagic vs. a GitHub Actions `macos-latest` runner).
-- [ ] Build, install, and smoke-test a signed iOS release candidate.
+      renamed to match Android (`com.hashamahmad.passCitizenshipTest`).
+      With no Mac available, the owner enrolled Appitome Technologies Pty
+      Ltd in the Apple Developer Program, generated an Apple Distribution
+      certificate and an App Store provisioning profile via the Apple
+      Developer web portal (certificate CSR generated locally with
+      OpenSSL, no Mac needed), and a GitHub Actions `macos-latest` workflow
+      was built to consume them — see Evidence.
+- [ ] Build, install, and smoke-test a signed iOS release candidate. Build
+      is done and verified (see Evidence); installing via TestFlight and
+      smoke-testing on a physical iPhone remain.
 - [ ] Prepare Google Play and App Store descriptions, screenshots, categories,
       pricing, declarations, and privacy metadata.
 - [ ] Confirm every feature is described as free and no entitlement or billing
@@ -574,6 +580,32 @@ Evidence:
   signed with the owner's release certificate (`CN=Hasham Ahmad, OU=ASD,
   O=Appitome Technologies, L=Sydney, ST=NSW, C=AU`), not the Flutter debug
   certificate.
+- Apple Developer Program enrollment (Appitome Technologies Pty Ltd, Team
+  ID `GA9WWQPRAU`) confirmed active 2026-08-04. App ID
+  `com.hashamahmad.passCitizenshipTest` registered with no extra
+  capabilities (the app needs none). An Apple Distribution certificate and
+  an "App Store" provisioning profile ("Pass Citizenship Test App Store")
+  were created via the Apple Developer web portal; the certificate's CSR
+  and private key were generated locally with OpenSSL, so no Mac was
+  required at any point in this process.
+- `.github/workflows/ios-release.yml` (new, `workflow_dispatch`-triggered,
+  `runs-on: macos-latest`) imports the certificate and provisioning
+  profile from 5 repository secrets into a temporary keychain — including
+  explicitly importing Apple's WWDR intermediate CA certificates, without
+  which `security find-identity` reports zero valid identities even with
+  a correctly imported certificate — then runs `flutter build ipa
+  --release` against `ios/ExportOptions.plist` and uploads the signed
+  `.ipa` as a workflow artifact.
+- `ios/Runner.xcodeproj/project.pbxproj`'s Release configuration was set to
+  manual signing (`CODE_SIGN_STYLE`, `DEVELOPMENT_TEAM`,
+  `CODE_SIGN_IDENTITY`, `PROVISIONING_PROFILE_SPECIFIER`): the
+  `ExportOptions.plist` alone only controls the export step, not the
+  earlier `xcodebuild archive` step, which reads signing configuration
+  from the Xcode project itself and was still on the `flutter create`
+  default of Automatic signing with no team.
+- Workflow run `30959271320` completed successfully on 2026-08-04 (5m9s),
+  producing the `pass-citizenship-test-ipa` artifact — confirmed via
+  `gh run view`.
 
 Notes:
 
@@ -588,10 +620,26 @@ Notes:
   genuine Flutter tooling interaction (release-mode dev-dependency
   filtering only runs during `pub get`), not a project misconfiguration;
   worth remembering for any future release build, including in CI.
-- The owner does not have a Mac available for the iOS side, so
-  certificates/provisioning and the macOS build are blocked on choosing and
-  setting up a cloud build path (Codemagic or GitHub Actions
-  `macos-latest`) before iOS work can proceed.
+- The owner does not have a Mac; the entire iOS signing setup (CSR,
+  certificate, provisioning profile, and build) was completed without one,
+  using the Apple Developer web portal plus a GitHub Actions
+  `macos-latest` runner for the actual build.
+- `.p12`/provisioning-profile secrets were base64-encoded locally and
+  pasted directly into GitHub repository secrets by the owner; the p12
+  export password and CI keychain password were never shared in chat.
+- The `ios-release.yml` workflow currently only produces a downloadable
+  `.ipa` artifact; it does not yet upload to TestFlight automatically.
+  Automating that would need an App Store Connect API key added as
+  further secrets — not yet set up, and not required to complete this
+  checklist item (manual upload via Transporter or a follow-up workflow
+  step both remain options).
+- Two CI fixes were required before the iOS build succeeded and are worth
+  remembering for any future signing changes: (1) a custom CI keychain
+  needs Apple's WWDR intermediate certificates imported explicitly, or
+  `security find-identity` reports no valid identities even with a
+  correct certificate; (2) `ExportOptions.plist` only configures the
+  export step — the Xcode project's own Release build settings must be
+  switched to manual signing for the archive step to succeed.
 
 ### RR-08 — Complete release documentation, beta testing, and submission
 
