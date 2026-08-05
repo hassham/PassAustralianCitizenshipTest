@@ -13,17 +13,17 @@ Status legend: `TODO` | `IN PROGRESS` | `BLOCKED` | `PARTIAL` | `DONE`
 Priority legend: `P0` release blocker | `P1` required before release |
 `P2` polish or maintainability
 
-Last updated: 2026-08-03.
+Last updated: 2026-08-05.
 
 ## Current delivery cycle: MVP release readiness
 
 **Theme:** Complete and validate the content, resolve physical-device feedback,
 prove quality on Android and iOS, and prepare signed store releases.
 
-**Overall status:** `IN PROGRESS` — RR-01 and RR-02 are `DONE`. RR-03's
-automated coverage work is complete; it awaits physical Android/iOS
-execution of the integration suite. Device/accessibility verification,
-signing, and store preparation remain.
+**Overall status:** `IN PROGRESS` — RR-01, RR-02, RR-03, and RR-04 are
+`DONE`. Both Android and iOS build and sign successfully. Final responsive
+QA (RR-06), the iOS TestFlight/physical-device smoke test, store
+preparation (RR-07), and all of RR-08 remain.
 
 ### Release-readiness outcome
 
@@ -92,12 +92,11 @@ Out of scope:
 
 ## Current focus
 
-RR-01 and RR-02 are `DONE`. RR-03's automated work (corrupted-database
-recovery coverage, and a large coverage push to 72.51% hand-written /
-54.08% raw) is complete; it now only needs physical Android/iOS execution
-of the integration suite. RR-04's animation/colour-independence check, and
-RR-06's final responsive QA, are the next smallest open items after that;
-RR-07 and RR-08 have not been started.
+RR-01, RR-02, RR-03, and RR-04 are `DONE`. RR-07 is in progress: both
+platforms build and sign successfully; remaining work is the iOS
+TestFlight upload/physical-device smoke test and store metadata for both
+platforms. RR-06's final responsive QA is the smallest open item; RR-08
+has not been started.
 
 ## Ordered release-readiness work packages
 
@@ -320,19 +319,22 @@ Notes:
 
 ### RR-03 — Add critical-flow integration and coverage evidence
 
-**Status:** `PARTIAL — AWAITING ANDROID/IOS DEVICE EXECUTION`
+**Status:** `DONE`
 
 **Priority:** `P0`
 
 **Depends on:** RR-01 for final UI expectations; RR-02 for production-volume
 coverage — both satisfied (421 approved questions).
 
-**Completion:** 10 of 10 checklist items complete. All automated coverage
-work is done at production question-bank volume; the remaining gap is
-running the existing device-level `integration_test` suite on physical
-Android and iOS hardware (it has so far only been run on Windows desktop and
-in this environment, matching the same device dependency already tracked for
-RR-01 and RR-04).
+**Completion:** 2026-08-05. All 10 checklist items complete and all
+automated coverage work is done at production question-bank volume. Per
+owner decision on 2026-08-05, this package is closed without executing
+`integration_test/critical_flows_test.dart` on physical Android or iOS
+hardware — it has only been run on Windows desktop and in the development
+environment. This is a deliberate, explicit exception to this backlog's
+own workflow rule 5 ("Physical-device fixes must be re-tested on a
+physical device before they are marked complete"); it is not a claim that
+device execution happened.
 
 - [x] Add device-level integration coverage for a complete practice session.
 - [x] Cover timed and untimed mock exams.
@@ -397,23 +399,24 @@ Notes:
   `home_screen.dart` (40.8%), `settings_screen.dart` (54.9%), and
   `app_database.dart` (24.6%, hand-written DB helper code) — a further
   session of similar scope to this one.
-- The integration suite must still be executed on supported Android and iOS
-  physical devices; this is the only remaining item before RR-03 can be
-  marked `DONE`.
+- The integration suite has not been executed on physical Android or iOS
+  hardware. Per owner decision on 2026-08-05, this is waived rather than
+  outstanding — see Completion above.
 - Coverage is recorded but remains below the 80% project target.
 
 ### RR-04 — Complete physical-device and accessibility validation
 
-**Status:** `PARTIAL — MANUAL VALIDATION RECORDED`
+**Status:** `DONE`
 
 **Priority:** `P0`
 
 **Depends on:** RR-01 and RR-03.
 
-**Completion:** 10 of 11 checklist items resolved. The owner completed the
-listed Android/iOS lifecycle, recovery, scaling, navigation, contrast, and
-scanner checks. TalkBack and VoiceOver walkthroughs are explicitly omitted
-from the MVP requirement. The colour/animation independence check remains.
+**Completion:** 2026-08-05. All 11 checklist items resolved. The owner
+completed the listed Android/iOS lifecycle, recovery, scaling, navigation,
+contrast, and scanner checks. TalkBack and VoiceOver walkthroughs are
+explicitly omitted from the MVP requirement. The colour/animation
+independence audit found and fixed one real issue in `practice_screen.dart`.
 
 - [x] Test timed-exam backgrounding, expiry, auto-submit, and restoration.
 - [x] Test app termination and cold-start restoration.
@@ -427,7 +430,7 @@ from the MVP requirement. The colour/animation independence check remains.
 - [x] Complete keyboard and focus-navigation checks where applicable.
 - [x] Measure WCAG AA contrast in light and dark modes.
 - [x] Run Android and iOS accessibility scanners.
-- [ ] Confirm no required information depends on animation or colour alone.
+- [x] Confirm no required information depends on animation or colour alone.
 
 Acceptance criteria:
 
@@ -447,6 +450,25 @@ Evidence:
   scanners.
 - TalkBack and VoiceOver manual walkthroughs were explicitly removed from the
   MVP validation requirement by owner decision on 2026-08-02.
+- A full audit of every screen under `lib/features/*/presentation/` and
+  `lib/shared/presentation/` for WCAG 1.4.1 (Use of Color) was completed
+  2026-08-05: every color-coded state found (correct/incorrect, pass/fail,
+  selected/starred, category performance bands, etc.) is paired with a
+  redundant icon or text label, with one exception. A repo-wide search for
+  `AnimationController`/`AnimatedContainer`/`TweenAnimationBuilder`/etc.
+  found no bespoke meaning-carrying animations (only default Flutter
+  progress indicators and page transitions), so there was nothing to fix
+  on the animation side.
+- The one exception found: `lib/features/practice/presentation/practice_screen.dart`'s
+  answer-option list distinguished the correct option and the user's wrong
+  pick from other options using background/border color alone, with no
+  icon (unlike the equivalent exam-review and exam-history-detail screens,
+  which already pair color with a check/cross icon per option). Fixed by
+  adding the same `check_circle`/`cancel`/`radio_button_unchecked` icon
+  pattern to each option once answered, and updating the option's
+  `Semantics` label to state correctness explicitly for screen readers.
+- `flutter analyze --no-pub` passed with no issues and the complete test
+  suite passed 45/45 after the fix, on 2026-08-05.
 
 ### RR-06 — Finish release-critical product and technical polish
 

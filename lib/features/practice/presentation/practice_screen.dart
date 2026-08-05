@@ -217,11 +217,18 @@ class PracticeScreen extends ConsumerWidget {
                           answered &&
                           index == state.selectedIndex &&
                           index != question.correctIndex;
+                      final optionStateLabel = !answered
+                          ? ''
+                          : isCorrect
+                          ? ', correct answer'
+                          : isWrongSelection
+                          ? ', your answer, incorrect'
+                          : '';
                       return Semantics(
                         button: true,
                         selected: index == state.selectedIndex,
                         label:
-                            'Answer ${index + 1}: ${question.options[index].text}',
+                            'Answer ${index + 1}: ${question.options[index].text}$optionStateLabel',
                         child: OutlinedButton(
                           onPressed: answered
                               ? null
@@ -271,7 +278,24 @@ class PracticeScreen extends ConsumerWidget {
                                   : 1,
                             ),
                           ),
-                          child: Text(question.options[index].text),
+                          child: Row(
+                            children: [
+                              if (answered) ...[
+                                Icon(
+                                  isCorrect
+                                      ? Icons.check_circle
+                                      : isWrongSelection
+                                      ? Icons.cancel
+                                      : Icons.radio_button_unchecked,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 10),
+                              ],
+                              Expanded(
+                                child: Text(question.options[index].text),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
