@@ -95,8 +95,16 @@ jobs:
           set -euo pipefail
 
           mkdir -p ~/private_keys
-          echo -n "$APP_STORE_CONNECT_KEY_BASE64" | base64 --decode \
-            -o ~/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+          KEY_PATH=~/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+          echo -n "$APP_STORE_CONNECT_KEY_BASE64" | base64 --decode -o "$KEY_PATH"
+
+          # Diagnostic only: confirms the decode produced a real PEM private
+          # key without ever printing the key material itself. A correctly
+          # decoded key is a few hundred bytes and starts with the standard
+          # PEM header; if this doesn't match, the secret most likely holds
+          # the raw .p8 content instead of its base64 encoding.
+          echo "Decoded key file size: $(wc -c < "$KEY_PATH") bytes"
+          echo "Decoded key first line: $(head -n 1 "$KEY_PATH")"
 
           IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -n 1)
           echo "Uploading $IPA_PATH to TestFlight..."
