@@ -20,10 +20,10 @@ Last updated: 2026-08-06.
 **Theme:** Complete and validate the content, resolve physical-device feedback,
 prove quality on Android and iOS, and prepare signed store releases.
 
-**Overall status:** `IN PROGRESS` — RR-01, RR-02, RR-03, and RR-04 are
-`DONE`. Both Android and iOS build, sign, install, and pass their physical-
-device smoke tests. Final responsive QA (RR-06), store metadata
-(RR-07), and all of RR-08 remain.
+**Overall status:** `IN PROGRESS` — RR-01 through RR-06 are `DONE`. Both
+Android and iOS build, sign, install, and pass their physical-device
+smoke tests, and responsive visual QA is complete. Store metadata
+(RR-07) and all of RR-08 remain.
 
 ### Release-readiness outcome
 
@@ -92,11 +92,10 @@ Out of scope:
 
 ## Current focus
 
-RR-01, RR-02, RR-03, and RR-04 are `DONE`. RR-07 is in progress: both
-platforms build, sign, install, and pass their physical-device smoke
-tests; the only remaining work is store metadata for both platforms.
-RR-06's final responsive QA is the smallest open item; RR-08 has not been
-started.
+RR-01 through RR-06 are `DONE`. RR-07 is in progress: both platforms
+build, sign, install, and pass their physical-device smoke tests; the
+only remaining work is store metadata for both platforms. RR-08 has not
+been started.
 
 ## Ordered release-readiness work packages
 
@@ -472,19 +471,18 @@ Evidence:
 
 ### RR-06 — Finish release-critical product and technical polish
 
-**Status:** `PARTIAL — FINAL RESPONSIVE QA REMAINS`
+**Status:** `DONE`
 
 **Priority:** `P2`
 
 **Depends on:** RR-01 and RR-03.
 
-**Completion:** 7 of 8 checklist items resolved. Only the final responsive
-visual walkthrough remains.
+**Completion:** 2026-08-06. All 8 checklist items resolved.
 
 - [x] Keep the system-controlled theme; no separate persisted theme preference
       is required for the MVP.
 - [x] Remove notification settings from the MVP.
-- [ ] Complete responsive visual QA.
+- [x] Complete responsive visual QA.
 - [x] Practice exit, saved-position, retry, and documented failure states are
       implemented and covered by the existing automated suite.
 - [x] A separate Terms of Service is not required for the MVP. Retain the
@@ -513,6 +511,15 @@ Evidence:
   covered by the existing automated suite.
 - `PRIVACY.md` includes the required unofficial-study-aid, content-error,
   own-risk, and test-results disclaimer.
+- Responsive visual QA was completed 2026-08-06 by running the app via
+  `flutter run -d windows` and resizing the window across ~360px (small
+  phone), ~430px (large phone, matching the physical Android/iOS devices
+  already smoke-tested), and ~800px+ (tablet-width) breakpoints. Every
+  primary screen (Home, Practice, Practice results, Exams, Exam session,
+  Exam review, Exam history and detail, Progress, Starred, Settings) was
+  checked for text truncation/overflow, clipped or overlapping controls,
+  and the answer-feedback panel's longer explanation/citation text
+  reflowing correctly. No issues found.
 
 ### RR-07 — Prepare signed Android and iOS releases
 
