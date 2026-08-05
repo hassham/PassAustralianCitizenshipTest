@@ -13,7 +13,7 @@ Status legend: `TODO` | `IN PROGRESS` | `BLOCKED` | `PARTIAL` | `DONE`
 Priority legend: `P0` release blocker | `P1` required before release |
 `P2` polish or maintainability
 
-Last updated: 2026-08-05.
+Last updated: 2026-08-06.
 
 ## Current delivery cycle: MVP release readiness
 
@@ -21,9 +21,9 @@ Last updated: 2026-08-05.
 prove quality on Android and iOS, and prepare signed store releases.
 
 **Overall status:** `IN PROGRESS` — RR-01, RR-02, RR-03, and RR-04 are
-`DONE`. Both Android and iOS build and sign successfully. Final responsive
-QA (RR-06), the iOS TestFlight/physical-device smoke test, store
-preparation (RR-07), and all of RR-08 remain.
+`DONE`. Both Android and iOS build, sign, install, and pass their physical-
+device smoke tests. Final responsive QA (RR-06), store metadata
+(RR-07), and all of RR-08 remain.
 
 ### Release-readiness outcome
 
@@ -93,10 +93,10 @@ Out of scope:
 ## Current focus
 
 RR-01, RR-02, RR-03, and RR-04 are `DONE`. RR-07 is in progress: both
-platforms build and sign successfully; remaining work is the iOS
-TestFlight upload/physical-device smoke test and store metadata for both
-platforms. RR-06's final responsive QA is the smallest open item; RR-08
-has not been started.
+platforms build, sign, install, and pass their physical-device smoke
+tests; the only remaining work is store metadata for both platforms.
+RR-06's final responsive QA is the smallest open item; RR-08 has not been
+started.
 
 ## Ordered release-readiness work packages
 
@@ -516,7 +516,7 @@ Evidence:
 
 ### RR-07 — Prepare signed Android and iOS releases
 
-**Status:** `PARTIAL — BOTH PLATFORMS BUILD AND SIGN; DEVICE SMOKE-TEST AND STORE METADATA REMAIN`
+**Status:** `PARTIAL — BOTH PLATFORMS BUILD, SIGN, INSTALL, AND SMOKE-TEST; STORE METADATA REMAINS`
 
 **Priority:** `P0`
 
@@ -524,11 +524,13 @@ Evidence:
 
 **Started:** 2026-08-03.
 
-**Completion:** Both platforms now produce signed release builds. Android's
-build has been installed and smoke-tested on a physical device. iOS builds
-successfully via a new GitHub Actions workflow (no Mac required) but has
-not yet been installed/smoke-tested on a physical iPhone via TestFlight.
-Store metadata for both platforms remains.
+**Completion:** Both platforms now produce signed release builds and have
+been installed and smoke-tested on physical devices. Android was
+installed via `adb` on a physical Redmi Note 9 Pro; iOS builds, signs,
+and uploads to TestFlight automatically via GitHub Actions (no Mac
+required) and was installed via TestFlight on a physical iPhone and
+smoke-tested by the owner on 2026-08-06. Only store metadata for both
+platforms remains.
 
 - [x] Configure Android release signing. Owner generated
       `upload-keystore.jks` via `keytool` on 2026-08-04.
@@ -563,9 +565,10 @@ Store metadata for both platforms remains.
       Developer web portal (certificate CSR generated locally with
       OpenSSL, no Mac needed), and a GitHub Actions `macos-latest` workflow
       was built to consume them — see Evidence.
-- [ ] Build, install, and smoke-test a signed iOS release candidate. Build
-      is done and verified (see Evidence); installing via TestFlight and
-      smoke-testing on a physical iPhone remain.
+- [x] Build, install, and smoke-test a signed iOS release candidate.
+      Built, signed, and uploaded via GitHub Actions, installed via
+      TestFlight on a physical iPhone, and smoke-tested by the owner on
+      2026-08-06 (see Evidence).
 - [ ] Prepare Google Play and App Store descriptions, screenshots, categories,
       pricing, declarations, and privacy metadata.
 - [ ] Confirm every feature is described as free and no entitlement or billing
@@ -628,6 +631,40 @@ Evidence:
 - Workflow run `30959271320` completed successfully on 2026-08-04 (5m9s),
   producing the `pass-citizenship-test-ipa` artifact — confirmed via
   `gh run view`.
+- Automated TestFlight upload was added to `ios-release.yml`: an App Store
+  Connect API key (key ID, issuer ID, and the `.p8` key itself,
+  base64-encoded) was generated via the Apple Developer web portal and
+  stored as three further repository secrets, and a final workflow step
+  decodes the key and runs `xcrun altool --upload-app` against the built
+  `.ipa`.
+- Three issues were found and fixed before the upload succeeded: (1) the
+  `APP_STORE_CONNECT_KEY_BASE64` secret was corrupted after two rounds of
+  manual copy-paste (decoding to 186 bytes of garbled binary instead of
+  the correct 257-byte PEM key) — fixed by writing the secret directly
+  from the local base64 file via `gh secret set` instead of a third manual
+  paste, and confirmed by a non-sensitive diagnostic step that prints the
+  decoded file's size and first line without ever printing key material;
+  (2) altool initially failed with "Cannot determine the Apple ID from
+  Bundle ID" (error 19) because an App ID registered in the Developer
+  Portal is not the same as an app record in App Store Connect — fixed by
+  creating the app listing in App Store Connect for
+  `com.hashamahmad.passCitizenshipTest`; (3) altool then rejected the
+  upload with "Invalid large app icon" (error 90717) because the
+  1024x1024 App Store icon had an alpha channel — fixed by flattening all
+  15 icons in `AppIcon.appiconset` to opaque RGB.
+- Workflow run `31046642373` completed successfully on 2026-08-05,
+  uploading the signed build to TestFlight end-to-end — confirmed via
+  `gh run list`.
+- Build 1 required an export compliance declaration in App Store Connect
+  before it was testable ("None of the algorithms mentioned above" — the
+  app is fully offline with no custom or standard encryption of its own;
+  `url_launcher` only opens the system browser for external links). The
+  owner installed the build via the TestFlight app on a physical iPhone
+  on 2026-08-06 and confirmed: Home rendered correctly with real bundled
+  data, Practice showed the full production question bank (matching the
+  421-question Android result), answering a question showed the correct
+  theme-aware feedback panel with explanation and source citation, and no
+  crashes occurred during the flow.
 
 Notes:
 
@@ -649,19 +686,29 @@ Notes:
 - `.p12`/provisioning-profile secrets were base64-encoded locally and
   pasted directly into GitHub repository secrets by the owner; the p12
   export password and CI keychain password were never shared in chat.
-- The `ios-release.yml` workflow currently only produces a downloadable
-  `.ipa` artifact; it does not yet upload to TestFlight automatically.
-  Automating that would need an App Store Connect API key added as
-  further secrets — not yet set up, and not required to complete this
-  checklist item (manual upload via Transporter or a follow-up workflow
-  step both remain options).
-- Two CI fixes were required before the iOS build succeeded and are worth
-  remembering for any future signing changes: (1) a custom CI keychain
-  needs Apple's WWDR intermediate certificates imported explicitly, or
-  `security find-identity` reports no valid identities even with a
-  correct certificate; (2) `ExportOptions.plist` only configures the
-  export step — the Xcode project's own Release build settings must be
-  switched to manual signing for the archive step to succeed.
+- Four CI fixes were required across the build-and-upload pipeline and are
+  worth remembering for any future signing or release-automation changes:
+  (1) a custom CI keychain needs Apple's WWDR intermediate certificates
+  imported explicitly, or `security find-identity` reports no valid
+  identities even with a correct certificate; (2) `ExportOptions.plist`
+  only configures the export step — the Xcode project's own Release build
+  settings must be switched to manual signing for the archive step to
+  succeed; (3) a GitHub secret can silently end up corrupted after manual
+  copy-paste with no error until altool fails at upload time — prefer
+  writing secrets from a local file via `gh secret set` over pasting into
+  the web UI, and a size/first-line diagnostic (safe to log, never prints
+  key material) catches this immediately; (4) registering an App ID in
+  the Apple Developer Portal is not sufficient for `altool`/TestFlight —
+  an app record with the same bundle ID must also be created in App Store
+  Connect first, or the upload fails with "Cannot determine the Apple ID
+  from Bundle ID".
+- App Store icons must be fully opaque: a 1024x1024 App Store icon (and by
+  extension the whole `AppIcon.appiconset`) can't have an alpha channel or
+  transparency, even though iOS itself renders app icons fine with one.
+  Icon-generation tools that pre-bake rounded corners with a transparent
+  margin will fail App Store Connect validation — iOS applies its own
+  corner-rounding mask at render time, so the source images should be
+  plain opaque squares.
 
 ### RR-08 — Complete release documentation, beta testing, and submission
 
