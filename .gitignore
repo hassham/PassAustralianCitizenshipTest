@@ -3,6 +3,10 @@
 *.log
 *.pyc
 *.swp
+
+# Raw store-listing screenshot exports (see store-assets/ for the
+# processed versions actually used for submission)
+/screenshots/
 .DS_Store
 .atom/
 .build/
