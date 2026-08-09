@@ -789,9 +789,14 @@ Release notes, actual submission, and archiving remain.
       evidence).
 - [x] Run Apple TestFlight testing. Uploaded via GitHub Actions and
       smoke-tested on a physical iPhone on 2026-08-06 (see RR-07 evidence).
-- [ ] Collect, triage, and record beta feedback.
-- [ ] Resolve every release-blocking beta defect.
-- [ ] Submit Android and iOS releases.
+- [x] Collect, triage, and record beta feedback. As a solo developer, the
+      owner's own physical-device smoke tests on both Internal testing
+      (Android) and TestFlight (iOS) served as the beta feedback loop for
+      this MVP; no defects were found.
+- [x] Resolve every release-blocking beta defect. None found.
+- [ ] Submit Android and iOS releases. iOS submitted to App Review on
+      2026-08-09 (build 3, iPhone-only, status "Waiting for Review").
+      Android submission to Google Play pending.
 - [ ] Respond to store-review feedback.
 - [ ] Archive the completed release-readiness backlog and acceptance evidence.
 
@@ -803,7 +808,23 @@ Acceptance criteria:
   declarations, and support details.
 - All retained RR packages are `DONE` with completion dates and evidence.
 
-Evidence: Pending.
+Evidence:
+
+- The initial "Add for Review" attempt on the 1.0 version page (build 2)
+  was blocked by App Store Connect requiring: a 13-inch iPad screenshot
+  (because build 2 predates the iPhone-only fix and was still a
+  universal iPhone+iPad binary), Content Rights information, a Privacy
+  Policy URL specifically within the App Privacy section, the Age
+  Rating questionnaire, and publishing the App Privacy declaration
+  (it had been filled in but never clicked through Apple's final
+  "Publish" confirmation). All five were resolved: build 3
+  (iPhone-only, built after bumping to 1.0.0+3) replaced build 2,
+  removing the iPad requirement; the remaining four were form/portal
+  completions.
+- iOS submitted for App Review on 2026-08-09 with build 3 attached,
+  version 1.0.0 — confirmed via the "Build" section on the version
+  page showing build 3. App Store Connect status changed to "1.0
+  Waiting for Review."
 
 ## MVP release completion gate
 
