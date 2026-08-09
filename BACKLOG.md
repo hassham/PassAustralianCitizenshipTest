@@ -13,17 +13,18 @@ Status legend: `TODO` | `IN PROGRESS` | `BLOCKED` | `PARTIAL` | `DONE`
 Priority legend: `P0` release blocker | `P1` required before release |
 `P2` polish or maintainability
 
-Last updated: 2026-08-06.
+Last updated: 2026-08-08.
 
 ## Current delivery cycle: MVP release readiness
 
 **Theme:** Complete and validate the content, resolve physical-device feedback,
 prove quality on Android and iOS, and prepare signed store releases.
 
-**Overall status:** `IN PROGRESS` — RR-01 through RR-06 are `DONE`. Both
+**Overall status:** `IN PROGRESS` — RR-01 through RR-07 are `DONE`. Both
 Android and iOS build, sign, install, and pass their physical-device
-smoke tests, and responsive visual QA is complete. Store metadata
-(RR-07) and all of RR-08 remain.
+smoke tests through both a direct build and their real store
+distribution channel (Google Play Internal testing / TestFlight), and
+store listings are complete for both platforms. Only RR-08 remains.
 
 ### Release-readiness outcome
 
@@ -92,10 +93,8 @@ Out of scope:
 
 ## Current focus
 
-RR-01 through RR-06 are `DONE`. RR-07 is in progress: both platforms
-build, sign, install, and pass their physical-device smoke tests; the
-only remaining work is store metadata for both platforms. RR-08 has not
-been started.
+RR-01 through RR-07 are `DONE`. Only RR-08 (release notes, beta testing,
+submission for review, and archiving this backlog) remains.
 
 ## Ordered release-readiness work packages
 
@@ -523,7 +522,7 @@ Evidence:
 
 ### RR-07 — Prepare signed Android and iOS releases
 
-**Status:** `PARTIAL — BOTH PLATFORMS BUILD, SIGN, INSTALL, AND SMOKE-TEST; STORE METADATA REMAINS`
+**Status:** `DONE`
 
 **Priority:** `P0`
 
@@ -531,13 +530,12 @@ Evidence:
 
 **Started:** 2026-08-03.
 
-**Completion:** Both platforms now produce signed release builds and have
-been installed and smoke-tested on physical devices. Android was
-installed via `adb` on a physical Redmi Note 9 Pro; iOS builds, signs,
-and uploads to TestFlight automatically via GitHub Actions (no Mac
-required) and was installed via TestFlight on a physical iPhone and
-smoke-tested by the owner on 2026-08-06. Only store metadata for both
-platforms remains.
+**Completion:** 2026-08-08. Both platforms produce signed release builds
+and have been installed and smoke-tested on physical devices via both
+their normal distribution channel and a direct/sideloaded build.
+Store listings (descriptions, screenshots, feature graphic, categories,
+pricing, and privacy/data-safety declarations) are complete for both
+Google Play and the App Store. All 7 checklist items are done.
 
 - [x] Configure Android release signing. Owner generated
       `upload-keystore.jks` via `keytool` on 2026-08-04.
@@ -576,10 +574,14 @@ platforms remains.
       Built, signed, and uploaded via GitHub Actions, installed via
       TestFlight on a physical iPhone, and smoke-tested by the owner on
       2026-08-06 (see Evidence).
-- [ ] Prepare Google Play and App Store descriptions, screenshots, categories,
-      pricing, declarations, and privacy metadata.
-- [ ] Confirm every feature is described as free and no entitlement or billing
-      setup is required.
+- [x] Prepare Google Play and App Store descriptions, screenshots, categories,
+      pricing, declarations, and privacy metadata. Both store listings are
+      fully filled in (see Evidence); Android's first Play-signed build was
+      also uploaded to Internal testing and smoke-tested successfully.
+- [x] Confirm every feature is described as free and no entitlement or billing
+      setup is required. Both stores are configured with Free pricing and no
+      in-app purchases; the App Privacy / Data Safety questionnaires both
+      declare no data collection, matching `PRIVACY.md`.
 
 Acceptance criteria:
 
@@ -672,6 +674,46 @@ Evidence:
   421-question Android result), answering a question showed the correct
   theme-aware feedback panel with explanation and source citation, and no
   crashes occurred during the flow.
+- The iOS deployment target was raised from 13.0 to 15.0
+  (`ios/Runner.xcodeproj/project.pbxproj`) after Apple's post-upload
+  notice ITMS-90068 flagged that MinimumOSVersion below 15.0 will be
+  rejected starting Spring 2027. The app was also restricted to
+  iPhone-only (`TARGETED_DEVICE_FAMILY = 1`, was the `flutter create`
+  default of universal iPhone+iPad) since iPad was never part of this
+  release's scope, avoiding an iPad screenshot/QA requirement. Bumping
+  the build number from 1.0.0+1 to 1.0.0+2 was also required: Apple
+  rejects a re-upload with the same build number as a prior upload
+  (`ENTITY_ERROR.ATTRIBUTE.INVALID.DUPLICATE`).
+- Six store screenshots were curated from real device captures (Home,
+  practice-session category picker, a mock exam in progress, answer
+  review with explanation and source citation, exam results, and
+  starred questions), chosen to lead with positive/complete states
+  rather than the app's legitimate but less flattering "needs
+  attention"/low-readiness screens. Processed into `store-assets/ios`
+  (1320x2868, App Store Connect's 6.9-inch requirement) and
+  `store-assets/android` (native resolution, well within Play's
+  looser requirements), plus a 1024x500 Play feature graphic and a
+  512x512 Play Store icon, both generated from the same 1024x1024
+  icon source used for iOS.
+- App Store Connect: Pricing set to Free with worldwide availability,
+  App Privacy declared as "Data Not Collected", and App Information
+  (subtitle, category) filled in.
+- Google Play Console: a new "Pass Citizenship Test" app
+  (`com.hashamahmad.pass_citizenship_test`) was registered under a new
+  Play Console developer account. Content rating (All Other App
+  Types, no ratings-relevant content), target audience (18 and over
+  only — the real citizenship test only applies to adult applicants,
+  and including under-18 age groups would have pulled the app into
+  Play's stricter Families Policy for no reason), privacy policy URL,
+  category (Education), and the full store listing (descriptions,
+  screenshots, icon, feature graphic) were completed. A fresh signed
+  `app-release.aab` (version 1.0.0+2) was built and uploaded to the
+  Internal testing track, and the Play-signed/re-delivered build (a
+  different artifact from the `adb`-sideloaded APK, since Play App
+  Signing re-signs uploads with a Google-managed key) was installed
+  and smoke-tested successfully by the owner on 2026-08-08 — the first
+  time this app was installed via Google Play's own distribution
+  pipeline rather than a direct build.
 
 Notes:
 
