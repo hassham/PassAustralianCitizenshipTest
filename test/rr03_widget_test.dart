@@ -19,6 +19,14 @@ void main() {
   testWidgets('practice interaction shows feedback and completes the session', (
     tester,
   ) async {
+    // The question bank has real-world variance in stem/option length; a
+    // small surface can push the correct option below the lazy ListView's
+    // built extent, making it unfindable regardless of which question the
+    // (randomised) selection happens to pick. A generous surface avoids
+    // that regardless of content length.
+    await tester.binding.setSurfaceSize(const Size(430, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     final database = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(database.close);
     final controller = PracticeController(PracticeRepository(database));
