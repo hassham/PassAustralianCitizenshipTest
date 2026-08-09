@@ -13,7 +13,7 @@ Status legend: `TODO` | `IN PROGRESS` | `BLOCKED` | `PARTIAL` | `DONE`
 Priority legend: `P0` release blocker | `P1` required before release |
 `P2` polish or maintainability
 
-Last updated: 2026-08-08.
+Last updated: 2026-08-09.
 
 ## Current delivery cycle: MVP release readiness
 
@@ -24,7 +24,9 @@ prove quality on Android and iOS, and prepare signed store releases.
 Android and iOS build, sign, install, and pass their physical-device
 smoke tests through both a direct build and their real store
 distribution channel (Google Play Internal testing / TestFlight), and
-store listings are complete for both platforms. Only RR-08 remains.
+store listings are complete for both platforms. RR-08 is in progress:
+beta testing, privacy declarations, and support contact are done;
+release notes and actual store submission remain.
 
 ### Release-readiness outcome
 
@@ -93,8 +95,10 @@ Out of scope:
 
 ## Current focus
 
-RR-01 through RR-07 are `DONE`. Only RR-08 (release notes, beta testing,
-submission for review, and archiving this backlog) remains.
+RR-01 through RR-07 are `DONE`. RR-08 is in progress: beta testing
+(Internal testing / TestFlight), privacy declarations, and support
+contact are done. What remains is release notes, submitting both
+releases for review, and archiving this backlog once shipped.
 
 ## Ordered release-readiness work packages
 
@@ -690,7 +694,7 @@ Evidence:
   starred questions), chosen to lead with positive/complete states
   rather than the app's legitimate but less flattering "needs
   attention"/low-readiness screens. Processed into `store-assets/ios`
-  (1320x2868, App Store Connect's 6.9-inch requirement) and
+  (1284x2778, App Store Connect's 6.5-inch iPhone Display requirement) and
   `store-assets/android` (native resolution, well within Play's
   looser requirements), plus a 1024x500 Play feature graphic and a
   512x512 Play Store icon, both generated from the same 1024x1024
@@ -761,22 +765,30 @@ Notes:
 
 ### RR-08 — Complete release documentation, beta testing, and submission
 
-**Status:** `TODO`
+**Status:** `PARTIAL`
 
 **Priority:** `P0`
 
 **Depends on:** RR-07.
 
-**Completion:** Not started.
+**Completion:** Privacy declarations, support contact, and both beta
+testing tracks are done as a byproduct of RR-07's store-listing work.
+Release notes, actual submission, and archiving remain.
 
-- [ ] Create release notes for version 1.0.0.
-- [ ] Finalize the privacy policy and store privacy declarations.
+- [x] Create release notes for version 1.0.0. See `CHANGELOG.md`.
+- [x] Finalize the privacy policy and store privacy declarations.
+      `PRIVACY.md` is complete; App Store Connect's App Privacy and Google
+      Play's Data Safety form both declare no data collection, matching it.
 - [x] Record and implement the Terms of Service decision: no separate Terms of
       Service for the MVP; retain the privacy policy and disclaimer.
-- [ ] Publish a support contact.
+- [x] Publish a support contact. Both store listings use the project's
+      public GitHub issues page as the support URL.
 - [ ] Prepare an optional user guide if required.
-- [ ] Run Google Play internal testing.
-- [ ] Run Apple TestFlight testing.
+- [x] Run Google Play internal testing. `app-release.aab` (1.0.0+2)
+      uploaded and smoke-tested successfully on 2026-08-08 (see RR-07
+      evidence).
+- [x] Run Apple TestFlight testing. Uploaded via GitHub Actions and
+      smoke-tested on a physical iPhone on 2026-08-06 (see RR-07 evidence).
 - [ ] Collect, triage, and record beta feedback.
 - [ ] Resolve every release-blocking beta defect.
 - [ ] Submit Android and iOS releases.
