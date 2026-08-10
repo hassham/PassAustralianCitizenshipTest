@@ -25,8 +25,8 @@ Android and iOS build, sign, install, and pass their physical-device
 smoke tests through both a direct build and their real store
 distribution channel (Google Play Internal testing / TestFlight), and
 store listings are complete for both platforms. RR-08 is in progress:
-beta testing, privacy declarations, and support contact are done;
-release notes and actual store submission remain.
+both platforms are submitted for store review as of 2026-08-09. Only
+responding to review feedback and archiving this backlog remain.
 
 ### Release-readiness outcome
 
@@ -95,10 +95,10 @@ Out of scope:
 
 ## Current focus
 
-RR-01 through RR-07 are `DONE`. RR-08 is in progress: beta testing
-(Internal testing / TestFlight), privacy declarations, and support
-contact are done. What remains is release notes, submitting both
-releases for review, and archiving this backlog once shipped.
+RR-01 through RR-07 are `DONE`. RR-08 is in progress: both Android and
+iOS are submitted for store review as of 2026-08-09. What remains is
+responding to whatever review feedback comes back, and archiving this
+backlog once both releases go live.
 
 ## Ordered release-readiness work packages
 
@@ -794,9 +794,11 @@ Release notes, actual submission, and archiving remain.
       (Android) and TestFlight (iOS) served as the beta feedback loop for
       this MVP; no defects were found.
 - [x] Resolve every release-blocking beta defect. None found.
-- [ ] Submit Android and iOS releases. iOS submitted to App Review on
+- [x] Submit Android and iOS releases. iOS submitted to App Review on
       2026-08-09 (build 3, iPhone-only, status "Waiting for Review").
-      Android submission to Google Play pending.
+      Android submitted to Google Play's Production track the same day
+      (`app-release.aab` 1.0.0+2, reused from the already-tested Internal
+      testing release).
 - [ ] Respond to store-review feedback.
 - [ ] Archive the completed release-readiness backlog and acceptance evidence.
 
@@ -825,6 +827,22 @@ Evidence:
   version 1.0.0 — confirmed via the "Build" section on the version
   page showing build 3. App Store Connect status changed to "1.0
   Waiting for Review."
+- Android's Production release form surfaced a real issue before
+  submission: Play Console's "Publishing overview" listed a pending
+  change of "Target age is 13 - 15" under Target audience and content,
+  contradicting the owner's earlier 18-and-over-only decision (made to
+  avoid Play's Families Policy, which this app was never built or
+  reviewed against). Caught and corrected to 18+ only before the
+  release was sent for review — confirmed by the owner directly in
+  App content → Target audience and content.
+- Android submitted to Google Play's Production track on 2026-08-09,
+  reusing the already Internal-testing-verified `app-release.aab`
+  (1.0.0+2) via "Add from library" rather than a fresh upload. No
+  closed-testing prerequisite applied to this account — Play Console
+  offered "Create new release" directly. Confirmed via the Publishing
+  overview checklist showing "Send the release to Google for review"
+  complete, with only the automatic post-approval publish step
+  remaining.
 
 ## MVP release completion gate
 
