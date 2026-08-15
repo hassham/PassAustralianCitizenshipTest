@@ -13,19 +13,16 @@ Status legend: `TODO` | `IN PROGRESS` | `BLOCKED` | `PARTIAL` | `DONE`
 Priority legend: `P0` release blocker | `P1` required before release |
 `P2` polish or maintainability
 
-Last updated: 2026-08-09.
+Last updated: 2026-08-13.
 
 ## Current delivery cycle: MVP release readiness
 
 **Theme:** Complete and validate the content, resolve physical-device feedback,
 prove quality on Android and iOS, and prepare signed store releases.
 
-**Overall status:** `IN PROGRESS` — RR-01 through RR-07 are `DONE`. Both
-Android and iOS build, sign, install, and pass their physical-device
-smoke tests through both a direct build and their real store
-distribution channel (Google Play Internal testing / TestFlight), and
-store listings are complete for both platforms. RR-08 is in progress:
-both platforms are submitted for store review as of 2026-08-09. Only
+**Overall status:** `IN PROGRESS` — RR-01 through RR-07 are `DONE`.
+**Android is live on Google Play** as of 2026-08-13. iOS is submitted
+and still awaiting Apple's review decision. RR-08 is in progress. Only
 responding to review feedback and archiving this backlog remain.
 
 ### Release-readiness outcome
@@ -95,10 +92,10 @@ Out of scope:
 
 ## Current focus
 
-RR-01 through RR-07 are `DONE`. RR-08 is in progress: both Android and
-iOS are submitted for store review as of 2026-08-09. What remains is
-responding to whatever review feedback comes back, and archiving this
-backlog once both releases go live.
+RR-01 through RR-07 are `DONE`. RR-08 is in progress: Android is live
+on Google Play as of 2026-08-13. iOS is submitted and still awaiting
+Apple's review decision. What remains is confirming iOS goes live, and
+archiving this backlog once both releases are out.
 
 ## Ordered release-readiness work packages
 
@@ -795,11 +792,12 @@ Release notes, actual submission, and archiving remain.
       this MVP; no defects were found.
 - [x] Resolve every release-blocking beta defect. None found.
 - [x] Submit Android and iOS releases. iOS submitted to App Review on
-      2026-08-09 (build 3, iPhone-only, status "Waiting for Review").
-      Android submitted to Google Play's Production track the same day
-      (`app-release.aab` 1.0.0+2, reused from the already-tested Internal
-      testing release).
-- [ ] Respond to store-review feedback.
+      2026-08-09 (build 3, iPhone-only). Android submitted to Google
+      Play's Production track the same day (`app-release.aab` 1.0.0+2,
+      reused from the already-tested Internal testing release).
+- [ ] Respond to store-review feedback. Android approved and **live on
+      Google Play** as of 2026-08-13 (100% rollout, no review feedback
+      required — approved cleanly). iOS still awaiting Apple's decision.
 - [ ] Archive the completed release-readiness backlog and acceptance evidence.
 
 Acceptance criteria:
@@ -843,6 +841,13 @@ Evidence:
   overview checklist showing "Send the release to Google for review"
   complete, with only the automatic post-approval publish step
   remaining.
+- **Android is live on Google Play** as of 2026-08-13 — approved by
+  Google roughly 4 days after submission (within the expected 7-14 day
+  window for a first app on a new developer account, on the faster
+  end). Confirmed via the Play Console dashboard: "Latest production
+  release ... 100% ... 39 hours ago" and "App update published. Users
+  should see changes immediately." No review feedback or changes were
+  required — approved as submitted.
 
 ## MVP release completion gate
 
