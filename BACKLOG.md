@@ -13,7 +13,7 @@ Status legend: `TODO` | `IN PROGRESS` | `BLOCKED` | `PARTIAL` | `DONE`
 Priority legend: `P0` release blocker | `P1` required before release |
 `P2` polish or maintainability
 
-Last updated: 2026-08-13.
+Last updated: 2026-08-18.
 
 ## Current delivery cycle: MVP release readiness
 
@@ -21,9 +21,9 @@ Last updated: 2026-08-13.
 prove quality on Android and iOS, and prepare signed store releases.
 
 **Overall status:** `IN PROGRESS` — RR-01 through RR-07 are `DONE`.
-**Android is live on Google Play** as of 2026-08-13. iOS is submitted
-and still awaiting Apple's review decision. RR-08 is in progress. Only
-responding to review feedback and archiving this backlog remain.
+**Both platforms are live**: Android on Google Play since 2026-08-13,
+iOS on the App Store since 2026-08-18. Version 1.0.0 has shipped. Only
+archiving this backlog remains on RR-08.
 
 ### Release-readiness outcome
 
@@ -92,10 +92,9 @@ Out of scope:
 
 ## Current focus
 
-RR-01 through RR-07 are `DONE`. RR-08 is in progress: Android is live
-on Google Play as of 2026-08-13. iOS is submitted and still awaiting
-Apple's review decision. What remains is confirming iOS goes live, and
-archiving this backlog once both releases are out.
+RR-01 through RR-07 are `DONE`. Both platforms are live: Android since
+2026-08-13, iOS since 2026-08-18. Version 1.0.0 has shipped. The only
+remaining step is archiving this backlog.
 
 ## Ordered release-readiness work packages
 
@@ -768,9 +767,11 @@ Notes:
 
 **Depends on:** RR-07.
 
-**Completion:** Privacy declarations, support contact, and both beta
-testing tracks are done as a byproduct of RR-07's store-listing work.
-Release notes, actual submission, and archiving remain.
+**Completion:** 2026-08-18. All substantive work is done — release
+notes, privacy/support/beta-testing (byproducts of RR-07's
+store-listing work), and both store submissions, which are now
+**live**: Android since 2026-08-13, iOS since 2026-08-18. Only
+archiving this backlog remains.
 
 - [x] Create release notes for version 1.0.0. See `CHANGELOG.md`.
 - [x] Finalize the privacy policy and store privacy declarations.
@@ -795,9 +796,14 @@ Release notes, actual submission, and archiving remain.
       2026-08-09 (build 3, iPhone-only). Android submitted to Google
       Play's Production track the same day (`app-release.aab` 1.0.0+2,
       reused from the already-tested Internal testing release).
-- [ ] Respond to store-review feedback. Android approved and **live on
-      Google Play** as of 2026-08-13 (100% rollout, no review feedback
-      required — approved cleanly). iOS still awaiting Apple's decision.
+- [x] Respond to store-review feedback. Android approved and live on
+      Google Play as of 2026-08-13, no review feedback required.
+      iOS's first submission (build 3) hit Guideline 2.1 — Apple
+      requested a screen recording plus written detail on device/OS
+      testing, app function, external services, regional behavior, and
+      the source material's licensing; all provided via App Review
+      Information's Notes and Attachment fields, then resubmitted.
+      Approved on 2026-08-18 and released by the owner the same day.
 - [ ] Archive the completed release-readiness backlog and acceptance evidence.
 
 Acceptance criteria:
@@ -848,6 +854,26 @@ Evidence:
   release ... 100% ... 39 hours ago" and "App update published. Users
   should see changes immediately." No review feedback or changes were
   required — approved as submitted.
+- iOS's build 3 submission (2026-08-09) received an App Review message
+  the following day: "Guideline 2.1 - Information Needed - New App
+  Submission," a standard first-app request rather than a functional
+  rejection. Apple asked for a screen recording of core functionality
+  plus written answers on: devices/OS tested, app function and target
+  audience, setup/credentials, external services used, regional
+  behavior, and authorization for any regulated/third-party content.
+  Resolved by recording a walkthrough on a physical iPhone 16 Pro Max
+  (iOS 26.6) and adding it as an Attachment, and expanding the App
+  Review Information Notes field to answer every point — including
+  disclosing that question content derives from the Australian
+  Government's "Our Common Bond" resource under a CC BY 4.0 licence,
+  with in-app attribution. Resubmitted via "Resubmit to App Review."
+- **iOS approved for distribution on 2026-08-18.** Set to manual
+  release (an owner decision made during the original submission, to
+  keep control over exact release timing rather than auto-publishing
+  the moment Apple approved). Released by the owner the same day via
+  "Release This Version."
+- **Both platforms are now live**: Android on Google Play since
+  2026-08-13, iOS on the App Store since 2026-08-18.
 
 ## MVP release completion gate
 
