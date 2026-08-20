@@ -3,8 +3,8 @@
 Study for the real Australian Citizenship Test — free, offline, and without the ads or clutter that plague most test-prep apps.
 
 <p>
-  <a href="https://apps.apple.com/us/app/pass-citizenship-test/id6798171743"><img src="store-assets/badges/app-store-badge.svg" alt="Download on the App Store" height="54"></a>
-  <a href="https://play.google.com/store/apps/details?id=com.hashamahmad.pass_citizenship_test"><img src="store-assets/badges/google-play-badge.png" alt="Get it on Google Play" height="54"></a>
+  <a href="https://apps.apple.com/us/app/pass-citizenship-test/id6798171743"><img src="store-assets/badges/app-store-badge.svg" alt="Download on the App Store" width="161" height="54"></a>
+  <a href="https://play.google.com/store/apps/details?id=com.hashamahmad.pass_citizenship_test"><img src="store-assets/badges/google-play-badge.png" alt="Get it on Google Play" width="181" height="54"></a>
 </p>
 
 ## Demo
