@@ -79,7 +79,9 @@ class ExamRepository {
     final examConfig = await config();
     final startedAt = now ?? DateTime.now();
     final durationSeconds = examConfig.durationMinutes * 60;
-    final available = await practiceRepository.questionsFor();
+    final available = practiceRepository.randomizeOptionOrder(
+      await practiceRepository.questionsFor(),
+    );
     final values =
         available
             .where((question) => question.isAustralianValuesQuestion)
@@ -108,7 +110,7 @@ class ExamRepository {
           ExamAttemptsCompanion.insert(
             configId: examConfig.id,
             selectedQuestionsJson: jsonEncode(
-              questions.map((question) => question.id).toList(),
+              practiceRepository.encodeSessionQuestions(questions),
             ),
             totalQuestions: questions.length,
             startedAt: startedAt,
@@ -148,9 +150,14 @@ class ExamRepository {
     final examConfig = await (database.select(
       database.examConfigurations,
     )..where((row) => row.id.equals(attempt.configId))).getSingle();
-    final ids = (jsonDecode(attempt.selectedQuestionsJson) as List<dynamic>)
-        .cast<String>();
-    final questions = await practiceRepository.questionsByIds(ids);
+    final saved = practiceRepository.decodeSessionQuestions(
+      attempt.selectedQuestionsJson,
+    );
+    final ids = saved.ids;
+    final questions = practiceRepository.restoreOptionOrder(
+      await practiceRepository.questionsByIds(ids),
+      saved.optionIdsByQuestion,
+    );
     if (questions.length != ids.length) {
       await abandonActiveExam();
       throw const ContentFailure(
@@ -443,8 +450,17 @@ class ExamRepository {
               ..where((row) => row.examAttemptId.equals(attemptId))
               ..orderBy([(row) => OrderingTerm.asc(row.questionOrder)]))
             .get();
-    final questions = await practiceRepository.questionsByIdsIncludingRemoved(
-      answerRows.map((answer) => answer.questionId).toList(),
+    final attempt = await (database.select(
+      database.examAttempts,
+    )..where((row) => row.id.equals(attemptId))).getSingle();
+    final saved = practiceRepository.decodeSessionQuestions(
+      attempt.selectedQuestionsJson,
+    );
+    final questions = practiceRepository.restoreOptionOrder(
+      await practiceRepository.questionsByIdsIncludingRemoved(
+        answerRows.map((answer) => answer.questionId).toList(),
+      ),
+      saved.optionIdsByQuestion,
     );
     final questionsById = {
       for (final question in questions) question.id: question,

@@ -33,8 +33,27 @@ void main() {
     expect(questions.first.references, isNotEmpty);
   });
 
+  test(
+    'bundled correct answers are balanced across option positions',
+    () async {
+      final questions = await repository.questions();
+      final counts = List<int>.filled(4, 0);
+      for (final question in questions) {
+        counts[question.correctIndex]++;
+      }
+
+      expect(counts.reduce((a, b) => a > b ? a : b), lessThanOrEqualTo(106));
+      expect(counts.reduce((a, b) => a < b ? a : b), greaterThanOrEqualTo(105));
+    },
+  );
+
   test('records progress and restores an unfinished session', () async {
-    final questions = await repository.questions('values');
+    final original = await repository.questions('values');
+    final first = original.first;
+    final questions = [
+      first.withOptions(first.options.reversed.toList()),
+      ...original.skip(1),
+    ];
     final sessionId = await repository.createSession('values', questions);
 
     await repository.recordAnswer(
@@ -50,6 +69,10 @@ void main() {
     final progress = await repository.progress();
     expect(restored?.currentIndex, 1);
     expect(restored?.correctCount, 1);
+    expect(
+      restored?.questions.first.options.map((option) => option.id),
+      questions.first.options.map((option) => option.id),
+    );
     expect(progress.attempted, 1);
     expect(progress.accuracy, 100);
   });

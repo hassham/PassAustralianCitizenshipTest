@@ -125,10 +125,12 @@ class PracticeController extends StateNotifier<PracticeState> {
     state = state.copyWith(loading: true, clearSelection: true);
     try {
       await repository.abandonActiveSession();
-      final questions = await repository.questionsFor(
-        categoryIds: categoryIds,
-        difficulties: difficulties,
-        limit: questionCount,
+      final questions = repository.randomizeOptionOrder(
+        await repository.questionsFor(
+          categoryIds: categoryIds,
+          difficulties: difficulties,
+          limit: questionCount,
+        ),
       );
       final categoryKey = categoryIds == null || categoryIds.isEmpty
           ? null
@@ -148,7 +150,9 @@ class PracticeController extends StateNotifier<PracticeState> {
     state = state.copyWith(loading: true, clearSelection: true);
     try {
       await repository.abandonActiveSession();
-      final questions = await repository.starredQuestions();
+      final questions = repository.randomizeOptionOrder(
+        await repository.starredQuestions(),
+      );
       if (questions.isEmpty) {
         state = const PracticeState();
         return false;

@@ -21,6 +21,18 @@ class StudyQuestionModel {
 
   int get correctIndex => options.indexWhere((option) => option.isCorrect);
   QuestionOptionModel get correctOption => options[correctIndex];
+
+  StudyQuestionModel withOptions(List<QuestionOptionModel> value) =>
+      StudyQuestionModel(
+        id: id,
+        categoryId: categoryId,
+        text: text,
+        options: value,
+        overallExplanation: overallExplanation,
+        difficulty: difficulty,
+        isAustralianValuesQuestion: isAustralianValuesQuestion,
+        references: references,
+      );
 }
 
 class QuestionOptionModel {
