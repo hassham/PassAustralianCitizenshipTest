@@ -45,6 +45,14 @@ void main() {
       restored?.questions.map((question) => question.id),
       started.questions.map((question) => question.id),
     );
+    expect(
+      restored?.questions.map(
+        (question) => question.options.map((option) => option.id).toList(),
+      ),
+      started.questions.map(
+        (question) => question.options.map((option) => option.id).toList(),
+      ),
+    );
   });
 
   test(

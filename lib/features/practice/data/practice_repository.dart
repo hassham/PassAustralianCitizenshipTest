@@ -383,6 +383,60 @@ class PracticeRepository {
     return ids.map((id) => byId[id]).whereType<StudyQuestionModel>().toList();
   }
 
+  /// Randomizes options once for a new session. The resulting order is saved
+  /// by [createSession] (or the exam repository) and restored by stable option
+  /// ID, so it must not be called while restoring an existing session.
+  List<StudyQuestionModel> randomizeOptionOrder(
+    List<StudyQuestionModel> questions,
+  ) => questions.map((question) {
+    final options = [...question.options]..shuffle();
+    return question.withOptions(options);
+  }).toList();
+
+  List<Map<String, dynamic>> encodeSessionQuestions(
+    List<StudyQuestionModel> questions,
+  ) => [
+    for (final question in questions)
+      {
+        'id': question.id,
+        'optionIds': question.options.map((option) => option.id).toList(),
+      },
+  ];
+
+  ({List<String> ids, Map<String, List<String>> optionIdsByQuestion})
+  decodeSessionQuestions(String value) {
+    final entries = jsonDecode(value) as List<dynamic>;
+    final ids = <String>[];
+    final optionIdsByQuestion = <String, List<String>>{};
+    for (final entry in entries) {
+      if (entry is String) {
+        ids.add(entry); // Backward compatibility with sessions from v1.0.
+      } else if (entry is Map<String, dynamic>) {
+        final id = entry['id'] as String;
+        ids.add(id);
+        optionIdsByQuestion[id] = (entry['optionIds'] as List<dynamic>)
+            .cast<String>();
+      }
+    }
+    return (ids: ids, optionIdsByQuestion: optionIdsByQuestion);
+  }
+
+  List<StudyQuestionModel> restoreOptionOrder(
+    List<StudyQuestionModel> questions,
+    Map<String, List<String>> optionIdsByQuestion,
+  ) => questions.map((question) {
+    final savedIds = optionIdsByQuestion[question.id];
+    if (savedIds == null) return question;
+    final byId = {for (final option in question.options) option.id: option};
+    final restored = savedIds
+        .map((id) => byId[id])
+        .whereType<QuestionOptionModel>()
+        .toList();
+    return restored.length == question.options.length
+        ? question.withOptions(restored)
+        : question;
+  }).toList();
+
   Future<Set<String>> starredIds() async {
     await initialise();
     final rows = await database.select(database.starredQuestions).get();
@@ -454,7 +508,7 @@ class PracticeRepository {
       .insert(
         PracticeSessionsCompanion.insert(
           categoryId: Value(categoryId),
-          questionIdsJson: jsonEncode(items.map((item) => item.id).toList()),
+          questionIdsJson: jsonEncode(encodeSessionQuestions(items)),
           updatedAt: DateTime.now(),
         ),
       );
@@ -463,9 +517,12 @@ class PracticeRepository {
     await initialise();
     final session = await database.activeSession();
     if (session == null) return null;
-    final ids = (jsonDecode(session.questionIdsJson) as List<dynamic>)
-        .cast<String>();
-    final items = await questionsByIds(ids);
+    final saved = decodeSessionQuestions(session.questionIdsJson);
+    final ids = saved.ids;
+    final items = restoreOptionOrder(
+      await questionsByIds(ids),
+      saved.optionIdsByQuestion,
+    );
     if (items.isEmpty) {
       await (database.update(database.practiceSessions)
             ..where((row) => row.id.equals(session.id)))
